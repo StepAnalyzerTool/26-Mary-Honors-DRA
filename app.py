@@ -152,7 +152,20 @@ def collection_tab() -> None:
         value=10,
         help="Use fewer than 10 when the session ended because the timer was reached.",
     )
-    trial_number = st.select_slider("Trial to code", options=list(range(1, int(completed_trials) + 1)))
+    available_trials = list(range(1, int(completed_trials) + 1))
+    if "selected_trial" not in st.session_state:
+        st.session_state.selected_trial = 1
+    if st.session_state.selected_trial not in available_trials:
+        st.session_state.selected_trial = available_trials[-1]
+    trial_number = st.segmented_control(
+        "Trial to code",
+        options=available_trials,
+        format_func=lambda number: f"T{number}",
+        key="selected_trial",
+        selection_mode="single",
+    )
+    if trial_number is None:
+        trial_number = 1
     current = st.session_state.trials[trial_number - 1]
 
     with st.form(f"trial_form_{trial_number}"):
@@ -238,4 +251,3 @@ with results:
 with ioa:
     st.subheader("Interobserver agreement")
     st.info("The IOA file-comparison module will be added after the session workbook format is validated.")
-
