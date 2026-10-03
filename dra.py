@@ -1,160 +1,107 @@
+"""Live-session catalog, persistence, and exports. Scoring is in scoring.py."""
 from __future__ import annotations
-
-from collections import defaultdict
+from datetime import datetime, timezone
 from io import BytesIO
+from pathlib import Path
+import json
+import random
 from typing import Any
-
 import pandas as pd
+from scoring import RULES_VERSION, empty_trials, score_trials
 
+ROOT=Path(__file__).parent
+SESSION_SCHEMA_VERSION=2
 
-OBSERVATION_FIELDS = [
-    {"key": "worksheet", "label": "Worksheet provided?", "kind": "yn"},
-    {"key": "instruction", "label": "Initial instruction presented?", "kind": "yn"},
-    {"key": "prompt", "label": "Additional prompt provided?", "kind": "yn"},
-    {"key": "began_within_10", "label": "Learner began within 10 seconds of initial instruction?", "kind": "yn"},
-    {"key": "problems", "label": "Math problems completed", "kind": "count"},
-    {"key": "target_behavior", "label": "Target challenging behavior occurred?", "kind": "yn"},
-    {"key": "minor_behavior", "label": "Minor behavior occurred?", "kind": "yn"},
-    {"key": "reinforcer_within_3", "label": "Reinforcer provided within 3 seconds of 2 problems?", "kind": "yn", "allow_na": True},
-    {"key": "reinforcer_20_seconds", "label": "Reinforcer access lasted 20 seconds?", "kind": "yn", "allow_na": True},
-    {"key": "reinforcer_for_target", "label": "Reinforcer provided contingent on target behavior?", "kind": "yn", "allow_na": True},
-    {"key": "worksheet_removed_for_target", "label": "Worksheet removed contingent on target behavior?", "kind": "yn", "allow_na": True},
-    {"key": "reinforcer_other_time", "label": "Reinforcer provided at another time?", "kind": "yn"},
-    {"key": "other_stimulus_for_two", "label": "Other stimulus provided contingent on 2 problems?", "kind": "yn", "allow_na": True},
-    {"key": "other_stimulus_for_target", "label": "Other stimulus provided contingent on target behavior?", "kind": "yn", "allow_na": True},
-    {"key": "other_stimulus_other_time", "label": "Other stimulus provided at another time?", "kind": "yn"},
-]
+def load_catalog() -> dict[str,Any]:
+ catalog=json.loads((ROOT/'dra_catalog_v1.json').read_text())
+ ids=[s['set_id'] for s in catalog['sets']]
+ if len(ids)!=324 or len(set(ids))!=324: raise ValueError('Catalog needs 324 distinct set IDs.')
+ scenarios={s['scenario_id']:s for s in catalog['scenarios']}
+ for item in catalog['sets']:
+  order=item['ordered_scenario_ids']
+  if len(order)!=10 or len(set(order))!=10 or sorted(order)!=item['scenario_ids']: raise ValueError('Invalid catalog membership/order.')
+  rows=[scenarios[x] for x in order]
+  if sum(x['completed'] for x in rows)!=5 or sum(x['required_prompts'] for x in rows)!=13: raise ValueError('Invalid opportunity balance.')
+  for start in (0,5):
+   half=rows[start:start+5]
+   if sum(x['completed'] for x in half) not in (2,3) or sum(x['required_prompts']==0 for x in half)!=1: raise ValueError('Invalid half balance.')
+   if [sum(x['behavior']==b for x in half) for b in ('No tapping or banging','Finger tapping','Table banging')]!=[1,2,2]: raise ValueError('Invalid behavior balance.')
+  for a,b,c in zip(rows,rows[1:],rows[2:]):
+   if a['completed']==b['completed']==c['completed'] or a['behavior']==b['behavior']==c['behavior']: raise ValueError('Invalid run length.')
+ return catalog
 
+def select_session(catalog: dict[str,Any],set_id: str|None=None) -> dict[str,Any]:
+ item=random.SystemRandom().choice(catalog['sets']) if set_id is None else next((s for s in catalog['sets'] if s['set_id']==set_id),None)
+ if item is None: raise ValueError('Unknown set ID.')
+ return {'catalog_version':catalog['catalog_version'],'set_id':item['set_id'],
+         'ordered_scenario_ids':list(item['ordered_scenario_ids']),
+         'selected_at':datetime.now(timezone.utc).isoformat(),'mode':'in_person'}
 
-STEP_LABELS = {
-    "arrange_materials": "Arrange materials outside of reach",
-    "prepare_reinforcers": "Prepare reinforcers",
-    "worksheet": "Provide worksheet",
-    "instruction": "Present initial instruction",
-    "prompt": "Provide an additional prompt when needed",
-    "reinforcer_within_3": "Deliver reinforcer within 3 seconds",
-    "reinforcer_20_seconds": "Provide 20 seconds of reinforcer access",
-    "reinforcer_for_target": "Do not reinforce target challenging behavior",
-    "worksheet_removed_for_target": "Remove worksheet following target challenging behavior",
-    "reinforcer_other_time": "Do not provide reinforcer at another time",
-    "other_stimulus_for_two": "Do not provide another stimulus for 2 problems",
-    "other_stimulus_for_target": "Do not provide another stimulus for target challenging behavior",
-    "other_stimulus_other_time": "Do not provide another stimulus at another time",
-}
+def session_plan(selection: dict[str,Any],catalog: dict[str,Any]) -> list[dict[str,Any]]:
+ scenarios={s['scenario_id']:s for s in catalog['scenarios']}
+ return [{'Trial':i,'Scenario':sid,'Task pattern':scenarios[sid]['task_pattern'],'Behavior':scenarios[sid]['behavior'],
+          'Dolphin earned':scenarios[sid]['completed'],'Prompts expected':scenarios[sid]['required_prompts']}
+         for i,sid in enumerate(selection['ordered_scenario_ids'],1)]
 
+def load_guide() -> dict[str,list[dict[str,str]]]:
+ entries=json.loads((ROOT/'scoring_guide.json').read_text())['entries'];grouped={}
+ for entry in entries: grouped.setdefault(entry['section'],[]).append(entry)
+ return grouped
 
-ERROR_TYPES = {
-    "arrange_materials": "Omission",
-    "prepare_reinforcers": "Omission",
-    "worksheet": "Omission",
-    "instruction": "Omission",
-    "prompt": "Omission or commission",
-    "reinforcer_within_3": "Omission",
-    "reinforcer_20_seconds": "Omission",
-    "reinforcer_for_target": "Commission",
-    "worksheet_removed_for_target": "Omission",
-    "reinforcer_other_time": "Commission",
-    "other_stimulus_for_two": "Commission",
-    "other_stimulus_for_target": "Commission",
-    "other_stimulus_other_time": "Commission",
-}
+def serialize_session(session: dict[str,Any],setup: dict[str,Any],trials: list[dict[str,Any]]) -> bytes:
+ return (json.dumps({'schema_version':SESSION_SCHEMA_VERSION,'rules_version':RULES_VERSION,
+                    'session':session,'setup':setup,'trials':trials},indent=2,default=str)+'\n').encode()
 
+def restore_session(data: bytes) -> dict[str,Any]:
+ if len(data)>5_000_000: raise ValueError('Session file is too large.')
+ payload=json.loads(data)
+ if payload.get('schema_version')!=SESSION_SCHEMA_VERSION or payload.get('rules_version')!=RULES_VERSION:
+  raise ValueError('This file uses another scoring format. Legacy scores cannot be reinterpreted automatically.')
+ trials=payload.get('trials')
+ if not isinstance(trials,list) or len(trials)!=10 or [t.get('trial') for t in trials]!=list(range(1,11)):
+  raise ValueError('Session must contain trial records 1–10.')
+ session=payload.get('session',{})
+ if session.get('set_id'):
+  canonical=select_session(load_catalog(),session['set_id'])
+  if session.get('catalog_version')!=canonical['catalog_version'] or session.get('ordered_scenario_ids')!=canonical['ordered_scenario_ids']:
+   raise ValueError('Set/order does not match the fixed catalog.')
+  if any(t.get('scenario_id')!=sid for t,sid in zip(trials,canonical['ordered_scenario_ids'])): raise ValueError('Trial scenario differs from stored plan.')
+ issues=score_trials(trials)['validation_issues']
+ if issues: raise ValueError('Invalid session data: '+issues[0])
+ return payload
 
-def empty_trials() -> list[dict[str, Any]]:
-    return [{"trial": i, **{f["key"]: (0 if f["kind"] == "count" else None) for f in OBSERVATION_FIELDS}} for i in range(1, 11)]
+def summary_row(session: dict[str,Any],scores: dict[str,Any],*,final: bool) -> dict[str,Any]:
+ return {'Participant ID':session.get('participant_id',''),'Session number':session.get('session_number',''),
+         'Date':session.get('date',''),'Collector':session.get('data_collector',''),'Collector role':session.get('collector_role',''),
+         'Mode':'in_person','Set ID':session.get('set_id',''),'Catalog version':session.get('catalog_version',''),
+         'Rules version':RULES_VERSION,'Trial order':', '.join(map(str,session.get('ordered_scenario_ids',[]))),
+         'Status':'Final' if final else 'Draft','Correct scores':scores['correct'],'Applicable scores':scores['applicable'],
+         'Overall fidelity (%)':scores['percent'] if final else None,'Provisional fidelity (%)':scores['percent'] if not final else None,
+         'Missing scores':scores['missing'],**scores['counts']}
 
-
-def _result(value: Any, expected: str, applicable: bool = True) -> str:
-    if not applicable or value == "NA":
-        return "N/A"
-    if value is None:
-        return "Missing"
-    return "Correct" if value == expected else "Incorrect"
-
-
-def score_trial(trial: dict[str, Any]) -> list[dict[str, Any]]:
-    began = trial.get("began_within_10")
-    problems = int(trial.get("problems") or 0)
-    target = trial.get("target_behavior")
-    rules = [
-        ("worksheet", _result(trial.get("worksheet"), "Y")),
-        ("instruction", _result(trial.get("instruction"), "Y")),
-        # A prompt is required only when the learner did not begin within 10 seconds
-        # of the INITIAL instruction. This assumption was confirmed 2026-08-23.
-        ("prompt", _result(trial.get("prompt"), "N" if began == "Y" else "Y", began in {"Y", "N"})),
-        ("reinforcer_within_3", _result(trial.get("reinforcer_within_3"), "Y", problems >= 2)),
-        # The paper sheet treats this item as applicable whenever access occurred;
-        # coders indicate N/A when no access occurred.
-        ("reinforcer_20_seconds", _result(trial.get("reinforcer_20_seconds"), "Y", trial.get("reinforcer_20_seconds") != "NA")),
-        ("reinforcer_for_target", _result(trial.get("reinforcer_for_target"), "N", target == "Y")),
-        ("worksheet_removed_for_target", _result(trial.get("worksheet_removed_for_target"), "Y", target == "Y")),
-        ("reinforcer_other_time", _result(trial.get("reinforcer_other_time"), "N")),
-        ("other_stimulus_for_two", _result(trial.get("other_stimulus_for_two"), "N", problems >= 2)),
-        ("other_stimulus_for_target", _result(trial.get("other_stimulus_for_target"), "N", target == "Y")),
-        ("other_stimulus_other_time", _result(trial.get("other_stimulus_other_time"), "N")),
-    ]
-    return [
-        {
-            "Trial": trial["trial"],
-            "Step": STEP_LABELS[key],
-            "Result": result,
-            "Error label": ERROR_TYPES[key] if result == "Incorrect" else "",
-        }
-        for key, result in rules
-    ]
-
-
-def score_session(setup: dict[str, Any], trials: list[dict[str, Any]]) -> dict[str, Any]:
-    details = [
-        {"Trial": "Setup", "Step": STEP_LABELS[key], "Result": _result(setup.get(key), "Y"), "Error label": ERROR_TYPES[key] if _result(setup.get(key), "Y") == "Incorrect" else ""}
-        for key in ("arrange_materials", "prepare_reinforcers")
-    ]
-    for trial in trials:
-        details.extend(score_trial(trial))
-
-    correct = sum(d["Result"] == "Correct" for d in details)
-    incorrect = sum(d["Result"] == "Incorrect" for d in details)
-    missing = sum(d["Result"] == "Missing" for d in details)
-    applicable = correct + incorrect
-    grouped: dict[str, dict[str, int]] = defaultdict(lambda: defaultdict(int))
-    for item in details:
-        grouped[item["Step"]][item["Result"]] += 1
-    summary = []
-    for step, values in grouped.items():
-        step_applicable = values["Correct"] + values["Incorrect"]
-        summary.append({
-            "Step": step,
-            "Correct": values["Correct"],
-            "Incorrect": values["Incorrect"],
-            "N/A": values["N/A"],
-            "Missing": values["Missing"],
-            "Accuracy": f"{(100 * values['Correct'] / step_applicable):.1f}%" if step_applicable else "N/A",
-        })
-    return {
-        "correct": correct,
-        "incorrect": incorrect,
-        "applicable": applicable,
-        "missing": missing,
-        "percent": 100 * correct / applicable if applicable else 0.0,
-        "details": details,
-        "step_summary": summary,
-    }
-
-
-def make_workbook(session: dict[str, Any], setup: dict[str, Any], trials: list[dict[str, Any]], scores: dict[str, Any]) -> bytes:
-    output = BytesIO()
-    session_rows = [{"Field": k.replace("_", " ").title(), "Value": str(v)} for k, v in {**session, **setup}.items()]
-    completed = int(session.get("completed_trials", 10))
-    with pd.ExcelWriter(output, engine="openpyxl") as writer:
-        pd.DataFrame(session_rows).to_excel(writer, sheet_name="Session", index=False)
-        pd.DataFrame(trials[:completed]).to_excel(writer, sheet_name="Observations", index=False)
-        pd.DataFrame(scores["step_summary"]).to_excel(writer, sheet_name="Results", index=False)
-        pd.DataFrame(scores["details"]).to_excel(writer, sheet_name="Scoring Details", index=False)
-        for sheet in writer.book.worksheets:
-            sheet.freeze_panes = "A2"
-            sheet.auto_filter.ref = sheet.dimensions
-            for column in sheet.columns:
-                width = min(max(len(str(cell.value or "")) for cell in column) + 2, 55)
-                sheet.column_dimensions[column[0].column_letter].width = width
-    return output.getvalue()
-
+def make_workbook(session: dict[str,Any],setup: dict[str,Any],trials: list[dict[str,Any]],scores: dict[str,Any],*,final: bool=False) -> bytes:
+ """Runtime export preserves the app's pandas/openpyxl implementation."""
+ output=BytesIO();observations=[];actions=[];events=[]
+ for trial in trials:
+  observations.append({'Trial':trial['trial'],'Scenario':trial.get('scenario_id'),'Status':trial.get('trial_status'),**trial.get('observations',{}),'Notes':trial.get('notes','')})
+  actions.extend({'Trial':trial['trial'],'Scenario':trial.get('scenario_id'),'Component':key,**action} for key,action in trial.get('actions',{}).items())
+  events.extend({'Trial':trial['trial'],'Scenario':trial.get('scenario_id'),**event} for event in trial.get('events',[]))
+ guide=[r for entries in load_guide().values() for r in entries]
+ with pd.ExcelWriter(output,engine='openpyxl') as writer:
+  pd.DataFrame([summary_row(session,scores,final=final)]).to_excel(writer,sheet_name='Session Summary',index=False)
+  pd.DataFrame([{'Field':k,'Value':json.dumps(v,default=str) if isinstance(v,(list,dict)) else str(v)} for k,v in session.items()]).to_excel(writer,sheet_name='Session',index=False)
+  pd.DataFrame([{'Field':k,'Value':v} for k,v in setup.items()]).to_excel(writer,sheet_name='Setup Observations',index=False)
+  if session.get('set_id'): pd.DataFrame(session_plan(session,load_catalog())).to_excel(writer,sheet_name='Fixed Trial Plan',index=False)
+  pd.DataFrame(observations).to_excel(writer,sheet_name='Observations',index=False)
+  pd.DataFrame(actions).to_excel(writer,sheet_name='Action Records',index=False)
+  pd.DataFrame(scores['step_summary']).to_excel(writer,sheet_name='Step Summaries',index=False)
+  pd.DataFrame(scores['details']).to_excel(writer,sheet_name='Scoring Details',index=False)
+  pd.DataFrame(events,columns=['Trial','Scenario','Time','Event','Classification','Notes']).to_excel(writer,sheet_name='Event Log',index=False)
+  pd.DataFrame(guide).to_excel(writer,sheet_name='Scoring Instructions',index=False)
+  for sheet in writer.book.worksheets:
+   sheet.freeze_panes='A2';sheet.auto_filter.ref=sheet.dimensions
+   for column in sheet.columns:
+    sheet.column_dimensions[column[0].column_letter].width=max(14,min(max(len(str(c.value or '')) for c in column)+2,70))
+    for cell in column:
+     if isinstance(cell.value,str) and cell.value.startswith('='): cell.data_type='s'
+ return output.getvalue()
