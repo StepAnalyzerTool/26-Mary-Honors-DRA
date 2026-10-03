@@ -165,9 +165,13 @@ def session_info():
         st.caption(f"Set: {session['set_id']} · Fixed order: {', '.join(map(str,session['ordered_scenario_ids']))}")
     else:
         st.warning('Select the set used for this session in the Session Selection tab before finalizing.')
-    with st.expander('Setup observations (descriptive; excluded from fidelity)'):
-        for key,label in [('arrange_materials','Materials arranged outside reach'),('prepare_reinforcers','Reinforcers prepared')]:
-            st.session_state.setup[key]=choice(label,['Not recorded','Yes','No','N/A'],st.session_state.setup.get(key,'Not recorded'),'setup_'+key)
+    st.markdown('**Setup observations**')
+    st.caption('Descriptive observations; excluded from fidelity.')
+    for key,label in [('arrange_materials','Were materials arranged outside reach?'),('prepare_reinforcers','Were reinforcers prepared?')]:
+        with st.container(border=True):
+            current=st.session_state.setup.get(key,'Not recorded')
+            answer=checked_choice(label,[('Yes','Yes'),('No','No'),('N/A','N/A')],MISSING if current=='Not recorded' else current,'setup_'+key)
+            st.session_state.setup[key]='Not recorded' if answer==MISSING else answer
 
 def optional_number(label, value, key, integer=False):
     raw=text(label,'' if value is None else value,key)
@@ -190,7 +194,10 @@ def collection_tab():
     trial=st.session_state.trials[index-1]
     before=deepcopy(trial)
     prefix=f'code_{index}_'
-    trial['trial_status']=choice('Trial observation status',['Not reached','Complete','Partial'],trial['trial_status'],prefix+'status',help='Partial means cut short by session cutoff or premature worksheet removal, not simply an unfinished math worksheet.')
+    with st.container(border=True):
+        status=checked_choice('Trial observation status',[(value,value) for value in ['Not reached','Complete','Partial']],trial['trial_status'],prefix+'status')
+        trial['trial_status']=status if status!=MISSING else 'Not reached'
+        st.caption('Partial: cut short by the session cutoff or premature worksheet removal. A fully observed trial with unfinished math is Complete.')
     if trial.get('scenario_id'):
         scenario=next(s for s in catalog_data()['scenarios'] if s['scenario_id']==trial['scenario_id'])
         st.info(f"Scenario {trial['scenario_id']}: {scenario['task_pattern']} · {scenario['behavior']} · Expected prompts: {scenario['required_prompts']}")

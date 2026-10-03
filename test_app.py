@@ -20,7 +20,7 @@ class AppWorkflowTests(unittest.TestCase):
   next(b for b in app.button if b.label=='Use this set').click().run()
   self.assertEqual(app.session_state['session']['set_id'],'DRA-001')
   fixed=list(app.session_state['session']['ordered_scenario_ids'])
-  app.selectbox(key='code_1_status').set_value('Complete').run()
+  app.checkbox(key='code_1_status_check_1').check().run()
   app.checkbox(key='code_1_worksheet_occ_check_0').check().run()
   app.checkbox(key='code_1_worksheet_timing_check_1').check().run()
   app.checkbox(key='code_1_worksheet_direction_check_0').check().run()
