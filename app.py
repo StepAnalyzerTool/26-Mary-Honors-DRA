@@ -47,6 +47,41 @@ def choice(label, options, current, key, **kwargs):
         st.session_state[key]=options[0]
     return st.selectbox(label, options, key=key, **kwargs)
 
+def checked_choice(label, options, current, key, disabled=False):
+    """Exclusive checkboxes; preserve canonical scores and clear sibling choices."""
+    if key not in st.session_state: st.session_state[key]=current
+    if disabled: st.session_state[key]=current
+    def changed(selected, value):
+        st.session_state[key]=value if st.session_state[selected] else MISSING
+        for i in range(len(options)):
+            sibling=f'{key}_check_{i}'
+            st.session_state[sibling]=st.session_state[key]==options[i][1]
+    st.write(label)
+    columns=st.columns(len(options))
+    for i,(caption,value) in enumerate(options):
+        widget=f'{key}_check_{i}'
+        st.session_state[widget]=st.session_state[key]==value
+        with columns[i]:
+            st.checkbox(caption,key=widget,disabled=disabled,on_change=changed,args=(widget,value))
+    return st.session_state[key]
+
+ACTION_QUESTIONS={
+ 'worksheet':('Was the worksheet presented?','Was it presented within 3 seconds of the session start or preceding trial ending?'),
+ 'instruction':('Was an initial instruction given?','Was it given within 3 seconds of worksheet presentation?'),
+ 'prompt_1':('Was the first required prompt given?','Was it given on time (8–12 seconds after the applicable reference)?'),
+ 'prompt_2':('Was the second required prompt given?','Was it given on time (8–12 seconds after the applicable reference)?'),
+ 'worksheet_removal':('Was the worksheet removed?','Was it removed on time for the selected removal reference?'),
+ 'earned_dolphin':('Was the dolphin given after two problems were completed?','Was it given within 3 seconds of the second problem being completed?'),
+ 'dolphin_removal':('Was the dolphin removed?','Was it removed after 13–17 seconds of access?'),
+}
+BEHAVIOR_QUESTIONS={
+ 'no_unearned':'Was the dolphin withheld while fewer than two problems were complete?',
+ 'no_excess':'Did the participant give no more than two prompts in this trial?',
+ 'no_work_prompts':'Did the participant refrain from prompting during ongoing work?',
+ 'no_tapping_comments':'Did the participant refrain from telling the learner to stop tapping?',
+ 'no_banging_comments':'Did the participant refrain from telling the learner to stop banging?',
+}
+
 def text(label, value, key, **kwargs):
     if key not in st.session_state:
         st.session_state[key]=str(value or '')
@@ -177,7 +212,8 @@ def collection_tab():
     st.caption('Beginning: first writing movement directed at solving the problem. Completion: written answer finished. Brief pauses within a problem remain ongoing work.')
     for component in TIMED_COMPONENTS:
         key=component['key'];action=trial['actions'][key]
-        with st.expander(component['label'],expanded=key=='worksheet'):
+        with st.container(border=True):
+            st.markdown(f"**{component['label']}**")
             sections=[component['guide']]
             if key.startswith('prompt'):
                 sections+=['Prompt After One Completed Problem Scoring','Task Direction Classification and Prompt Limit']
@@ -185,17 +221,24 @@ def collection_tab():
                 sections+=['One Problem Completed After Both Prompts: Removal Scoring','Completed Worksheet Removal Scoring','Worksheet Removal: Component Assignment']
             with st.expander('Scoring rules and examples'):
                 rule_help(sections)
-            a,b=st.columns(2)
-            with a:
-                action['occurrence']=choice('Action occurrence',[MISSING,CORRECT,OMISSION,NA,INTERRUPTED,TERMINATED],action.get('occurrence',MISSING),prefix+key+'_occ',format_func=lambda x:'Performed (occurrence correct)' if x==CORRECT else 'Not yet scored' if x==MISSING else x)
-            with b:
+            question,timing_question=ACTION_QUESTIONS[key]
+            action['occurrence']=checked_choice(question,[('Yes',CORRECT),('No',OMISSION),('N/A',NA),('Interrupted',INTERRUPTED),('Ended early by participant',TERMINATED)],action.get('occurrence',MISSING),prefix+key+'_occ')
+            st.caption('N/A: no opportunity arose. Interrupted: the session ended before the deadline. Ended early: premature worksheet removal closed this opportunity.')
+            with st.container(border=True):
                 timing_key=prefix+key+'_timing'
                 if action['occurrence']!=CORRECT:
-                    st.session_state[timing_key]=NA
-                    action['timing']=choice('Action timing',[NA],NA,timing_key,disabled=True)
+                    action['timing']=NA
+                    st.session_state.pop(timing_key,None)
+                    st.session_state.pop(prefix+key+'_direction',None)
+                    for i in range(2): st.session_state[f'{timing_key}_check_{i}']=False
+                    st.write(timing_question)
+                    st.caption('Timing: N/A until the action is scored Yes.')
                 else:
-                    if st.session_state.get(timing_key)==NA: st.session_state[timing_key]=MISSING
-                    action['timing']=choice('Action timing',[MISSING,CORRECT,TIMING_COMMISSION,TIMING_OMISSION],action.get('timing',MISSING),timing_key,format_func=lambda x:'Not yet scored' if x==MISSING else x)
+                    timing_current=action.get('timing',MISSING)
+                    answer=checked_choice(timing_question,[('Yes',CORRECT),('No','Outside window')],CORRECT if timing_current==CORRECT else 'Outside window' if timing_current in (TIMING_COMMISSION,TIMING_OMISSION) else MISSING,timing_key)
+                    if answer=='Outside window':
+                        action['timing']=checked_choice('Was it early or late?',[('Early',TIMING_COMMISSION),('Late',TIMING_OMISSION)],timing_current,prefix+key+'_direction')
+                    else: action['timing']=answer
             a,b=st.columns(2)
             with a: action['reference_at']=text('Reference event time',action.get('reference_at',''),prefix+key+'_reference',help='Seconds or MM:SS.s relative to session start. Identify the reference event using the rule above.')
             with b: action['action_at']=text('Action time',action.get('action_at',''),prefix+key+'_action',help='Speech onset for instructions/prompts. Leave blank if the action never occurred.')
@@ -214,12 +257,12 @@ def collection_tab():
             except (ValueError,TypeError) as exc:
                 st.error(str(exc))
             action['notes']=text('Reference description / coding notes',action.get('notes',''),prefix+key+'_notes')
-    st.markdown('**Per-trial behavior scores**')
     for component in BEHAVIOR_COMPONENTS:
-        with st.expander(component['label']):
+        with st.container(border=True):
+            st.markdown(f"**{component['label']}**")
             with st.expander('Scoring rules and examples'):
                 rule_help([component['guide']])
-            trial['behaviors'][component['key']]=choice('Behavior score',[MISSING,CORRECT,COMMISSION,NA,INTERRUPTED,TERMINATED],trial['behaviors'].get(component['key'],MISSING),prefix+component['key'],format_func=lambda x:'Not yet scored' if x==MISSING else x)
+            trial['behaviors'][component['key']]=checked_choice(BEHAVIOR_QUESTIONS[component['key']],[('Yes',CORRECT),('No',COMMISSION),('N/A',NA),('Interrupted',INTERRUPTED),('Ended early by participant',TERMINATED)],trial['behaviors'].get(component['key'],MISSING),prefix+component['key'])
     with st.expander('Detailed event log'):
         st.caption('Record individual errors and learner events here. Repeated commissions are logged individually; the per-trial behavior measure is still scored once. The event log does not silently add scores to the overall denominator.')
         event_frame=pd.DataFrame(trial.get('events',[]),columns=['Time','Event','Classification','Notes'])
