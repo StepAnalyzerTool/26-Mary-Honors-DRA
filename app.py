@@ -1,253 +1,334 @@
 from __future__ import annotations
 
+from copy import deepcopy
 from datetime import date
+import json
+import re
 
 import pandas as pd
 import streamlit as st
 import streamlit.components.v1 as components
 
-from dra import (
-    OBSERVATION_FIELDS,
-    empty_trials,
-    make_workbook,
-    score_session,
-)
+from dra import (load_catalog, load_guide, select_session, session_plan,
+                 serialize_session, restore_session, summary_row, make_workbook)
+from scoring import (TIMED_COMPONENTS, BEHAVIOR_COMPONENTS, RULES_VERSION,
+                     CORRECT, OMISSION, COMMISSION, TIMING_OMISSION, TIMING_COMMISSION,
+                     NA, INTERRUPTED, TERMINATED, MISSING, empty_trials, score_trials,
+                     parse_time, timing_result)
 
+st.set_page_config(page_title='DRA Session Coder', layout='wide')
 
-st.set_page_config(page_title="DRA Session Coder", page_icon="⏱️", layout="wide")
+@st.cache_data
+def catalog_data():
+    return load_catalog()
 
+@st.cache_data
+def guide_data():
+    return load_guide()
 
-def initialize_state() -> None:
-    if "trials" not in st.session_state:
-        st.session_state.trials = empty_trials()
-    if "setup" not in st.session_state:
-        st.session_state.setup = {
-            "arrange_materials": None,
-            "prepare_reinforcers": None,
+def initialize():
+    st.session_state.setdefault('trials', empty_trials())
+    st.session_state.setdefault('session', {'date': str(date.today()), 'mode':'in_person'})
+    st.session_state.setdefault('setup', {'arrange_materials':'Not recorded', 'prepare_reinforcers':'Not recorded'})
+    st.session_state.setdefault('trial_index', 1)
+
+def has_coding():
+    return any(t['trial_status']!='Not reached' or t.get('events') for t in st.session_state.trials)
+
+def set_selection(selection):
+    st.session_state.session.update(selection)
+    for trial, sid in zip(st.session_state.trials, selection['ordered_scenario_ids']):
+        trial['scenario_id']=sid
+
+def choice(label, options, current, key, **kwargs):
+    if key not in st.session_state:
+        st.session_state[key]=current if current in options else options[0]
+    if st.session_state[key] not in options:
+        st.session_state[key]=options[0]
+    return st.selectbox(label, options, key=key, **kwargs)
+
+def text(label, value, key, **kwargs):
+    if key not in st.session_state:
+        st.session_state[key]=str(value or '')
+    return st.text_input(label, key=key, **kwargs)
+
+def rule_help(sections):
+    for section in sections:
+        entries=guide_data().get(section, [])
+        if entries:
+            st.markdown(f'**{section}**')
+            st.dataframe(pd.DataFrame([{'Entry':e['entry'],'Rule':e['rule'],'Example':e.get('example','')} for e in entries]), hide_index=True, use_container_width=True)
+
+def timers():
+    with st.expander('Optional timing tools'):
+        st.caption('Independent timers for coding aids. They do not score events or change the learner’s behavior.')
+        components.html('''
+        <style>body{font:15px Arial;color:#203a52}.timers{display:flex;gap:25px;flex-wrap:wrap}.clock{font-size:32px;margin:8px 0}button{padding:7px 11px;margin:2px;border:1px solid #b3c5d1;background:#edf3f8;border-radius:5px}input{width:75px}</style>
+        <div class="timers" id="timers"></div>
+        <script>
+        const root=document.getElementById('timers');
+        for(let i=0;i<2;i++){
+          const block=document.createElement('div');
+          block.innerHTML='<div class="clock">00:00.0</div><button>Start</button><button>Stop</button><button>Reset</button><br><input type="number" min="0" value="0" aria-label="Countdown seconds"> <button>Countdown</button><button>Count up</button>';
+          root.appendChild(block);let elapsed=0,base=0,running=false,down=false,duration=0;
+          const clock=block.querySelector('.clock'),buttons=block.querySelectorAll('button');
+          function now(){return elapsed+(running?(performance.now()-base)/1000:0);}
+          function display(){let n=down?Math.max(0,duration-now()):now();let mins=Math.floor(n/60),secs=Math.floor(n%60),d=Math.floor(n%1*10);clock.textContent=String(mins).padStart(2,'0')+':'+String(secs).padStart(2,'0')+'.'+d;}
+          buttons[0].onclick=()=>{if(!running){base=performance.now();running=true;}};
+          buttons[1].onclick=()=>{elapsed=now();running=false;display();};
+          buttons[2].onclick=()=>{elapsed=0;running=false;display();};
+          buttons[3].onclick=()=>{duration=Math.max(0,Number(block.querySelector('input').value));elapsed=0;running=false;down=true;display();};
+          buttons[4].onclick=()=>{elapsed=0;running=false;down=false;display();};
+          setInterval(display,50);display();
         }
-    if "session" not in st.session_state:
-        st.session_state.session = {}
+        </script>''', height=160)
 
-
-def timing_tools() -> None:
-    with st.expander("⏱️ Timing tools", expanded=False):
-        st.caption(
-            "Use a preset countdown or the count-up stopwatch while viewing the video. "
-            "Timers are aids only and do not alter a response automatically."
-        )
-        components.html(
-            """
-            <style>
-              body { font-family: Arial, sans-serif; margin: 0; color: #17324d; }
-              .row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
-              button { border:0; border-radius:7px; padding:9px 14px; cursor:pointer;
-                       background:#e8f0f7; color:#17324d; font-weight:600; }
-              button.primary { background:#1864ab; color:white; }
-              #clock { font-size:38px; font-weight:700; min-width:135px; text-align:center; }
-              #status { margin-top:8px; color:#536779; font-size:13px; }
-            </style>
-            <div class="row">
-              <button onclick="preset(3)">3 seconds</button>
-              <button onclick="preset(10)">10 seconds</button>
-              <button onclick="preset(20)">20 seconds</button>
-              <button onclick="countup()">Count up</button>
-              <span id="clock">00:10.0</span>
-            </div>
-            <div class="row" style="margin-top:8px">
-              <button class="primary" onclick="start()">Start</button>
-              <button onclick="pause()">Pause</button>
-              <button onclick="resetTimer()">Reset</button>
-            </div>
-            <div id="status">10-second countdown ready</div>
-            <script>
-              let mode='down', duration=10, remaining=10, elapsed=0;
-              let running=false, startedAt=0, interval=null;
-              const clock=document.getElementById('clock');
-              const status=document.getElementById('status');
-              function render(v) {
-                v=Math.max(0,v); const m=Math.floor(v/60); const s=Math.floor(v%60);
-                const d=Math.floor((v-Math.floor(v))*10);
-                clock.textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')+'.'+d;
-              }
-              function preset(sec){ pause(); mode='down'; duration=sec; remaining=sec; elapsed=0;
-                render(sec); status.textContent=sec+'-second countdown ready'; }
-              function countup(){ pause(); mode='up'; elapsed=0; remaining=0; render(0);
-                status.textContent='Count-up stopwatch ready'; }
-              function start(){ if(running) return; running=true; startedAt=performance.now();
-                status.textContent='Timer running'; interval=setInterval(tick,50); }
-              function tick(){ const delta=(performance.now()-startedAt)/1000; startedAt=performance.now();
-                if(mode==='down'){ remaining-=delta; if(remaining<=0){remaining=0; pause(); status.textContent='Time expired'; beep();} render(remaining); }
-                else { elapsed+=delta; render(elapsed); } }
-              function pause(){ if(running){clearInterval(interval); running=false; status.textContent='Timer paused';} }
-              function resetTimer(){ pause(); if(mode==='down'){remaining=duration; render(duration); status.textContent=duration+'-second countdown ready';}
-                else {elapsed=0; render(0); status.textContent='Count-up stopwatch ready';} }
-              function beep(){ try { const a=new AudioContext(); const o=a.createOscillator(); const g=a.createGain();
-                o.connect(g);g.connect(a.destination);o.frequency.value=700;g.gain.value=.08;o.start();o.stop(a.currentTime+.18);} catch(e){} }
-              render(10);
-            </script>
-            """,
-            height=155,
-        )
-
-
-def yn(label: str, key: str, allow_na: bool = False, help_text: str | None = None):
-    options = [None, "Y", "N"] + (["NA"] if allow_na else [])
-    labels = {None: "Select...", "Y": "Yes", "N": "No", "NA": "Not applicable"}
-    return st.selectbox(
-        label,
-        options,
-        format_func=lambda value: labels[value],
-        key=key,
-        help=help_text,
-    )
-
-
-def collection_tab() -> None:
-    st.subheader("Session information")
-    c1, c2, c3, c4 = st.columns(4)
+def selector_tab():
+    st.subheader('Select a fixed 10-trial session')
+    st.write('Each catalog ID identifies both the scenarios and their exact order. Selecting a set never reshuffles it.')
+    disabled=has_coding()
+    if disabled:
+        st.info('The set is locked because coding has begun. Download a backup and start a new coding session to use another set.')
+    c1,c2=st.columns(2)
     with c1:
-        participant_id = st.text_input("Participant ID", value=st.session_state.session.get("participant_id", ""))
-        session_number = st.text_input("Session number", value=st.session_state.session.get("session_number", ""))
+        if st.button('Randomly select a session', disabled=disabled, type='primary'):
+            set_selection(select_session(catalog_data()))
+            st.rerun()
     with c2:
-        simulated_learner = st.text_input("Simulated learner", value=st.session_state.session.get("simulated_learner", ""))
-        script_number = st.text_input("Script number", value=st.session_state.session.get("script_number", ""))
-    with c3:
-        data_collector = st.text_input("Data collector", value=st.session_state.session.get("data_collector", ""))
-        collector_role = st.selectbox("Collector role", ["Primary", "Secondary"])
-    with c4:
-        session_date = st.date_input("Date", value=st.session_state.session.get("date", date.today()))
-        end_reason = st.selectbox("Session end reason", ["10 trials completed", "10-minute timer reached"])
+        selected=st.selectbox('Use an existing set ID', [s['set_id'] for s in catalog_data()['sets']])
+        if st.button('Use this set', disabled=disabled):
+            set_selection(select_session(catalog_data(),selected))
+            st.rerun()
+    session=st.session_state.session
+    if session.get('set_id'):
+        st.markdown(f"**{session['set_id']} · {session['catalog_version']}**")
+        plan=pd.DataFrame(session_plan(session,catalog_data()))
+        st.dataframe(plan,hide_index=True,use_container_width=True)
+        st.caption('Expected behavior is the script, not a substitute for observed events.')
+        st.download_button('Download session plan (CSV)',plan.to_csv(index=False).encode(),file_name=session['set_id']+'_trial_plan.csv',mime='text/csv')
+        st.download_button('Download set record (JSON)',json.dumps({k:session[k] for k in ('set_id','catalog_version','ordered_scenario_ids','selected_at','mode')},indent=2).encode(),file_name=session['set_id']+'_plan.json',mime='application/json')
+    with st.expander('All 324 fixed sets'):
+        st.dataframe(pd.DataFrame([{'Set ID':s['set_id'],**{f'Trial {i}':sid for i,sid in enumerate(s['ordered_scenario_ids'],1)}} for s in catalog_data()['sets']]),hide_index=True,use_container_width=True)
 
-    st.session_state.session = {
-        "participant_id": participant_id.strip(),
-        "session_number": session_number.strip(),
-        "simulated_learner": simulated_learner.strip(),
-        "script_number": script_number.strip(),
-        "data_collector": data_collector.strip(),
-        "collector_role": collector_role,
-        "date": session_date,
-        "end_reason": end_reason,
-    }
+def session_info():
+    session=st.session_state.session
+    st.subheader('Session information')
+    a,b,c=st.columns(3)
+    with a:
+        session['participant_id']=text('Participant ID',session.get('participant_id',''),'meta_participant').strip()
+        session['session_number']=text('Session number',session.get('session_number',''),'meta_number').strip()
+        session['date']=text('Date (YYYY-MM-DD)',session.get('date',str(date.today())),'meta_date')
+    with b:
+        session['data_collector']=text('Data collector',session.get('data_collector',''),'meta_collector').strip()
+        session['collector_role']=choice('Collector role',['Primary','Secondary'],session.get('collector_role','Primary'),'meta_role')
+        session['simulated_learner']=text('Simulated learner',session.get('simulated_learner',''),'meta_learner')
+    with c:
+        session['end_reason']=choice('Session end reason',['Not recorded','10 trials completed','10-minute limit reached'],session.get('end_reason','Not recorded'),'meta_end_reason')
+        session['end_at']=text('Session endpoint (seconds or MM:SS.s)',session.get('end_at',''),'meta_end_at',help='Session-relative time. Session start is 0:00.')
+        session['notes']=text('Session notes',session.get('notes',''),'meta_notes')
+    if session.get('set_id'):
+        st.caption(f"Set: {session['set_id']} · Fixed order: {', '.join(map(str,session['ordered_scenario_ids']))}")
+    else:
+        st.warning('Select the set used for this session in the Session Selection tab before finalizing.')
+    with st.expander('Setup observations (descriptive; excluded from fidelity)'):
+        for key,label in [('arrange_materials','Materials arranged outside reach'),('prepare_reinforcers','Reinforcers prepared')]:
+            st.session_state.setup[key]=choice(label,['Not recorded','Yes','No','N/A'],st.session_state.setup.get(key,'Not recorded'),'setup_'+key)
 
-    st.subheader("Session setup")
-    c1, c2 = st.columns(2)
-    with c1:
-        st.session_state.setup["arrange_materials"] = yn(
-            "Were materials arranged outside of reach?",
-            "setup_arrange",
-        )
-    with c2:
-        st.session_state.setup["prepare_reinforcers"] = yn(
-            "Were reinforcers prepared?",
-            "setup_prepare",
-        )
+def optional_number(label, value, key, integer=False):
+    raw=text(label,'' if value is None else value,key)
+    if not raw.strip(): return None
+    try:
+        number=float(raw)
+        if number<0 or not pd.notna(number) or number==float('inf'): raise ValueError()
+        if integer and not number.is_integer(): raise ValueError()
+        return int(number) if integer else number
+    except ValueError:
+        st.error(f'{label}: enter a nonnegative '+('integer.' if integer else 'number.'))
+        return raw  # preserve invalid input so validation blocks finalization
 
-    timing_tools()
-
-    st.subheader("Trial observations")
-    completed_trials = st.number_input(
-        "Number of trials completed",
-        min_value=1,
-        max_value=10,
-        value=10,
-        help="Use fewer than 10 when the session ended because the timer was reached.",
-    )
-    available_trials = list(range(1, int(completed_trials) + 1))
-    if "selected_trial" not in st.session_state:
-        st.session_state.selected_trial = 1
-    if st.session_state.selected_trial not in available_trials:
-        st.session_state.selected_trial = available_trials[-1]
-    trial_number = st.segmented_control(
-        "Trial to code",
-        options=available_trials,
-        format_func=lambda number: f"T{number}",
-        key="selected_trial",
-        selection_mode="single",
-    )
-    if trial_number is None:
-        trial_number = 1
-    current = st.session_state.trials[trial_number - 1]
-
-    with st.form(f"trial_form_{trial_number}"):
-        st.markdown(f"#### Trial {trial_number}")
-        c1, c2, c3 = st.columns(3)
-        responses = {}
-        for index, field in enumerate(OBSERVATION_FIELDS):
-            container = (c1, c2, c3)[index % 3]
-            with container:
-                if field["kind"] == "count":
-                    responses[field["key"]] = st.number_input(
-                        field["label"], min_value=0, step=1,
-                        value=int(current.get(field["key"], 0) or 0),
-                        key=f"t{trial_number}_{field['key']}",
-                    )
-                else:
-                    choices = [None, "Y", "N"] + (["NA"] if field.get("allow_na") else [])
-                    responses[field["key"]] = st.selectbox(
-                        field["label"], choices,
-                        index=choices.index(current.get(field["key"])) if current.get(field["key"]) in choices else 0,
-                        format_func=lambda v: {None:"Select...","Y":"Yes","N":"No","NA":"Not applicable"}[v],
-                        key=f"t{trial_number}_{field['key']}",
-                    )
-        saved = st.form_submit_button("Save trial", type="primary", use_container_width=True)
-        if saved:
-            st.session_state.trials[trial_number - 1].update(responses)
-            st.success(f"Trial {trial_number} saved.")
-
-    notes = st.text_area("Session notes", value=st.session_state.session.get("notes", ""))
-    st.session_state.session["notes"] = notes
-    st.session_state.session["completed_trials"] = int(completed_trials)
-
-
-def results_tab() -> None:
-    scores = score_session(
-        st.session_state.setup,
-        st.session_state.trials[: int(st.session_state.session.get("completed_trials", 10))],
-    )
-    st.subheader("Current session results")
-    if scores["applicable"] == 0:
-        st.info("Enter and save session observations to calculate results.")
+def collection_tab():
+    session_info()
+    timers()
+    st.subheader('Trial-by-trial coding')
+    st.caption('Changes are retained while this browser session is open. Download a JSON backup before leaving; restore it to continue later.')
+    index=st.radio('Trial to code',list(range(1,11)),format_func=lambda i:f'T{i}',horizontal=True,key='trial_index')
+    trial=st.session_state.trials[index-1]
+    before=deepcopy(trial)
+    prefix=f'code_{index}_'
+    trial['trial_status']=choice('Trial observation status',['Not reached','Complete','Partial'],trial['trial_status'],prefix+'status',help='Partial means cut short by session cutoff or premature worksheet removal, not simply an unfinished math worksheet.')
+    if trial.get('scenario_id'):
+        scenario=next(s for s in catalog_data()['scenarios'] if s['scenario_id']==trial['scenario_id'])
+        st.info(f"Scenario {trial['scenario_id']}: {scenario['task_pattern']} · {scenario['behavior']} · Expected prompts: {scenario['required_prompts']}")
+    if trial['trial_status']=='Not reached':
+        st.write('This trial contributes no scores until marked Complete or Partial.')
         return
+    st.markdown('**Observed learner behavior and prompt count**')
+    obs=trial['observations']
+    a,b,c=st.columns(3)
+    with a:
+        obs['problems']=choice('Problems completed',[None,0,1,2],obs.get('problems'),prefix+'problems',format_func=lambda x:'Not recorded' if x is None else str(x))
+        obs['prompts_delivered']=optional_number('Prompts delivered (exclude initial instruction)',obs.get('prompts_delivered'),prefix+'prompt_count',True)
+    with b:
+        obs['tapping_seconds']=optional_number('Observable tapping (seconds)',obs.get('tapping_seconds'),prefix+'tap_seconds')
+        obs['banging_seconds']=optional_number('Observable banging (seconds)',obs.get('banging_seconds'),prefix+'bang_seconds')
+    with c:
+        obs['incomplete_seconds']=optional_number('Time with fewer than two problems complete (seconds)',obs.get('incomplete_seconds'),prefix+'incomplete_seconds')
+        obs['timer_use']=choice('Participant timer use',['Not recorded','Used','Not used'],obs.get('timer_use','Not recorded'),prefix+'timer')
+    st.caption('Beginning: first writing movement directed at solving the problem. Completion: written answer finished. Brief pauses within a problem remain ongoing work.')
+    for component in TIMED_COMPONENTS:
+        key=component['key'];action=trial['actions'][key]
+        with st.expander(component['label'],expanded=key=='worksheet'):
+            sections=[component['guide']]
+            if key.startswith('prompt'):
+                sections+=['Prompt After One Completed Problem Scoring','Task Direction Classification and Prompt Limit']
+            if key=='worksheet_removal':
+                sections+=['One Problem Completed After Both Prompts: Removal Scoring','Completed Worksheet Removal Scoring','Worksheet Removal: Component Assignment']
+            with st.expander('Scoring rules and examples'):
+                rule_help(sections)
+            a,b=st.columns(2)
+            with a:
+                action['occurrence']=choice('Action occurrence',[MISSING,CORRECT,OMISSION,NA,INTERRUPTED,TERMINATED],action.get('occurrence',MISSING),prefix+key+'_occ',format_func=lambda x:'Performed (occurrence correct)' if x==CORRECT else 'Not yet scored' if x==MISSING else x)
+            with b:
+                timing_key=prefix+key+'_timing'
+                if action['occurrence']!=CORRECT:
+                    st.session_state[timing_key]=NA
+                    action['timing']=choice('Action timing',[NA],NA,timing_key,disabled=True)
+                else:
+                    if st.session_state.get(timing_key)==NA: st.session_state[timing_key]=MISSING
+                    action['timing']=choice('Action timing',[MISSING,CORRECT,TIMING_COMMISSION,TIMING_OMISSION],action.get('timing',MISSING),timing_key,format_func=lambda x:'Not yet scored' if x==MISSING else x)
+            a,b=st.columns(2)
+            with a: action['reference_at']=text('Reference event time',action.get('reference_at',''),prefix+key+'_reference',help='Seconds or MM:SS.s relative to session start. Identify the reference event using the rule above.')
+            with b: action['action_at']=text('Action time',action.get('action_at',''),prefix+key+'_action',help='Speech onset for instructions/prompts. Leave blank if the action never occurred.')
+            window=component['window']
+            if key=='worksheet_removal':
+                branch=choice('Removal reference',['Select reference','Second problem completed','Second prompt; no work','First problem completed after both prompts','Premature removal before a valid reference'],action.get('branch','Select reference'),prefix+key+'_branch')
+                action['branch']=branch
+                window=(0,3) if branch=='Second problem completed' else (8,12) if branch in ['Second prompt; no work','First problem completed after both prompts'] else None
+            try:
+                reference=parse_time(action['reference_at']);at=parse_time(action['action_at'])
+                if window and reference is not None and at is not None:
+                    predicted=timing_result(at-reference,*window)
+                    st.caption(f'Elapsed: {at-reference:.2f} seconds · timing calculation: {predicted}')
+                    if action['occurrence']==CORRECT and action['timing'] not in (MISSING,predicted):
+                        st.warning('Selected timing differs from timestamps. Correct the timestamps or score before finalizing.')
+            except (ValueError,TypeError) as exc:
+                st.error(str(exc))
+            action['notes']=text('Reference description / coding notes',action.get('notes',''),prefix+key+'_notes')
+    st.markdown('**Per-trial behavior scores**')
+    for component in BEHAVIOR_COMPONENTS:
+        with st.expander(component['label']):
+            with st.expander('Scoring rules and examples'):
+                rule_help([component['guide']])
+            trial['behaviors'][component['key']]=choice('Behavior score',[MISSING,CORRECT,COMMISSION,NA,INTERRUPTED,TERMINATED],trial['behaviors'].get(component['key'],MISSING),prefix+component['key'],format_func=lambda x:'Not yet scored' if x==MISSING else x)
+    with st.expander('Detailed event log'):
+        st.caption('Record individual errors and learner events here. Repeated commissions are logged individually; the per-trial behavior measure is still scored once. The event log does not silently add scores to the overall denominator.')
+        event_frame=pd.DataFrame(trial.get('events',[]),columns=['Time','Event','Classification','Notes'])
+        edited=st.data_editor(event_frame,num_rows='dynamic',hide_index=True,use_container_width=True,key=prefix+'events',column_config={'Time':st.column_config.TextColumn('Time (seconds or MM:SS.s)')})
+        trial['events']=json.loads(edited.fillna('').to_json(orient='records'))
+    trial['notes']=st.text_area('Trial notes',value=trial.get('notes',''),key=prefix+'notes')
+    if trial!=before:
+        trial['reviewed']=False
+    trial_scores=score_trials([trial])
+    for issue in trial_scores['validation_issues']:
+        st.error(issue)
+    if st.button('Mark this trial reviewed',key=prefix+'review',disabled=bool(trial_scores['missing'] or trial_scores['validation_issues'])):
+        trial['reviewed']=True
+    st.caption('Reviewed' if trial.get('reviewed') else 'Not reviewed / scores incomplete')
 
-    c1, c2, c3 = st.columns(3)
-    c1.metric("Procedural fidelity", f"{scores['percent']:.1f}%")
-    c2.metric("Correct opportunities", f"{scores['correct']} / {scores['applicable']}")
-    c3.metric("Unscored observations", scores["missing"])
+def finalization_issues(scores):
+    session=st.session_state.session;issues=list(scores['validation_issues'])
+    for key,label in [('participant_id','Participant ID'),('session_number','Session number'),('data_collector','Data collector'),('set_id','Catalog set')]:
+        if not session.get(key): issues.append(label+' is required for a final summary.')
+    try:
+        date.fromisoformat(session.get('date',''))
+    except (ValueError,TypeError): issues.append('Enter a valid date in YYYY-MM-DD format.')
+    try: end=parse_time(session.get('end_at'))
+    except (ValueError,TypeError): end=None
+    if end is None or end>600: issues.append('Record a valid session endpoint, no later than 10:00.')
+    reason=session.get('end_reason')
+    if reason=='Not recorded' or reason is None: issues.append('Record the session end reason.')
+    if reason=='10-minute limit reached' and end!=600: issues.append('The 10-minute cutoff endpoint must be 10:00.')
+    reached=[t for t in st.session_state.trials if t['trial_status']!='Not reached']
+    for trial in reached:
+        obs=trial['observations']
+        if obs.get('problems') is None or obs.get('prompts_delivered') is None:
+            issues.append(f"Trial {trial['trial']}: record problems completed and prompts delivered.")
+        for action in trial.get('actions',{}).values():
+            for field in ('reference_at','action_at'):
+                try:
+                    timestamp=parse_time(action.get(field))
+                    if timestamp is not None and end is not None and timestamp>end:
+                        issues.append(f"Trial {trial['trial']}: an action/reference timestamp is after session end.")
+                except (ValueError,TypeError): pass
+    if not reached: issues.append('No trial has been coded.')
+    if reason=='10 trials completed' and (len(reached)!=10 or any(t['trial_status']!='Complete' for t in reached)):
+        issues.append('All ten trials must be Complete for the ten-trial endpoint.')
+    if [t['trial'] for t in reached]!=list(range(1,len(reached)+1)): issues.append('Reached trials must form a consecutive sequence from trial 1.')
+    if any(not t.get('reviewed') for t in reached): issues.append('Mark each reached trial reviewed after scoring it.')
+    if scores['missing']: issues.append(f"{scores['missing']} score(s) are still missing.")
+    return issues
 
-    st.caption(
-        "Draft scoring rules are based on the current DRA sheet and thesis. "
-        "They are centralized in dra.py and should be reviewed before research use."
-    )
-    summary = pd.DataFrame(scores["step_summary"])
-    st.dataframe(summary, hide_index=True, use_container_width=True)
+def filename():
+    s=st.session_state.session
+    return re.sub(r'[^A-Za-z0-9_.-]+','_',f"DRA_{s.get('participant_id') or 'participant'}_session-{s.get('session_number') or 'unknown'}_{s.get('data_collector') or 'collector'}")
 
-    with st.expander("Trial-by-trial scoring details"):
-        st.dataframe(pd.DataFrame(scores["details"]), hide_index=True, use_container_width=True)
+def results_tab():
+    scores=score_trials(st.session_state.trials)
+    issues=finalization_issues(scores)
+    final=not issues and scores['applicable']>0
+    st.subheader('Session summary')
+    a,b,c=st.columns(3)
+    a.metric('Overall fidelity' if final else 'Provisional fidelity',f"{scores['percent']:.1f}%" if scores['percent'] is not None else '—')
+    b.metric('Correct / applicable scores',f"{scores['correct']} / {scores['applicable']}")
+    c.metric('Missing scores',scores['missing'])
+    st.caption('Occurrence and timing each contribute separately. Timing is N/A for omitted actions. Excluded opportunities do not enter the denominator.')
+    if not final:
+        st.warning('Draft: do not use this provisional percentage as a finalized graph point.')
+        with st.expander('What remains to finalize',expanded=bool(scores['validation_issues'])):
+            for issue in issues: st.write('• '+issue)
+    else: st.success('Coding complete: final session summary available.')
+    st.markdown('**Individual step and measure summaries**')
+    st.dataframe(pd.DataFrame(scores['step_summary']),hide_index=True,use_container_width=True)
+    with st.expander('All scored opportunities'):
+        st.dataframe(pd.DataFrame(scores['details']),hide_index=True,use_container_width=True)
+    name=filename()
+    st.download_button('Download '+('final' if final else 'draft')+' session workbook',make_workbook(st.session_state.session,st.session_state.setup,st.session_state.trials,scores,final=final),file_name=name+('.xlsx' if final else '_DRAFT.xlsx'),mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    row=summary_row(st.session_state.session,scores,final=final)
+    st.download_button('Download '+('final' if final else 'draft')+' summary (CSV)',pd.DataFrame([row]).to_csv(index=False).encode(),file_name=name+('_summary.csv' if final else '_DRAFT_summary.csv'),mime='text/csv')
+    st.download_button('Download editable session backup (JSON)',serialize_session(st.session_state.session,st.session_state.setup,st.session_state.trials),file_name=name+'.json',mime='application/json')
 
-    workbook = make_workbook(st.session_state.session, st.session_state.setup, st.session_state.trials, scores)
-    name_parts = [
-        st.session_state.session.get("participant_id") or "participant",
-        f"session-{st.session_state.session.get('session_number') or 'unknown'}",
-        st.session_state.session.get("data_collector") or "collector",
-    ]
-    st.download_button(
-        "Download session workbook",
-        data=workbook,
-        file_name="DRA_" + "_".join(name_parts) + ".xlsx",
-        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        type="primary",
-    )
+def restore_tab():
+    st.subheader('Resume or start a coding session')
+    st.write('Upload the JSON backup exported by this version. Restoring replaces the current browser session; download a backup first if needed.')
+    upload=st.file_uploader('Session backup',type=['json'],key='restore_upload')
+    acknowledge=st.checkbox('Replace the current browser session',key='replace_ack')
+    if st.button('Restore session',disabled=upload is None or not acknowledge):
+        try:
+            payload=restore_session(upload.getvalue())
+            for key in list(st.session_state):
+                if key.startswith(('code_','meta_','setup_')): del st.session_state[key]
+            st.session_state.session=payload['session'];st.session_state.setup=payload['setup'];st.session_state.trials=payload['trials']
+            st.session_state.trial_index=1
+            st.rerun()
+        except (ValueError,TypeError,KeyError,json.JSONDecodeError) as exc: st.error(str(exc))
+    if st.button('Start a new blank session',disabled=not acknowledge):
+        for key in list(st.session_state):
+            if key.startswith(('code_','meta_','setup_')): del st.session_state[key]
+        st.session_state.trials=empty_trials();st.session_state.session={'date':str(date.today()),'mode':'in_person'};st.session_state.setup={'arrange_materials':'Not recorded','prepare_reinforcers':'Not recorded'};st.session_state.trial_index=1
+        st.rerun()
 
-
-initialize_state()
-st.title("DRA Session Coder")
-st.caption("Mary's Honors Thesis · Video-based procedural-fidelity coding")
-
-collection, results, ioa = st.tabs(["DRA Data Collection", "Results", "IOA"])
-with collection:
-    collection_tab()
-with results:
-    results_tab()
+initialize()
+st.title('DRA Session Coder')
+st.caption("Mary’s honors thesis · Coding recordings of in-person simulated-learner sessions · "+RULES_VERSION)
+selection,collection,results,instructions,resume,ioa=st.tabs(['Session Selection','DRA Data Collection','Results','Scoring Instructions','Resume / New Session','IOA'])
+with selection: selector_tab()
+with collection: collection_tab()
+with results: results_tab()
+with instructions:
+    st.subheader('Scoring appendix and coder examples')
+    for section in guide_data():
+        with st.expander(section): rule_help([section])
+with resume: restore_tab()
 with ioa:
-    st.subheader("Interobserver agreement")
-    st.info("The IOA file-comparison module will be added after the session workbook format is validated.")
+    st.subheader('Interobserver agreement')
+    st.info('Primary and secondary coding identities are retained in exports. The comparison module remains to be implemented.')

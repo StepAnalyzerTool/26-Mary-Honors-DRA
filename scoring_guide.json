@@ -1,0 +1,1229 @@
+{
+  "rules_version": "DRA-2026-10-03",
+  "entries": [
+    {
+      "section": "General Scoring Conventions",
+      "entry": "Purpose",
+      "rule": "Score participant actions in Differential Reinforcement of Alternative Behavior (DRA), using the same rules for the video simulator and live simulated-learner sessions.",
+      "example": ""
+    },
+    {
+      "section": "General Scoring Conventions",
+      "entry": "Target times",
+      "rule": "Teach 3 seconds for instructions, earned dolphin delivery, completed worksheet removal, and worksheet transitions; 10 seconds for waiting periods; 15 seconds for dolphin access. Scoring tolerances are not participant instructions.",
+      "example": ""
+    },
+    {
+      "section": "General Scoring Conventions",
+      "entry": "Two measures",
+      "rule": "For required actions, record occurrence separately from timing. Preserve event timestamps. A late action is delivered with a timing omission; do not also record it as entirely omitted.",
+      "example": ""
+    },
+    {
+      "section": "General Scoring Conventions",
+      "entry": "Omission",
+      "rule": "A required action is never performed before its opportunity ends, after the complete response window elapsed. Timing is N/A.",
+      "example": ""
+    },
+    {
+      "section": "General Scoring Conventions",
+      "entry": "Timing omission",
+      "rule": "A required action is performed after its scoring deadline.",
+      "example": ""
+    },
+    {
+      "section": "General Scoring Conventions",
+      "entry": "Commission",
+      "rule": "An inappropriate action occurs: excess prompts, prompts during ongoing work, unearned dolphin delivery, or statements directing the learner to stop tapping or banging.",
+      "example": ""
+    },
+    {
+      "section": "General Scoring Conventions",
+      "entry": "Timing commission",
+      "rule": "A scored action occurs too early: worksheet presentation, initial instruction, required prompt, worksheet removal, or dolphin removal. For an early required prompt or worksheet removal, occurrence is correct and timing is incorrect.",
+      "example": ""
+    },
+    {
+      "section": "General Scoring Conventions",
+      "entry": "N/A versus Interrupted",
+      "rule": "N/A means no applicable opportunity arose. Interrupted means an applicable opportunity arose but session cutoff prevented the full response window, with no action performed. Exclude both from scoring denominators.",
+      "example": ""
+    },
+    {
+      "section": "General Scoring Conventions",
+      "entry": "Interval boundaries",
+      "rule": "All accepted windows include their endpoints: 0\u20133, 8\u201312, and 13\u201317 seconds.",
+      "example": ""
+    },
+    {
+      "section": "General Scoring Conventions",
+      "entry": "Actual opportunities",
+      "rule": "Score opportunities actually reached. A complete correctly implemented catalog session plans 10 worksheet presentations, 10 initial instructions, 13 prompts, 5 earned deliveries, 10 worksheet removals, 5 dolphin removals, 4 tapping trials, and 4 banging trials. No unearned delivery and no excess prompts are scored once per trial; ongoing-work prompting is scored per applicable trial. Errors and cutoff may alter actual opportunities.",
+      "example": ""
+    },
+    {
+      "section": "General Scoring Conventions",
+      "entry": "Trial attribution",
+      "rule": "Assign worksheet presentation to the trial being introduced. Retain the scenario ID and fixed catalog trial position for every coded trial.",
+      "example": ""
+    },
+    {
+      "section": "General Scoring Conventions",
+      "entry": "Coder access",
+      "rule": "Coders must be able to review the relevant preceding event as well as the current trial. Record correct actions, errors, N/A, and Interrupted; preserve timestamps when actions occur.",
+      "example": ""
+    },
+    {
+      "section": "Worksheet Presentation Scoring",
+      "entry": "Required action",
+      "rule": "Provide one worksheet at a time. Present trial 1 within 3 seconds of session start. For trials 2\u201310, present within 3 seconds of dolphin removal or removal of the preceding unfinished worksheet.",
+      "example": ""
+    },
+    {
+      "section": "Worksheet Presentation Scoring",
+      "entry": "Coder instructions",
+      "rule": "Identify trial number and reference event; record its time, worksheet presentation time, and session endpoint. Presentation is when the worksheet is placed in front of the learner and available to work on.",
+      "example": ""
+    },
+    {
+      "section": "Worksheet Presentation Scoring",
+      "entry": "Correct",
+      "rule": "Presented within the applicable 3-second window. Record Presented: Yes; Timing: Correct.",
+      "example": "Dolphin removed at 2:00; worksheet presented at 2:02."
+    },
+    {
+      "section": "Worksheet Presentation Scoring",
+      "entry": "Timing commission",
+      "rule": "Presented before session start or before the preceding trial ends. Record Presented: Yes; Timing: Timing commission.",
+      "example": "Next worksheet provided while dolphin access continues."
+    },
+    {
+      "section": "Worksheet Presentation Scoring",
+      "entry": "Timing omission",
+      "rule": "Presented more than 3 seconds after the reference event. Record Presented: Yes; Timing: Timing omission.",
+      "example": "Dolphin removed at 2:00; worksheet presented at 2:05."
+    },
+    {
+      "section": "Worksheet Presentation Scoring",
+      "entry": "Omission",
+      "rule": "A worksheet is required, the full window elapsed, and it is never presented before session end. Record Presented: No; Occurrence: Omission; Timing: N/A.",
+      "example": "Dolphin removed at 9:55; no worksheet before session ends at 10:00."
+    },
+    {
+      "section": "Worksheet Presentation Scoring",
+      "entry": "Interrupted",
+      "rule": "A worksheet is required, but session cutoff occurs before its full 3-second window elapsed, without presentation.",
+      "example": "Dolphin removed at 9:59; no worksheet before cutoff at 10:00."
+    },
+    {
+      "section": "Worksheet Presentation Scoring",
+      "entry": "N/A",
+      "rule": "No further presentation opportunity arises because 10 trials are complete or the session has already ended.",
+      "example": "No trial 11 is required."
+    },
+    {
+      "section": "Worksheet Presentation Scoring",
+      "entry": "Cutoff",
+      "rule": "If presentation occurs before cutoff, retain its score even if the full window has not elapsed.",
+      "example": ""
+    },
+    {
+      "section": "Initial Instruction Scoring",
+      "entry": "Required action",
+      "rule": "Give a clear direction to begin math work within 3 seconds of worksheet presentation. The first task direction after presentation is the initial instruction.",
+      "example": ""
+    },
+    {
+      "section": "Initial Instruction Scoring",
+      "entry": "Acceptable wording",
+      "rule": "Exact words are not required in person. The direction must clearly tell the learner to begin the task.",
+      "example": "Start working. Do your math. Begin your worksheet. Complete two problems."
+    },
+    {
+      "section": "Initial Instruction Scoring",
+      "entry": "Coder instructions",
+      "rule": "Record worksheet presentation and speech onset of the first subsequent task direction. In the simulator, use the task-direction button-press time.",
+      "example": ""
+    },
+    {
+      "section": "Initial Instruction Scoring",
+      "entry": "Correct",
+      "rule": "Instruction begins within 3 seconds. Record Delivered: Yes; Timing: Correct.",
+      "example": "Direction begins 2 seconds after presentation."
+    },
+    {
+      "section": "Initial Instruction Scoring",
+      "entry": "Timing omission",
+      "rule": "Instruction begins more than 3 seconds later. Record Delivered: Yes; Timing: Timing omission.",
+      "example": "Direction begins 5 seconds after presentation."
+    },
+    {
+      "section": "Initial Instruction Scoring",
+      "entry": "Omission",
+      "rule": "No initial instruction before worksheet removal or session end, after the complete response window elapsed. Record Delivered: No; Occurrence: Omission; Timing: N/A.",
+      "example": ""
+    },
+    {
+      "section": "Initial Instruction Scoring",
+      "entry": "Timing commission",
+      "rule": "A task direction occurs before presentation. Record separately; it does not satisfy the instruction required after presentation.",
+      "example": "Direction before presentation, followed by an on-time instruction: record the early error and the later correct action."
+    },
+    {
+      "section": "Initial Instruction Scoring",
+      "entry": "Interrupted",
+      "rule": "Session ends before the complete 3-second window elapsed, without an instruction.",
+      "example": "Worksheet at 9:59; no instruction before cutoff."
+    },
+    {
+      "section": "Initial Instruction Scoring",
+      "entry": "N/A",
+      "rule": "No worksheet is presented, so no post-presentation instruction opportunity arises.",
+      "example": ""
+    },
+    {
+      "section": "Initial Instruction Scoring",
+      "entry": "Learner already working",
+      "rule": "The instruction is still required even when the learner starts immediately. Subsequent task directions count as prompts.",
+      "example": ""
+    },
+    {
+      "section": "First Prompt Scoring",
+      "entry": "Required action",
+      "rule": "When the learner has not begun working, prompt after 10 seconds, measured from the initial instruction.",
+      "example": ""
+    },
+    {
+      "section": "First Prompt Scoring",
+      "entry": "Acceptable wording",
+      "rule": "Any clear direction to begin or continue math work is acceptable in person. Later task directions are prompts regardless of exact wording.",
+      "example": "Do your math. Keep working. Finish your problems. Do the next problem."
+    },
+    {
+      "section": "First Prompt Scoring",
+      "entry": "Coder instructions",
+      "rule": "Record the initial instruction, work onset or resumption, and speech onset of the prompt. Check the number of prompts already delivered.",
+      "example": ""
+    },
+    {
+      "section": "First Prompt Scoring",
+      "entry": "Correct",
+      "rule": "Delivered 8\u201312 seconds after the initial instruction, while the stated condition still applies. Record Delivered: Yes; Timing: Correct.",
+      "example": "Instruction at 0:02; prompt at 0:12: on time."
+    },
+    {
+      "section": "First Prompt Scoring",
+      "entry": "Timing commission",
+      "rule": "A required prompt delivered before 8 seconds: occurrence correct; timing incorrect. Both measures enter the overall score. It counts toward the two-prompt maximum and triggers the scripted response.",
+      "example": ""
+    },
+    {
+      "section": "First Prompt Scoring",
+      "entry": "Other commissions",
+      "rule": "A prompt during ongoing work or after two prompts is a commission under the applicable per-trial behavior measure, not a correctly delivered required prompt. Record every instance.",
+      "example": ""
+    },
+    {
+      "section": "First Prompt Scoring",
+      "entry": "Timing omission",
+      "rule": "A required prompt is delivered after 12 seconds, while still applicable. Record Delivered: Yes; Timing: Timing omission.",
+      "example": ""
+    },
+    {
+      "section": "First Prompt Scoring",
+      "entry": "Omission",
+      "rule": "A required prompt is never delivered before its opportunity ends, after the complete response window elapsed. Record Delivered: No; Occurrence: Omission; Timing: N/A.",
+      "example": ""
+    },
+    {
+      "section": "First Prompt Scoring",
+      "entry": "Interrupted",
+      "rule": "Session cutoff occurs before the full prompt window elapsed, with no prompt delivered.",
+      "example": "Wait begins at 9:55; no prompt before cutoff at 10:00."
+    },
+    {
+      "section": "First Prompt Scoring",
+      "entry": "Terminated by participant",
+      "rule": "Premature worksheet removal ends a still-open prompt window with no prompt delivered: mark Terminated by participant and exclude. Preserve any omission already established before removal.",
+      "example": ""
+    },
+    {
+      "section": "First Prompt Scoring",
+      "entry": "N/A",
+      "rule": "The learner begins or resumes work before a prompt is required, or this prompt opportunity never arises. Retain any inappropriate prompt actually delivered.",
+      "example": ""
+    },
+    {
+      "section": "First Prompt Scoring",
+      "entry": "Opportunity note",
+      "rule": "Do not create an extra omission for the same prompt merely because its delivered timing was incorrect. Preserve delivered, early, late, excess, and never-delivered distinctions.",
+      "example": ""
+    },
+    {
+      "section": "Second Prompt Following No Work Scoring",
+      "entry": "Required action",
+      "rule": "When work has not begun after the first prompt, prompt after 10 seconds, measured from the first prompt.",
+      "example": ""
+    },
+    {
+      "section": "Second Prompt Following No Work Scoring",
+      "entry": "Acceptable wording",
+      "rule": "Any clear direction to begin or continue math work is acceptable in person. Later task directions are prompts regardless of exact wording.",
+      "example": "Do your math. Keep working. Finish your problems. Do the next problem."
+    },
+    {
+      "section": "Second Prompt Following No Work Scoring",
+      "entry": "Coder instructions",
+      "rule": "Record the first prompt, work onset or resumption, and speech onset of the prompt. Check the number of prompts already delivered.",
+      "example": ""
+    },
+    {
+      "section": "Second Prompt Following No Work Scoring",
+      "entry": "Correct",
+      "rule": "Delivered 8\u201312 seconds after the first prompt, while the stated condition still applies. Record Delivered: Yes; Timing: Correct.",
+      "example": "First prompt at 0:12; second prompt at 0:22: on time."
+    },
+    {
+      "section": "Second Prompt Following No Work Scoring",
+      "entry": "Timing commission",
+      "rule": "A required prompt delivered before 8 seconds: occurrence correct; timing incorrect. Both measures enter the overall score. It counts toward the two-prompt maximum and triggers the scripted response.",
+      "example": ""
+    },
+    {
+      "section": "Second Prompt Following No Work Scoring",
+      "entry": "Other commissions",
+      "rule": "A prompt during ongoing work or after two prompts is a commission under the applicable per-trial behavior measure, not a correctly delivered required prompt. Record every instance.",
+      "example": ""
+    },
+    {
+      "section": "Second Prompt Following No Work Scoring",
+      "entry": "Timing omission",
+      "rule": "A required prompt is delivered after 12 seconds, while still applicable. Record Delivered: Yes; Timing: Timing omission.",
+      "example": ""
+    },
+    {
+      "section": "Second Prompt Following No Work Scoring",
+      "entry": "Omission",
+      "rule": "A required prompt is never delivered before its opportunity ends, after the complete response window elapsed. Record Delivered: No; Occurrence: Omission; Timing: N/A.",
+      "example": ""
+    },
+    {
+      "section": "Second Prompt Following No Work Scoring",
+      "entry": "Interrupted",
+      "rule": "Session cutoff occurs before the full prompt window elapsed, with no prompt delivered.",
+      "example": "Wait begins at 9:55; no prompt before cutoff at 10:00."
+    },
+    {
+      "section": "Second Prompt Following No Work Scoring",
+      "entry": "Terminated by participant",
+      "rule": "Premature worksheet removal ends a still-open prompt window with no prompt delivered: mark Terminated by participant and exclude. Preserve any omission already established before removal.",
+      "example": ""
+    },
+    {
+      "section": "Second Prompt Following No Work Scoring",
+      "entry": "N/A",
+      "rule": "The learner begins or resumes work before a prompt is required, or this prompt opportunity never arises. Retain any inappropriate prompt actually delivered.",
+      "example": ""
+    },
+    {
+      "section": "Second Prompt Following No Work Scoring",
+      "entry": "Opportunity note",
+      "rule": "Do not create an extra omission for the same prompt merely because its delivered timing was incorrect. Preserve delivered, early, late, excess, and never-delivered distinctions.",
+      "example": ""
+    },
+    {
+      "section": "Prompt After One Completed Problem Scoring",
+      "entry": "Required action",
+      "rule": "When the second problem has not begun and a prompt remains available, prompt after 10 seconds, measured from completion of the first problem.",
+      "example": ""
+    },
+    {
+      "section": "Prompt After One Completed Problem Scoring",
+      "entry": "Acceptable wording",
+      "rule": "Any clear direction to begin or continue math work is acceptable in person. Later task directions are prompts regardless of exact wording.",
+      "example": "Do your math. Keep working. Finish your problems. Do the next problem."
+    },
+    {
+      "section": "Prompt After One Completed Problem Scoring",
+      "entry": "Coder instructions",
+      "rule": "Record completion of the first problem, work onset or resumption, and speech onset of the prompt. Check the number of prompts already delivered.",
+      "example": ""
+    },
+    {
+      "section": "Prompt After One Completed Problem Scoring",
+      "entry": "Correct",
+      "rule": "Delivered 8\u201312 seconds after completion of the first problem, while the stated condition still applies. Record Delivered: Yes; Timing: Correct.",
+      "example": "First problem completed at 0:20; prompt at 0:30: on time."
+    },
+    {
+      "section": "Prompt After One Completed Problem Scoring",
+      "entry": "Timing commission",
+      "rule": "A required prompt delivered before 8 seconds: occurrence correct; timing incorrect. Both measures enter the overall score. It counts toward the two-prompt maximum and triggers the scripted response.",
+      "example": ""
+    },
+    {
+      "section": "Prompt After One Completed Problem Scoring",
+      "entry": "Other commissions",
+      "rule": "A prompt during ongoing work or after two prompts is a commission under the applicable per-trial behavior measure, not a correctly delivered required prompt. Record every instance.",
+      "example": ""
+    },
+    {
+      "section": "Prompt After One Completed Problem Scoring",
+      "entry": "Timing omission",
+      "rule": "A required prompt is delivered after 12 seconds, while still applicable. Record Delivered: Yes; Timing: Timing omission.",
+      "example": ""
+    },
+    {
+      "section": "Prompt After One Completed Problem Scoring",
+      "entry": "Omission",
+      "rule": "A required prompt is never delivered before its opportunity ends, after the complete response window elapsed. Record Delivered: No; Occurrence: Omission; Timing: N/A.",
+      "example": ""
+    },
+    {
+      "section": "Prompt After One Completed Problem Scoring",
+      "entry": "Interrupted",
+      "rule": "Session cutoff occurs before the full prompt window elapsed, with no prompt delivered.",
+      "example": "Wait begins at 9:55; no prompt before cutoff at 10:00."
+    },
+    {
+      "section": "Prompt After One Completed Problem Scoring",
+      "entry": "Terminated by participant",
+      "rule": "Premature worksheet removal ends a still-open prompt window with no prompt delivered: mark Terminated by participant and exclude. Preserve any omission already established before removal.",
+      "example": ""
+    },
+    {
+      "section": "Prompt After One Completed Problem Scoring",
+      "entry": "N/A",
+      "rule": "The learner begins or resumes work before a prompt is required, or this prompt opportunity never arises. Retain any inappropriate prompt actually delivered.",
+      "example": ""
+    },
+    {
+      "section": "Prompt After One Completed Problem Scoring",
+      "entry": "Opportunity note",
+      "rule": "Do not create an extra omission for the same prompt merely because its delivered timing was incorrect. Preserve delivered, early, late, excess, and never-delivered distinctions.",
+      "example": ""
+    },
+    {
+      "section": "Task Direction Classification and Prompt Limit",
+      "entry": "Sequence rule",
+      "rule": "The first task direction after worksheet presentation is the initial instruction. All subsequent directions to begin or continue work are prompts, even if wording is identical.",
+      "example": ""
+    },
+    {
+      "section": "Task Direction Classification and Prompt Limit",
+      "entry": "Simulator button",
+      "rule": "Use one button: Say - Do your math work. Classify its presses by sequence, not label.",
+      "example": ""
+    },
+    {
+      "section": "Task Direction Classification and Prompt Limit",
+      "entry": "Prompt maximum",
+      "rule": "Allow two prompts per worksheet/trial, excluding the initial instruction. Every delivered prompt counts; the count does not reset after problem 1.",
+      "example": ""
+    },
+    {
+      "section": "Task Direction Classification and Prompt Limit",
+      "entry": "Error distinctions",
+      "rule": "Early required prompt: timing commission. Prompt during ongoing work: commission. Third or later prompt: excess-prompt commission. Keep these classifications separate.",
+      "example": ""
+    },
+    {
+      "section": "Task Direction Classification and Prompt Limit",
+      "entry": "Example",
+      "rule": "One early prompt plus one on-time prompt uses both prompts. Any further prompt is excessive.",
+      "example": ""
+    },
+    {
+      "section": "Task Direction Classification and Prompt Limit",
+      "entry": "Missing initial instruction",
+      "rule": "When no instruction has been given, worksheet presentation provides the waiting-time reference. However, the first subsequent task direction still counts as the initial instruction, not as a prompt.",
+      "example": ""
+    },
+    {
+      "section": "Task Direction Classification and Prompt Limit",
+      "entry": "Learner responses",
+      "rule": "Immediate-start scenarios begin at worksheet presentation. Prompt-dependent scenarios respond to actual prompts, even if early; the initial instruction does not trigger their prompted response.",
+      "example": ""
+    },
+    {
+      "section": "Task Direction Classification and Prompt Limit",
+      "entry": "Coder instructions",
+      "rule": "Keep a running count of task directions and prompts for each worksheet. Reset for the next worksheet. Do not assign initial-instruction status repeatedly to the same wording.",
+      "example": ""
+    },
+    {
+      "section": "Unfinished Worksheet Removal Scoring",
+      "entry": "Required action",
+      "rule": "After the second prompt, wait 10 seconds without work, then remove the unfinished worksheet. Do not give the dolphin.",
+      "example": ""
+    },
+    {
+      "section": "Unfinished Worksheet Removal Scoring",
+      "entry": "Coder instructions",
+      "rule": "Record second-prompt onset, any subsequent work, and worksheet removal. Verify that two prompts were delivered and that work did not begin or resume during the final wait.",
+      "example": ""
+    },
+    {
+      "section": "Unfinished Worksheet Removal Scoring",
+      "entry": "Correct",
+      "rule": "Removal 8\u201312 seconds after the second prompt while the learner remains inactive. Record Removed: Yes; Timing: Correct.",
+      "example": "Second prompt at 0:22; no work; removal at 0:32."
+    },
+    {
+      "section": "Unfinished Worksheet Removal Scoring",
+      "entry": "Timing commission",
+      "rule": "Worksheet removed before the allowed endpoint, including before two prompts or while work is ongoing. Record Removed: Yes / occurrence correct; timing incorrect.",
+      "example": ""
+    },
+    {
+      "section": "Unfinished Worksheet Removal Scoring",
+      "entry": "Timing omission",
+      "rule": "Removal after 12 seconds while the requirement remains applicable. Record Removed: Yes; Timing: Timing omission.",
+      "example": ""
+    },
+    {
+      "section": "Unfinished Worksheet Removal Scoring",
+      "entry": "Omission",
+      "rule": "Removal is required, the full window elapsed, and the worksheet is never removed before session end. Record Removed: No; Occurrence: Omission; Timing: N/A.",
+      "example": ""
+    },
+    {
+      "section": "Unfinished Worksheet Removal Scoring",
+      "entry": "Interrupted",
+      "rule": "Session ends before the full removal window elapsed and no removal occurred.",
+      "example": ""
+    },
+    {
+      "section": "Unfinished Worksheet Removal Scoring",
+      "entry": "N/A",
+      "rule": "This removal opportunity never arises, or work resumes during the final wait. If work subsequently stops after problem 1, use the next section.",
+      "example": ""
+    },
+    {
+      "section": "Unfinished Worksheet Removal Scoring",
+      "entry": "Resumed work",
+      "rule": "Keep the worksheet available if work begins during the final wait. Removal while a problem is in progress is a premature-removal timing commission even if the preceding prompt clock reached 10 seconds.",
+      "example": ""
+    },
+    {
+      "section": "One Problem Completed After Both Prompts: Removal Scoring",
+      "entry": "Required action",
+      "rule": "Allow resumed work to continue. If problem 1 is completed after both prompts and the learner does not start problem 2, wait 10 seconds from completion of problem 1, then remove the worksheet. No third prompt.",
+      "example": ""
+    },
+    {
+      "section": "One Problem Completed After Both Prompts: Removal Scoring",
+      "entry": "Coder instructions",
+      "rule": "Verify both prompts were used. Record first-problem completion, whether problem 2 begins, and removal time.",
+      "example": ""
+    },
+    {
+      "section": "One Problem Completed After Both Prompts: Removal Scoring",
+      "entry": "Correct",
+      "rule": "Removal at 8\u201312 seconds after first-problem completion, if problem 2 has not begun.",
+      "example": "Problem 1 completed at 0:35; no second-problem work; removal at 0:45."
+    },
+    {
+      "section": "One Problem Completed After Both Prompts: Removal Scoring",
+      "entry": "Timing commission",
+      "rule": "Premature worksheet removal or removal during work: occurrence correct; timing incorrect. A third prompt is a separate excess-prompt commission.",
+      "example": ""
+    },
+    {
+      "section": "One Problem Completed After Both Prompts: Removal Scoring",
+      "entry": "Timing omission",
+      "rule": "Removal after 12 seconds while still required.",
+      "example": ""
+    },
+    {
+      "section": "One Problem Completed After Both Prompts: Removal Scoring",
+      "entry": "Omission",
+      "rule": "Required removal never occurs after the full response window elapsed. Timing is N/A.",
+      "example": ""
+    },
+    {
+      "section": "One Problem Completed After Both Prompts: Removal Scoring",
+      "entry": "Interrupted",
+      "rule": "Session cutoff prevents the full removal window, and no removal occurs.",
+      "example": ""
+    },
+    {
+      "section": "One Problem Completed After Both Prompts: Removal Scoring",
+      "entry": "N/A",
+      "rule": "This sequence does not occur, or problem 2 begins before removal is required.",
+      "example": ""
+    },
+    {
+      "section": "Completed Worksheet Removal Scoring",
+      "entry": "Required action",
+      "rule": "Remove the worksheet within 3 seconds of completion of the second problem. Worksheet removal and dolphin delivery may occur in either order, but each must meet its own deadline.",
+      "example": ""
+    },
+    {
+      "section": "Completed Worksheet Removal Scoring",
+      "entry": "Coder instructions",
+      "rule": "Record second-problem completion and when the worksheet is removed. Score independently of the other action.",
+      "example": ""
+    },
+    {
+      "section": "Completed Worksheet Removal Scoring",
+      "entry": "Correct",
+      "rule": "Action occurs within 3 seconds, including exactly 3 seconds. Record Occurred: Yes; Timing: Correct.",
+      "example": ""
+    },
+    {
+      "section": "Completed Worksheet Removal Scoring",
+      "entry": "Timing omission",
+      "rule": "Action occurs more than 3 seconds after completion. Record Occurred: Yes; Timing: Timing omission.",
+      "example": "Second problem completed at 1:00; action at 1:05: late."
+    },
+    {
+      "section": "Completed Worksheet Removal Scoring",
+      "entry": "Omission",
+      "rule": "Action never occurs before its opportunity ends, after the full response window elapsed. Record Occurred: No; Occurrence: Omission; Timing: N/A.",
+      "example": ""
+    },
+    {
+      "section": "Completed Worksheet Removal Scoring",
+      "entry": "Interrupted",
+      "rule": "Session ends before the full 3-second window elapsed, with no action.",
+      "example": "Second problem completed at 9:59; no action before 10:00."
+    },
+    {
+      "section": "Completed Worksheet Removal Scoring",
+      "entry": "N/A",
+      "rule": "Two problems are not completed, so this earned-action opportunity does not arise. Score any inappropriate action under the relevant commission rule.",
+      "example": ""
+    },
+    {
+      "section": "Completed Worksheet Removal Scoring",
+      "entry": "Cutoff",
+      "rule": "An action that occurs before cutoff retains its score, even if the complete window has not elapsed.",
+      "example": ""
+    },
+    {
+      "section": "Earned Dolphin Delivery Scoring",
+      "entry": "Required action",
+      "rule": "Give the dolphin within 3 seconds of completion of the second problem. Worksheet removal and dolphin delivery may occur in either order, but each must meet its own deadline.",
+      "example": ""
+    },
+    {
+      "section": "Earned Dolphin Delivery Scoring",
+      "entry": "Coder instructions",
+      "rule": "Record second-problem completion and when the dolphin becomes available to the learner. Score independently of the other action.",
+      "example": ""
+    },
+    {
+      "section": "Earned Dolphin Delivery Scoring",
+      "entry": "Correct",
+      "rule": "Action occurs within 3 seconds, including exactly 3 seconds. Record Occurred: Yes; Timing: Correct.",
+      "example": ""
+    },
+    {
+      "section": "Earned Dolphin Delivery Scoring",
+      "entry": "Timing omission",
+      "rule": "Action occurs more than 3 seconds after completion. Record Occurred: Yes; Timing: Timing omission.",
+      "example": "Second problem completed at 1:00; action at 1:05: late."
+    },
+    {
+      "section": "Earned Dolphin Delivery Scoring",
+      "entry": "Omission",
+      "rule": "Action never occurs before its opportunity ends, after the full response window elapsed. Record Occurred: No; Occurrence: Omission; Timing: N/A.",
+      "example": ""
+    },
+    {
+      "section": "Earned Dolphin Delivery Scoring",
+      "entry": "Interrupted",
+      "rule": "Session ends before the full 3-second window elapsed, with no action.",
+      "example": "Second problem completed at 9:59; no action before 10:00."
+    },
+    {
+      "section": "Earned Dolphin Delivery Scoring",
+      "entry": "N/A",
+      "rule": "Two problems are not completed, so this earned-action opportunity does not arise. Score any inappropriate action under the relevant commission rule.",
+      "example": ""
+    },
+    {
+      "section": "Earned Dolphin Delivery Scoring",
+      "entry": "Cutoff",
+      "rule": "An action that occurs before cutoff retains its score, even if the complete window has not elapsed.",
+      "example": ""
+    },
+    {
+      "section": "Worksheet Removal: Component Assignment",
+      "entry": "One component per worksheet",
+      "rule": "Score worksheet-removal occurrence and timing once per trial. Use the completed-work or unfinished-work reference as applicable. Do not add a second removal component solely because both branches are described in this appendix.",
+      "example": ""
+    },
+    {
+      "section": "Worksheet Removal: Component Assignment",
+      "entry": "Premature removal",
+      "rule": "Even when no valid removal deadline has yet arisen, an actual premature removal receives occurrence correct and timing commission. Do not mark that actual removal N/A.",
+      "example": ""
+    },
+    {
+      "section": "Worksheet Removal: Component Assignment",
+      "entry": "Open windows",
+      "rule": "Premature removal also ends unfinished instruction/prompt windows. Mark those windows Terminated by participant if their deadlines have not elapsed; preserve omissions already established.",
+      "example": ""
+    },
+    {
+      "section": "Unearned Dolphin Delivery Scoring",
+      "entry": "Required behavior",
+      "rule": "Withhold the dolphin until two problems are completed. Tapping or banging does not alter this requirement.",
+      "example": ""
+    },
+    {
+      "section": "Unearned Dolphin Delivery Scoring",
+      "entry": "Coder instructions",
+      "rule": "Review dolphin deliveries throughout the trial and determine how many problems had been completed at each delivery.",
+      "example": ""
+    },
+    {
+      "section": "Unearned Dolphin Delivery Scoring",
+      "entry": "Correct",
+      "rule": "Score no unearned delivery once in every trial, including trials eventually completing two problems. No delivery before two problems is correct. For partial trials, require at least 3 seconds with fewer than two problems complete.",
+      "example": "One problem completed; worksheet eventually removed; no dolphin given: correct withholding."
+    },
+    {
+      "section": "Unearned Dolphin Delivery Scoring",
+      "entry": "Commission",
+      "rule": "Dolphin delivered before two problems are complete. Record each observed delivery with its timestamp.",
+      "example": "Dolphin given while Sam bangs and has completed zero problems."
+    },
+    {
+      "section": "Unearned Dolphin Delivery Scoring",
+      "entry": "Partial trial",
+      "rule": "Count correct withholding when fewer than two problems were complete for at least 3 seconds and no unearned delivery occurred. Retain any actual unearned delivery regardless of duration. Shorter incomplete observations without delivery are excluded.",
+      "example": ""
+    },
+    {
+      "section": "Unearned Dolphin Delivery Scoring",
+      "entry": "Example: later completion",
+      "rule": "Dolphin delivered after one problem, then problem 2 is completed: unearned-delivery commission. Later completion does not erase it.",
+      "example": ""
+    },
+    {
+      "section": "Unearned Dolphin Delivery Scoring",
+      "entry": "Example: earned delivery only",
+      "rule": "Dolphin delivered only after two problems: no-unearned-delivery score correct. Score earned-delivery occurrence and timing separately.",
+      "example": ""
+    },
+    {
+      "section": "Unearned Dolphin Delivery Scoring",
+      "entry": "Example: behavior",
+      "rule": "Dolphin delivered before work or during tapping/banging with fewer than two completed problems: unearned-delivery commission.",
+      "example": ""
+    },
+    {
+      "section": "Unearned Dolphin Delivery Scoring",
+      "entry": "Earned delivery",
+      "rule": "Once two problems are completed, use Earned Dolphin Delivery Scoring. Do not treat earned delivery during tapping or banging as a commission.",
+      "example": ""
+    },
+    {
+      "section": "Dolphin Removal Scoring",
+      "entry": "Required action",
+      "rule": "Allow 15 seconds of access, then remove the dolphin.",
+      "example": ""
+    },
+    {
+      "section": "Dolphin Removal Scoring",
+      "entry": "Coder instructions",
+      "rule": "Record when dolphin access begins and when it ends. Calculate access duration. Record removal occurrence separately from timing; do not add a duplicate duration score.",
+      "example": ""
+    },
+    {
+      "section": "Dolphin Removal Scoring",
+      "entry": "Correct",
+      "rule": "Removal at 13\u201317 seconds of access, inclusive. Record Removed: Yes; Timing: Correct.",
+      "example": ""
+    },
+    {
+      "section": "Dolphin Removal Scoring",
+      "entry": "Timing commission",
+      "rule": "Removal before 13 seconds. Record Removed: Yes; Timing: Timing commission.",
+      "example": "Dolphin removed after 10 seconds."
+    },
+    {
+      "section": "Dolphin Removal Scoring",
+      "entry": "Timing omission",
+      "rule": "Removal after 17 seconds. Record Removed: Yes; Timing: Timing omission.",
+      "example": "Dolphin removed after 20 seconds."
+    },
+    {
+      "section": "Dolphin Removal Scoring",
+      "entry": "Omission",
+      "rule": "Dolphin never removed before session end after the full 17-second window elapsed. Record Removed: No; Occurrence: Omission; Timing: N/A.",
+      "example": ""
+    },
+    {
+      "section": "Dolphin Removal Scoring",
+      "entry": "Interrupted",
+      "rule": "Session ends before the full 17-second window elapsed, without removal.",
+      "example": "Access begins at 9:50; no removal before 10:00."
+    },
+    {
+      "section": "Dolphin Removal Scoring",
+      "entry": "N/A",
+      "rule": "Dolphin access never occurs.",
+      "example": ""
+    },
+    {
+      "section": "Dolphin Removal Scoring",
+      "entry": "Unearned access",
+      "rule": "Apply this same removal and duration rule even if dolphin delivery was unearned. Retain the separate unearned-delivery commission.",
+      "example": ""
+    },
+    {
+      "section": "Dolphin Removal Scoring",
+      "entry": "Cutoff",
+      "rule": "If the dolphin is removed before cutoff, retain the score, even if the window would otherwise have been interrupted.",
+      "example": "Removal at 10 seconds of access followed by session end: timing commission remains."
+    },
+    {
+      "section": "Finger Tapping Scoring",
+      "entry": "Required behavior",
+      "rule": "Continue the procedure without commenting on finger tapping or changing the task requirement. Give the dolphin after two completed problems; otherwise withhold it.",
+      "example": ""
+    },
+    {
+      "section": "Finger Tapping Scoring",
+      "entry": "Coder instructions",
+      "rule": "Identify whether finger tapping occurred and record any direction to stop it. Review worksheet and dolphin actions under their respective scoring sections.",
+      "example": ""
+    },
+    {
+      "section": "Finger Tapping Scoring",
+      "entry": "Correct",
+      "rule": "No direction to stop finger tapping during a completed applicable trial, or during a partial trial with at least 3 seconds of observable finger tapping.",
+      "example": ""
+    },
+    {
+      "section": "Finger Tapping Scoring",
+      "entry": "Commission",
+      "rule": "Say Please stop tapping the table, or an equivalent statement directing the learner to stop the behavior. Record the statement onset.",
+      "example": ""
+    },
+    {
+      "section": "Finger Tapping Scoring",
+      "entry": "N/A",
+      "rule": "No finger tapping observation opportunity arises. An inappropriate stop statement actually delivered is still retained as a commission event.",
+      "example": ""
+    },
+    {
+      "section": "Finger Tapping Scoring",
+      "entry": "Partial trial",
+      "rule": "Retain any actual stop statement regardless of exposure duration. Without a stop statement, include a partial trial as correct only after at least 3 seconds of observable behavior; shorter observations are excluded.",
+      "example": ""
+    },
+    {
+      "section": "Finger Tapping Scoring",
+      "entry": "Example",
+      "rule": "Behavior visible for 4 seconds before early trial termination; no stop statement: correct no-comment score. Behavior visible for 1 second and participant says Stop: commission.",
+      "example": ""
+    },
+    {
+      "section": "Finger Tapping Scoring",
+      "entry": "Other errors",
+      "rule": "Premature worksheet removal receives a timing commission; unearned dolphin delivery receives a commission. Do not infer causation from timing alone.",
+      "example": ""
+    },
+    {
+      "section": "Table Banging Scoring",
+      "entry": "Required behavior",
+      "rule": "Continue the procedure without commenting on table banging or changing the task requirement. Give the dolphin after two completed problems; otherwise withhold it.",
+      "example": ""
+    },
+    {
+      "section": "Table Banging Scoring",
+      "entry": "Coder instructions",
+      "rule": "Identify whether table banging occurred and record any direction to stop it. Review worksheet and dolphin actions under their respective scoring sections.",
+      "example": ""
+    },
+    {
+      "section": "Table Banging Scoring",
+      "entry": "Correct",
+      "rule": "No direction to stop table banging during a completed applicable trial, or during a partial trial with at least 3 seconds of observable table banging.",
+      "example": ""
+    },
+    {
+      "section": "Table Banging Scoring",
+      "entry": "Commission",
+      "rule": "Say Please stop banging the table, or an equivalent statement directing the learner to stop the behavior. Record the statement onset.",
+      "example": ""
+    },
+    {
+      "section": "Table Banging Scoring",
+      "entry": "N/A",
+      "rule": "No table banging observation opportunity arises. An inappropriate stop statement actually delivered is still retained as a commission event.",
+      "example": ""
+    },
+    {
+      "section": "Table Banging Scoring",
+      "entry": "Partial trial",
+      "rule": "Retain any actual stop statement regardless of exposure duration. Without a stop statement, include a partial trial as correct only after at least 3 seconds of observable behavior; shorter observations are excluded.",
+      "example": ""
+    },
+    {
+      "section": "Table Banging Scoring",
+      "entry": "Example",
+      "rule": "Behavior visible for 4 seconds before early trial termination; no stop statement: correct no-comment score. Behavior visible for 1 second and participant says Stop: commission.",
+      "example": ""
+    },
+    {
+      "section": "Table Banging Scoring",
+      "entry": "Other errors",
+      "rule": "Premature worksheet removal receives a timing commission; unearned dolphin delivery receives a commission. Do not infer causation from timing alone.",
+      "example": ""
+    },
+    {
+      "section": "Optional Timer Use",
+      "entry": "Participant choice",
+      "rule": "Two independent unlabeled timers may be used for reminders, waits, or dolphin access. The separate visible session clock runs automatically.",
+      "example": ""
+    },
+    {
+      "section": "Optional Timer Use",
+      "entry": "Coder instructions",
+      "rule": "Record timer use if observed. It is separate from procedural scoring.",
+      "example": ""
+    },
+    {
+      "section": "Optional Timer Use",
+      "entry": "Nonuse",
+      "rule": "Not using a timer is not an omission or commission. Correctness depends on the actions and timing, not timer operation.",
+      "example": ""
+    },
+    {
+      "section": "Session Endpoint and Cutoff Scoring",
+      "entry": "Endpoint",
+      "rule": "End after 10 trials or at 10 minutes. There is no one-minute maximum per trial.",
+      "example": ""
+    },
+    {
+      "section": "Session Endpoint and Cutoff Scoring",
+      "entry": "Performed action",
+      "rule": "Any action before cutoff retains its score, including early, late, and inappropriate actions.",
+      "example": ""
+    },
+    {
+      "section": "Session Endpoint and Cutoff Scoring",
+      "entry": "Open window; no action",
+      "rule": "If the response deadline has not been reached at cutoff and no action occurred, mark Interrupted and exclude from the denominator.",
+      "example": ""
+    },
+    {
+      "section": "Session Endpoint and Cutoff Scoring",
+      "entry": "Deadline passed; no action",
+      "rule": "If the complete response window elapsed before cutoff and no action occurred, retain the omission score.",
+      "example": ""
+    },
+    {
+      "section": "Session Endpoint and Cutoff Scoring",
+      "entry": "No opportunity",
+      "rule": "If the triggering event never occurred before session end, mark N/A rather than Interrupted.",
+      "example": ""
+    },
+    {
+      "section": "Session Endpoint and Cutoff Scoring",
+      "entry": "Example: timing commission",
+      "rule": "Dolphin removed after 10 seconds of access and session then ends: retain timing commission.",
+      "example": ""
+    },
+    {
+      "section": "Session Endpoint and Cutoff Scoring",
+      "entry": "Example: Interrupted",
+      "rule": "Session ends at 10 seconds of access without removal: Interrupted.",
+      "example": ""
+    },
+    {
+      "section": "Session Endpoint and Cutoff Scoring",
+      "entry": "Example: omission",
+      "rule": "Dolphin access exceeds 17 seconds and no removal occurs before cutoff: omission; timing N/A.",
+      "example": ""
+    },
+    {
+      "section": "Participant-Terminated Opportunities",
+      "entry": "Trigger",
+      "rule": "A participant prematurely removes the worksheet. Score removal occurrence as correct and removal timing as a timing commission.",
+      "example": ""
+    },
+    {
+      "section": "Participant-Terminated Opportunities",
+      "entry": "Window still open",
+      "rule": "If no instruction or prompt was delivered and its response deadline had not elapsed, mark Terminated by participant and exclude the unfinished window from scoring.",
+      "example": ""
+    },
+    {
+      "section": "Participant-Terminated Opportunities",
+      "entry": "Deadline already passed",
+      "rule": "If no action was delivered and the full deadline elapsed before removal, retain its omission score.",
+      "example": ""
+    },
+    {
+      "section": "Participant-Terminated Opportunities",
+      "entry": "Action already performed",
+      "rule": "Keep occurrence and timing scores for actions already performed, including early actions.",
+      "example": ""
+    },
+    {
+      "section": "Participant-Terminated Opportunities",
+      "entry": "Example: open instruction window",
+      "rule": "Worksheet at 0:00; removed at 0:01 without instruction: removal timing commission; instruction window Terminated by participant.",
+      "example": ""
+    },
+    {
+      "section": "Participant-Terminated Opportunities",
+      "entry": "Example: missed instruction",
+      "rule": "Worksheet at 0:00; removed at 0:05 without instruction: removal timing commission; instruction omission retained.",
+      "example": ""
+    },
+    {
+      "section": "Participant-Terminated Opportunities",
+      "entry": "Partial behavior observations",
+      "rule": "Use the separate 3-second exposure rules for correct withholding and no-comment scores. Actual commissions always remain in the record.",
+      "example": ""
+    },
+    {
+      "section": "No Excess Prompts Scoring",
+      "entry": "One score per trial",
+      "rule": "Correct if no third prompt occurs. Incorrect as a commission if one or more third/later prompts occur. Exclude the initial instruction from the prompt count.",
+      "example": ""
+    },
+    {
+      "section": "No Excess Prompts Scoring",
+      "entry": "Detailed log",
+      "rule": "Record every excess prompt and its timestamp, but give only one incorrect no-excess-prompts score per trial.",
+      "example": ""
+    },
+    {
+      "section": "No Excess Prompts Scoring",
+      "entry": "Example",
+      "rule": "Initial instruction plus two prompts: correct. Initial instruction plus three prompts: incorrect. Five prompts still produce one incorrect trial score, with three excess events logged.",
+      "example": ""
+    },
+    {
+      "section": "No Excess Prompts Scoring",
+      "entry": "Early prompts",
+      "rule": "An early prompt still uses one of the two prompts; it cannot be ignored to allow an additional prompt.",
+      "example": ""
+    },
+    {
+      "section": "No Prompts During Ongoing Work Scoring",
+      "entry": "One score per applicable trial",
+      "rule": "Correct if no prompt occurs while an individual problem is in progress. Incorrect as a commission if any do. The required initial instruction remains separate even if immediate work has begun.",
+      "example": ""
+    },
+    {
+      "section": "No Prompts During Ongoing Work Scoring",
+      "entry": "Applicability",
+      "rule": "If no individual problem begins, no ongoing-work observation opportunity arises. Retain any actual commission and record only applicable behavior scores.",
+      "example": ""
+    },
+    {
+      "section": "No Prompts During Ongoing Work Scoring",
+      "entry": "Detailed log",
+      "rule": "Record each prompt during ongoing work. Every delivered prompt counts toward the two-prompt limit.",
+      "example": ""
+    },
+    {
+      "section": "No Prompts During Ongoing Work Scoring",
+      "entry": "Example: early required prompt",
+      "rule": "Learner inactive; required prompt given at 5 seconds: occurrence correct, timing commission.",
+      "example": ""
+    },
+    {
+      "section": "No Prompts During Ongoing Work Scoring",
+      "entry": "Example: unnecessary prompt",
+      "rule": "Learner writing an answer; participant says Keep working: ongoing-work commission.",
+      "example": ""
+    },
+    {
+      "section": "No Prompts During Ongoing Work Scoring",
+      "entry": "Example: overlapping rules",
+      "rule": "A third prompt delivered while writing violates both no-excess-prompts and no-prompts-during-work measures. Score each measure separately; retain one event with both classifications.",
+      "example": ""
+    },
+    {
+      "section": "Overall Session Score and Individual Summaries",
+      "entry": "Main dependent variable",
+      "rule": "Overall procedural fidelity (%) = number of correct applicable scores divided by total applicable scores, multiplied by 100. Use this percentage for the session-by-session graph.",
+      "example": ""
+    },
+    {
+      "section": "Overall Session Score and Individual Summaries",
+      "entry": "Separate contributions",
+      "rule": "Required-action occurrence and timing each contribute separately. Include applicable per-trial behavior measures, including no unearned delivery, no excess prompts, no prompts during work, and no stop statements for each relevant behavior.",
+      "example": ""
+    },
+    {
+      "section": "Overall Session Score and Individual Summaries",
+      "entry": "Delivered on time",
+      "rule": "Occurrence correct; timing correct: 2 correct scores out of 2 applicable scores.",
+      "example": ""
+    },
+    {
+      "section": "Overall Session Score and Individual Summaries",
+      "entry": "Delivered late",
+      "rule": "Occurrence correct; timing omission: 1 correct score out of 2 applicable scores.",
+      "example": ""
+    },
+    {
+      "section": "Overall Session Score and Individual Summaries",
+      "entry": "Delivered early",
+      "rule": "For an early required prompt or worksheet removal: occurrence correct; timing commission: 1 correct score out of 2 applicable scores.",
+      "example": ""
+    },
+    {
+      "section": "Overall Session Score and Individual Summaries",
+      "entry": "Entirely omitted",
+      "rule": "Occurrence omission; timing N/A: 0 correct scores out of 1 applicable score. Do not add an incorrect timing score for an omitted action.",
+      "example": ""
+    },
+    {
+      "section": "Overall Session Score and Individual Summaries",
+      "entry": "Exclusions",
+      "rule": "Exclude N/A, Interrupted, and Terminated by participant entries from the applicable-score denominator. Retain applicable scores and all actual commission events.",
+      "example": ""
+    },
+    {
+      "section": "Overall Session Score and Individual Summaries",
+      "entry": "No fixed denominator",
+      "rule": "The denominator may vary because timing is N/A for omitted actions and some opportunities are not reached or are terminated. Report correct-score count and applicable-score count with the percentage.",
+      "example": ""
+    },
+    {
+      "section": "Overall Session Score and Individual Summaries",
+      "entry": "Individual summaries",
+      "rule": "Report each component\u2019s occurrence and timing separately, along with commission, omission, timing commission, and timing omission classifications. Preserve raw event counts as well as per-trial scores.",
+      "example": ""
+    },
+    {
+      "section": "Overall Session Score and Individual Summaries",
+      "entry": "Example calculation",
+      "rule": "A late instruction contributes 1/2, an on-time prompt 2/2, an omitted earned delivery 0/1, and correct no-unearned-delivery 1/1. Combined: 4 correct / 6 applicable = 66.7%. These are illustrative scores, not a complete session.",
+      "example": ""
+    },
+    {
+      "section": "Math Work: Beginning, Completion, and Pauses",
+      "entry": "Beginning",
+      "rule": "An individual problem begins with the first writing movement directed at solving it. Use this marker for video tags and live coding.",
+      "example": ""
+    },
+    {
+      "section": "Math Work: Beginning, Completion, and Pauses",
+      "entry": "Completion",
+      "rule": "An individual problem is completed when its written answer is finished. Do not use the end of the video clip as a substitute.",
+      "example": ""
+    },
+    {
+      "section": "Math Work: Beginning, Completion, and Pauses",
+      "entry": "Ongoing work",
+      "rule": "Once a problem starts, treat it as ongoing work until its answer is finished, including brief pauses. The simulated learner always finishes a problem they begin.",
+      "example": ""
+    },
+    {
+      "section": "Math Work: Beginning, Completion, and Pauses",
+      "entry": "Next waiting period",
+      "rule": "After problem 1 is completed, the next 10-second wait applies only if problem 2 has not begun.",
+      "example": ""
+    },
+    {
+      "section": "Math Work: Beginning, Completion, and Pauses",
+      "entry": "Coder instructions",
+      "rule": "Record problem 1 and problem 2 start/completion timestamps using the same definitions. Do not code a brief within-problem pause as a new prompt opportunity.",
+      "example": ""
+    },
+    {
+      "section": "Video Simulator: Recording and Automatic Scoring",
+      "entry": "Session record",
+      "rule": "Record participant ID, session ID, date/time, catalog version, set ID, and exact fixed order. Select one of the 324 catalog entries and never reshuffle its stored order.",
+      "example": ""
+    },
+    {
+      "section": "Video Simulator: Recording and Automatic Scoring",
+      "entry": "Trial record",
+      "rule": "Record trial position, scenario ID, behavior condition, and planned work/prompt pattern.",
+      "example": ""
+    },
+    {
+      "section": "Video Simulator: Recording and Automatic Scoring",
+      "entry": "Participant events",
+      "rule": "Timestamp worksheet presentation/removal, task directions, dolphin delivery/removal, stop statements, and timer operations.",
+      "example": ""
+    },
+    {
+      "section": "Video Simulator: Recording and Automatic Scoring",
+      "entry": "Learner events",
+      "rule": "Tag actual video playback points for the start and completion of each problem. Record events only when playback reaches them.",
+      "example": ""
+    },
+    {
+      "section": "Video Simulator: Recording and Automatic Scoring",
+      "entry": "Scoring",
+      "rule": "Apply the shared rules to actual events. Preserve raw timestamps, occurrence, elapsed time, timing/error categories, and reasons for N/A or Interrupted.",
+      "example": ""
+    },
+    {
+      "section": "Video Simulator: Recording and Automatic Scoring",
+      "entry": "Actual availability",
+      "rule": "Instruction timing uses button press. Physical-action and access timing must correspond to when the action or availability change is actually represented in playback, so video transitions do not distort the measure.",
+      "example": ""
+    },
+    {
+      "section": "Video Simulator: Recording and Automatic Scoring",
+      "entry": "Export",
+      "rule": "Provide event log, trial scores, and session summary with catalog version, set ID, and observed sequence.",
+      "example": ""
+    },
+    {
+      "section": "In-Person Coding Program: Recording Requirements",
+      "entry": "Session and observer",
+      "rule": "Record participant ID, session ID, date/time, catalog version, set ID, fixed planned order, observer ID, and primary/secondary role.",
+      "example": ""
+    },
+    {
+      "section": "In-Person Coding Program: Recording Requirements",
+      "entry": "Trial-by-trial review",
+      "rule": "Coders must be able to identify the previous trial endpoint and current worksheet introduction. Assign presentation scores to the incoming trial.",
+      "example": ""
+    },
+    {
+      "section": "In-Person Coding Program: Recording Requirements",
+      "entry": "Event coding",
+      "rule": "Record session start/end, worksheet events, speech onset of task directions and stop statements, problem starts/completions, dolphin access/removal, and timer use.",
+      "example": ""
+    },
+    {
+      "section": "In-Person Coding Program: Recording Requirements",
+      "entry": "Score entry",
+      "rule": "Provide explicit correct/error choices and occurrence/timing fields for each component. Include component-specific N/A and Interrupted guidance rather than generic buttons without definitions.",
+      "example": ""
+    },
+    {
+      "section": "In-Person Coding Program: Recording Requirements",
+      "entry": "Timing support",
+      "rule": "Calculate elapsed times from coded event timestamps to assist score entry and flag inconsistencies for review. Preserve the coder\u2019s observation and any corrections.",
+      "example": ""
+    },
+    {
+      "section": "In-Person Coding Program: Recording Requirements",
+      "entry": "Observed versus planned",
+      "rule": "Record actual events, including departures from the selected scenario. Do not fill in actions merely because the script called for them.",
+      "example": ""
+    },
+    {
+      "section": "In-Person Coding Program: Recording Requirements",
+      "entry": "Uncertainty",
+      "rule": "Provide notes for script deviations, obscured events, and unreliable timestamps. Flag uncertain events for review rather than assuming a score.",
+      "example": ""
+    },
+    {
+      "section": "In-Person Coding Program: Recording Requirements",
+      "entry": "Export",
+      "rule": "Export event log, trial scores, and session summary with observer identity, catalog version, set ID, and actual sequence.",
+      "example": ""
+    }
+  ]
+}
