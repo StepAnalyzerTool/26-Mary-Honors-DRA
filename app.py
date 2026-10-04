@@ -245,12 +245,24 @@ def collection_tab():
     trial=st.session_state.trials[index-1]
     before=deepcopy(trial)
     prefix=f'code_{index}_'
-    with st.container(border=True):
-        status=checked_choice('Trial observation status',[(value,value) for value in ['Not reached','Complete','Partial']],trial['trial_status'],prefix+'status')
-        trial['trial_status']=status if status!=MISSING else 'Not reached'
-        st.caption('Partial: cut short by the session cutoff or premature worksheet removal. A fully observed trial with unfinished math is Complete.')
+    if prefix+'status_initialized' not in st.session_state:
+        if trial['trial_status']=='Not reached': trial['trial_status']='Complete'
+        st.session_state[prefix+'status_initialized']=True
+    label='Not Observed' if trial['trial_status']=='Not reached' else trial['trial_status']
+    st.write(f'Trial Status: {label}')
+    a,b,c=st.columns(3)
+    with a:
+        if st.button('Partial',key=prefix+'partial'):
+            trial['trial_status']='Partial'; trial['reviewed']=False; st.rerun()
+    with b:
+        if st.button('Not Observed',key=prefix+'not_observed'):
+            trial['trial_status']='Not reached'; trial['reviewed']=False; st.rerun()
+    with c:
+        if trial['trial_status']!='Complete' and st.button('Complete',key=prefix+'complete'):
+            trial['trial_status']='Complete'; trial['reviewed']=False; st.rerun()
+    st.caption('Partial: cut short by the session cutoff or premature worksheet removal. A fully observed trial with unfinished math is Complete. Not Observed trials are excluded from scores.')
     if trial['trial_status']=='Not reached':
-        st.write('This trial contributes no scores until marked Complete or Partial.')
+        st.write('This trial is marked Not Observed and contributes no scores. Select Complete or Partial to code it.')
         return
     st.markdown('**Observed learner behavior and prompt count**')
     obs=trial['observations']
