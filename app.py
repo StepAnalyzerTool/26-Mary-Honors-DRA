@@ -410,14 +410,24 @@ clear_plan_from_coding()
 st.title('DRA Session Coder')
 st.caption("Mary’s Honors Thesis · 2026-2027 - Planning and Coding Recordings of In-Person Simulated-Learner Sessions")
 selection,collection,results,instructions,resume,ioa=st.tabs(['Scenario Selection and Simulated-Learner Fidelity','DRA Data Collection','Results','Scoring Instructions','Resume / New Session','IOA'])
-with selection: selector_tab()
-with collection: collection_tab()
-with results: results_tab()
+with selection:
+    st.header('Scenario Selection and Simulated-Learner Fidelity')
+    selector_tab()
+with collection:
+    st.header('DRA Data Collection')
+    collection_tab()
+with results:
+    st.header('Results')
+    results_tab()
 with instructions:
+    st.header('Scoring Instructions')
     st.subheader('Scoring appendix and coder examples')
     for section in guide_data():
         with st.expander(section): rule_help([section])
-with resume: restore_tab()
+with resume:
+    st.header('Resume / New Session')
+    restore_tab()
 with ioa:
+    st.header('IOA')
     st.subheader('Interobserver agreement')
     st.info('Primary and secondary coding identities are retained in exports. The comparison module remains to be implemented.')
