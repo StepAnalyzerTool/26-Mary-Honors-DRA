@@ -250,7 +250,7 @@ def collection_tab():
         st.session_state[prefix+'status_initialized']=True
     label='Not Observed' if trial['trial_status']=='Not reached' else trial['trial_status']
     st.write(f'Trial Status: {label}')
-    a,b,c=st.columns(3)
+    a,b,c,_=st.columns([1,1,1,5])
     with a:
         if st.button('Partial',key=prefix+'partial'):
             trial['trial_status']='Partial'; trial['reviewed']=False; st.rerun()
@@ -264,18 +264,25 @@ def collection_tab():
     if trial['trial_status']=='Not reached':
         st.write('This trial is marked Not Observed and contributes no scores. Select Complete or Partial to code it.')
         return
-    st.markdown('**Observed learner behavior and prompt count**')
+    st.markdown('**Simulated Learner Behavior**')
     obs=trial['observations']
-    a,b,c=st.columns(3)
-    with a:
-        obs['problems']=choice('Problems completed',[None,0,1,2],obs.get('problems'),prefix+'problems',format_func=lambda x:'Not recorded' if x is None else str(x))
-        obs['prompts_delivered']=optional_number('Prompts delivered (exclude initial instruction)',obs.get('prompts_delivered'),prefix+'prompt_count',True)
-    with b:
-        obs['tapping_seconds']=optional_number('Observable tapping (seconds)',obs.get('tapping_seconds'),prefix+'tap_seconds')
-        obs['banging_seconds']=optional_number('Observable banging (seconds)',obs.get('banging_seconds'),prefix+'bang_seconds')
-    with c:
-        obs['incomplete_seconds']=optional_number('Time with fewer than two problems complete (seconds)',obs.get('incomplete_seconds'),prefix+'incomplete_seconds')
-        obs['timer_use']=choice('Participant timer use',['Not recorded','Used','Not used'],obs.get('timer_use','Not recorded'),prefix+'timer')
+    problems=checked_choice('Problems completed',[('0',0),('1',1),('2',2),('N/A',None)],None if obs.get('problems_na') else obs.get('problems',MISSING) if obs.get('problems') is not None else MISSING,prefix+'problems')
+    obs['problems_na']=problems is None
+    obs['problems']=problems if problems in (0,1,2) else None
+    st.caption('N/A: no worksheet was provided.')
+    for field,label in [('tapping_observed','Was finger tapping observed?'),('banging_observed','Was table banging observed?')]:
+        value=checked_choice(label,[('Yes',True),('No',False),('N/A',None)],obs.get(field,MISSING),prefix+field)
+        obs[field]=value
+    st.markdown('**Participant Behavior**')
+    count=checked_choice('Prompts delivered (exclude initial instruction)',[('0',0),('1',1),('2',2),('3 or more',3),('N/A',None)],obs.get('prompts_delivered') if obs.get('prompts_delivered') is not None else MISSING,prefix+'prompt_count')
+    obs['prompts_na']=count is None
+    obs['prompts_delivered']=count if count in (0,1,2,3) else None
+    obs['timer_use']=checked_choice('Did the participant use a timer?',[('Yes','Used'),('No','Not used'),('N/A','N/A')],obs.get('timer_use',MISSING),prefix+'timer')
+    if trial['trial_status']=='Partial':
+        st.write('Partial-trial scoring checks')
+        st.caption('Judge whether there was at least 3 seconds of opportunity; no exact duration needs to be entered.')
+        for field,label in [('incomplete_eligible','Was there at least 3 seconds with fewer than two problems completed?'),('tapping_eligible','Was finger tapping observable for at least 3 seconds?'),('banging_eligible','Was table banging observable for at least 3 seconds?')]:
+            obs[field]=checked_choice(label,[('Yes',True),('No',False),('N/A',None)],obs.get(field,MISSING),prefix+field)
     st.caption('Beginning: first writing movement directed at solving the problem. Completion: written answer finished. Brief pauses within a problem remain ongoing work.')
     for component in TIMED_COMPONENTS:
         key=component['key'];action=trial['actions'][key]
@@ -306,23 +313,8 @@ def collection_tab():
                     if answer=='Outside window':
                         action['timing']=checked_choice('Was it early or late?',[('Early',TIMING_COMMISSION),('Late',TIMING_OMISSION)],timing_current,prefix+key+'_direction')
                     else: action['timing']=answer
-            a,b=st.columns(2)
-            with a: action['reference_at']=text('Reference event time',action.get('reference_at',''),prefix+key+'_reference',help='Seconds or MM:SS.s relative to session start. Identify the reference event using the rule above.')
-            with b: action['action_at']=text('Action time',action.get('action_at',''),prefix+key+'_action',help='Speech onset for instructions/prompts. Leave blank if the action never occurred.')
-            window=component['window']
             if key=='worksheet_removal':
-                branch=choice('Removal reference',['Select reference','Second problem completed','Second prompt; no work','First problem completed after both prompts','Premature removal before a valid reference'],action.get('branch','Select reference'),prefix+key+'_branch')
-                action['branch']=branch
-                window=(0,3) if branch=='Second problem completed' else (8,12) if branch in ['Second prompt; no work','First problem completed after both prompts'] else None
-            try:
-                reference=parse_time(action['reference_at']);at=parse_time(action['action_at'])
-                if window and reference is not None and at is not None:
-                    predicted=timing_result(at-reference,*window)
-                    st.caption(f'Elapsed: {at-reference:.2f} seconds · timing calculation: {predicted}')
-                    if action['occurrence']==CORRECT and action['timing'] not in (MISSING,predicted):
-                        st.warning('Selected timing differs from timestamps. Correct the timestamps or score before finalizing.')
-            except (ValueError,TypeError) as exc:
-                st.error(str(exc))
+                action['branch']=choice('Removal reference',['Select reference','Second problem completed','Second prompt; no work','First problem completed after both prompts','Premature removal before a valid reference'],action.get('branch','Select reference'),prefix+key+'_branch')
             action['notes']=text('Reference description / coding notes',action.get('notes',''),prefix+key+'_notes')
     for component in BEHAVIOR_COMPONENTS:
         with st.container(border=True):
@@ -361,7 +353,7 @@ def finalization_issues(scores):
     reached=[t for t in st.session_state.trials if t['trial_status']!='Not reached']
     for trial in reached:
         obs=trial['observations']
-        if obs.get('problems') is None or obs.get('prompts_delivered') is None:
+        if (obs.get('problems') is None and not obs.get('problems_na')) or (obs.get('prompts_delivered') is None and not obs.get('prompts_na')):
             issues.append(f"Trial {trial['trial']}: record problems completed and prompts delivered.")
         for action in trial.get('actions',{}).values():
             for field in ('reference_at','action_at'):

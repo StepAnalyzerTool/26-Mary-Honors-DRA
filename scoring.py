@@ -161,13 +161,17 @@ def validate_trials(trials: list[dict[str,Any]]) -> list[str]:
    if value is not None and (not isinstance(value,(int,float)) or not math.isfinite(value) or value<0):
     issues.append(f'{prefix}: invalid {field}.')
   if obs.get('problems') not in (None,0,1,2): issues.append(f'{prefix}: problems must be 0, 1, or 2.')
+  if obs.get('problems_na') and actions.get('worksheet',{}).get('occurrence')==CORRECT:
+   issues.append(f'{prefix}: problems completed can be N/A only when no worksheet was provided.')
   if obs.get('problems') in (0,1) and actions.get('earned_dolphin',{}).get('occurrence') in {CORRECT,OMISSION}:
    issues.append(f'{prefix}: earned delivery is N/A with fewer than two completed problems. Use no unearned delivery for early access.')
   if trial.get('trial_status')=='Partial':
    for key,field in (('no_unearned','incomplete_seconds'),('no_tapping_comments','tapping_seconds'),('no_banging_comments','banging_seconds')):
     if trial.get('behaviors',{}).get(key)==CORRECT:
      value=obs.get(field)
-     if not isinstance(value,(int,float)) or not math.isfinite(value) or value<3: issues.append(f"{prefix}: correct {COMPONENTS[key]['label']} on a partial trial needs 3 seconds of recorded exposure.")
+     eligibility=obs.get(field.replace('_seconds','_eligible'))
+     eligible=eligibility is True if eligibility is not None and eligibility!=MISSING else isinstance(value,(int,float)) and math.isfinite(value) and value>=3
+     if not eligible: issues.append(f"{prefix}: correct {COMPONENTS[key]['label']} on a partial trial needs confirmation of at least 3 seconds of exposure.")
   count=obs.get('prompts_delivered');result=trial.get('behaviors',{}).get('no_excess')
   if isinstance(count,(int,float)):
    if count>2 and result!=COMMISSION: issues.append(f'{prefix}: more than two prompts requires an excess-prompt commission.')
