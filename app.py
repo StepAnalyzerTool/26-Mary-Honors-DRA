@@ -32,13 +32,18 @@ def initialize():
     st.session_state.setdefault('setup', {'arrange_materials':'Not recorded', 'prepare_reinforcers':'Not recorded'})
     st.session_state.setdefault('trial_index', 1)
 
+def clear_plan_from_coding():
+    # Strip plan data even from older restored backups; retain observed records.
+    for key in ('set_id','catalog_version','ordered_scenario_ids','selected_at'):
+        st.session_state.session.pop(key,None)
+    for trial in st.session_state.trials:
+        trial['scenario_id']=None
+
 def has_coding():
     return any(t['trial_status']!='Not reached' or t.get('events') for t in st.session_state.trials)
 
 def set_selection(selection):
-    st.session_state.session.update(selection)
-    for trial, sid in zip(st.session_state.trials, selection['ordered_scenario_ids']):
-        trial['scenario_id']=sid
+    st.session_state['planner_selection']=dict(selection)
 
 def choice(label, options, current, key, **kwargs):
     if key not in st.session_state:
@@ -121,7 +126,7 @@ def timers():
 def selector_tab():
     st.subheader('Select a fixed 10-trial session')
     st.write('Each catalog ID identifies both the scenarios and their exact order. Selecting a set never reshuffles it.')
-    disabled=has_coding()
+    disabled=False
     if disabled:
         st.info('The set is locked because coding has begun. Download a backup and start a new coding session to use another set.')
     c1,c2=st.columns(2)
@@ -134,7 +139,7 @@ def selector_tab():
         if st.button('Use this set', disabled=disabled):
             set_selection(select_session(catalog_data(),selected))
             st.rerun()
-    session=st.session_state.session
+    session=st.session_state.get('planner_selection',{})
     if session.get('set_id'):
         st.markdown(f"**{session['set_id']} · {session['catalog_version']}**")
         plan=pd.DataFrame(session_plan(session,catalog_data()))
@@ -161,10 +166,6 @@ def session_info():
         session['end_reason']=choice('Session end reason',['Not recorded','10 trials completed','10-minute limit reached'],session.get('end_reason','Not recorded'),'meta_end_reason')
         session['end_at']=text('Session endpoint (seconds or MM:SS.s)',session.get('end_at',''),'meta_end_at',help='Session-relative time. Session start is 0:00.')
         session['notes']=text('Session notes',session.get('notes',''),'meta_notes')
-    if session.get('set_id'):
-        st.caption(f"Set: {session['set_id']} · Fixed order: {', '.join(map(str,session['ordered_scenario_ids']))}")
-    else:
-        st.warning('Select the set used for this session in the Session Selection tab before finalizing.')
     st.markdown('**Setup observations**')
     st.caption('Descriptive observations; excluded from fidelity.')
     for key,label in [('arrange_materials','Were materials arranged outside reach?'),('prepare_reinforcers','Were reinforcers prepared?')]:
@@ -198,9 +199,6 @@ def collection_tab():
         status=checked_choice('Trial observation status',[(value,value) for value in ['Not reached','Complete','Partial']],trial['trial_status'],prefix+'status')
         trial['trial_status']=status if status!=MISSING else 'Not reached'
         st.caption('Partial: cut short by the session cutoff or premature worksheet removal. A fully observed trial with unfinished math is Complete.')
-    if trial.get('scenario_id'):
-        scenario=next(s for s in catalog_data()['scenarios'] if s['scenario_id']==trial['scenario_id'])
-        st.info(f"Scenario {trial['scenario_id']}: {scenario['task_pattern']} · {scenario['behavior']} · Expected prompts: {scenario['required_prompts']}")
     if trial['trial_status']=='Not reached':
         st.write('This trial contributes no scores until marked Complete or Partial.')
         return
@@ -287,7 +285,7 @@ def collection_tab():
 
 def finalization_issues(scores):
     session=st.session_state.session;issues=list(scores['validation_issues'])
-    for key,label in [('participant_id','Participant ID'),('session_number','Session number'),('data_collector','Data collector'),('set_id','Catalog set')]:
+    for key,label in [('participant_id','Participant ID'),('session_number','Session number'),('data_collector','Data collector')]:
         if not session.get(key): issues.append(label+' is required for a final summary.')
     try:
         date.fromisoformat(session.get('date',''))
@@ -358,6 +356,7 @@ def restore_tab():
             for key in list(st.session_state):
                 if key.startswith(('code_','meta_','setup_')): del st.session_state[key]
             st.session_state.session=payload['session'];st.session_state.setup=payload['setup'];st.session_state.trials=payload['trials']
+            clear_plan_from_coding()
             st.session_state.trial_index=1
             st.rerun()
         except (ValueError,TypeError,KeyError,json.JSONDecodeError) as exc: st.error(str(exc))
@@ -368,10 +367,15 @@ def restore_tab():
         st.rerun()
 
 initialize()
+clear_plan_from_coding()
 st.title('DRA Session Coder')
 st.caption("Mary’s honors thesis · Coding recordings of in-person simulated-learner sessions · "+RULES_VERSION)
-selection,collection,results,instructions,resume,ioa=st.tabs(['Session Selection','DRA Data Collection','Results','Scoring Instructions','Resume / New Session','IOA'])
-with selection: selector_tab()
+workspace=st.radio('Workspace',['Session coder','Session planner'],horizontal=True,key='workspace')
+if workspace=='Session planner':
+    st.caption('For session organizers. Plans are separate from observer coding and are not copied into coding records.')
+    selector_tab()
+    st.stop()
+collection,results,instructions,resume,ioa=st.tabs(['DRA Data Collection','Results','Scoring Instructions','Resume / New Session','IOA'])
 with collection: collection_tab()
 with results: results_tab()
 with instructions:

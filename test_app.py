@@ -17,9 +17,13 @@ class AppWorkflowTests(unittest.TestCase):
   self.assertFalse(app.exception,[e.message for e in app.exception])
  def test_selection_navigation_and_separate_score_controls(self):
   app=self.app().run();self.assert_no_exception(app)
+  app.radio(key='workspace').set_value('Session planner').run()
   next(b for b in app.button if b.label=='Use this set').click().run()
-  self.assertEqual(app.session_state['session']['set_id'],'DRA-001')
-  fixed=list(app.session_state['session']['ordered_scenario_ids'])
+  self.assertEqual(app.session_state['planner_selection']['set_id'],'DRA-001')
+  fixed=list(app.session_state['planner_selection']['ordered_scenario_ids'])
+  self.assertNotIn('set_id',app.session_state['session'])
+  self.assertTrue(all(t['scenario_id'] is None for t in app.session_state['trials']))
+  app.radio(key='workspace').set_value('Session coder').run()
   app.checkbox(key='code_1_status_check_1').check().run()
   app.checkbox(key='code_1_worksheet_occ_check_0').check().run()
   app.checkbox(key='code_1_worksheet_timing_check_1').check().run()
@@ -27,8 +31,8 @@ class AppWorkflowTests(unittest.TestCase):
   app.radio(key='trial_index').set_value(2).run()
   app.radio(key='trial_index').set_value(1).run();self.assert_no_exception(app)
   self.assertEqual(app.session_state['trials'][0]['actions']['worksheet']['timing'],TIMING_COMMISSION)
-  self.assertEqual(app.session_state['session']['ordered_scenario_ids'],fixed)
-  self.assertTrue(next(b for b in app.button if b.label=='Randomly select a session').disabled)
+  self.assertEqual(app.session_state['planner_selection']['ordered_scenario_ids'],fixed)
+  self.assertFalse(any('Expected prompts' in x.value for x in app.info))
  def test_completed_session_final_summary_and_dirty_review(self):
   session,trials=perfect_session()
   session.update(participant_id='P1',session_number='1',data_collector='Mary',collector_role='Primary',
@@ -43,10 +47,11 @@ class AppWorkflowTests(unittest.TestCase):
   self.assertTrue(any(m.label=='Provisional fidelity' for m in app.metric))
  def test_random_selection_does_not_redraw_on_rerun(self):
   app=self.app().run()
+  app.radio(key='workspace').set_value('Session planner').run()
   next(b for b in app.button if b.label=='Randomly select a session').click().run()
-  selection=dict(app.session_state['session'])
+  selection=dict(app.session_state['planner_selection'])
   app.run()
-  self.assertEqual(app.session_state['session']['set_id'],selection['set_id'])
-  self.assertEqual(app.session_state['session']['selected_at'],selection['selected_at'])
+  self.assertEqual(app.session_state['planner_selection']['set_id'],selection['set_id'])
+  self.assertEqual(app.session_state['planner_selection']['selected_at'],selection['selected_at'])
 
 if __name__=='__main__':unittest.main()
