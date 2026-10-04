@@ -298,59 +298,77 @@ def collection_tab():
             obs[field]=checked_choice(label,[('Yes',True),('No',False)],obs.get(field,MISSING),prefix+field)
     st.caption('Beginning: first writing movement directed at solving the problem. Completion: written answer finished. Brief pauses within a problem remain ongoing work.')
     st.subheader('Participant Behavior')
-    for component in TIMED_COMPONENTS:
+    def action_fields(component):
         key=component['key'];action=trial['actions'][key]
-        if key=='dolphin_removal':
-            provided=checked_choice('Was the dolphin provided at any point in this trial?',[('Yes',True),('No',False)],obs.get('dolphin_provided',MISSING),prefix+'dolphin_provided')
-            obs['dolphin_provided']=provided
-            if provided is False:
-                action['occurrence']=NA; action['timing']=NA
-                action['reference_at']=''; action['action_at']=''
-                for stored in list(st.session_state):
-                    if stored.startswith(prefix+'dolphin_removal_'): del st.session_state[stored]
-                st.caption('Dolphin removal: N/A because the dolphin was not provided in this trial.')
-                continue
-            if provided!=True:
-                st.caption('Select whether the dolphin was provided before scoring removal.')
-                continue
-            st.caption('Score removal even if the dolphin was provided before two problems were completed.')
+        label={'worksheet':'Worksheet Presented','instruction':'Instruction Given'}.get(key,component['label'])
+        st.markdown(f'**{label}**')
+        question,timing_question=ACTION_QUESTIONS[key]
+        options=[('Yes',CORRECT),('No',OMISSION)]
+        if key in ACTION_NA and key!='dolphin_removal': options.append(('N/A',NA))
+        options.extend([('Interrupted',INTERRUPTED),('Ended early by participant',TERMINATED)])
+        action['occurrence']=checked_choice(question,options,action.get('occurrence',MISSING),prefix+key+'_occ')
+        if key in ACTION_NA and key!='dolphin_removal': st.caption(ACTION_NA[key])
+        st.caption('Interrupted: the session ended before the deadline. Ended early: premature worksheet removal closed this opportunity.')
         with st.container(border=True):
-            label={'worksheet':'Worksheet Presented','instruction':'Instruction Given'}.get(key,component['label'])
-            st.markdown(f'**{label}**')
-            question,timing_question=ACTION_QUESTIONS[key]
-            options=[('Yes',CORRECT),('No',OMISSION)]
-            if key in ACTION_NA: options.append(('N/A',NA))
-            options.extend([('Interrupted',INTERRUPTED),('Ended early by participant',TERMINATED)])
-            action['occurrence']=checked_choice(question,options,action.get('occurrence',MISSING),prefix+key+'_occ')
-            if key in ACTION_NA: st.caption(ACTION_NA[key])
-            st.caption('Interrupted: the session ended before the deadline. Ended early: premature worksheet removal closed this opportunity.')
-            with st.container(border=True):
-                timing_key=prefix+key+'_timing'
-                if action['occurrence']!=CORRECT:
-                    action['timing']=NA
-                    st.session_state.pop(timing_key,None)
-                    st.session_state.pop(prefix+key+'_direction',None)
-                    for i in range(2): st.session_state[f'{timing_key}_check_{i}']=False
-                    st.write(timing_question)
-                    st.caption('Timing: N/A until the action is scored Yes.')
+            timing_key=prefix+key+'_timing'
+            if action['occurrence']!=CORRECT:
+                action['timing']=NA
+                st.session_state.pop(timing_key,None)
+                st.session_state.pop(prefix+key+'_direction',None)
+                for i in range(2): st.session_state[f'{timing_key}_check_{i}']=False
+                st.write(timing_question)
+                st.caption('Timing: N/A until the action is scored Yes.')
+            else:
+                timing_current=action.get('timing',MISSING)
+                answer=checked_choice(timing_question,[('Yes',CORRECT),('No','Outside window')],CORRECT if timing_current==CORRECT else 'Outside window' if timing_current in (TIMING_COMMISSION,TIMING_OMISSION) else MISSING,timing_key)
+                if answer=='Outside window':
+                    if key=='earned_dolphin':
+                        action['timing']=TIMING_OMISSION
+                        st.caption('Late: the dolphin was given more than 3 seconds after the second problem was completed. Delivery before two problems were completed is scored separately as unearned delivery.')
+                    else:
+                        action['timing']=checked_choice('Was it early or late?',[('Early',TIMING_COMMISSION),('Late',TIMING_OMISSION)],timing_current,prefix+key+'_direction')
+                else: action['timing']=answer
+        if key=='worksheet_removal':
+            action['branch']=choice('Removal reference',['Select reference','Second problem completed','Second prompt; no work','First problem completed after both prompts','Premature removal before a valid reference'],action.get('branch','Select reference'),prefix+key+'_branch')
+        action['notes']=text('Reference description / coding notes',action.get('notes',''),prefix+key+'_notes')
+    for component in TIMED_COMPONENTS:
+        key=component['key']
+        if key=='dolphin_removal': continue
+        with st.container(border=True):
+            action_fields(component)
+            if key=='earned_dolphin':
+                st.markdown('**Dolphin access duration**')
+                provided=checked_choice('Was the dolphin provided at any point in this trial?',[('Yes',True),('No',False)],obs.get('dolphin_provided',MISSING),prefix+'dolphin_provided')
+                obs['dolphin_provided']=provided
+                removal=trial['actions']['dolphin_removal']
+                if provided is False:
+                    removal['occurrence']=NA; removal['timing']=NA
+                    removal['reference_at']=''; removal['action_at']=''
+                    for stored in list(st.session_state):
+                        if stored.startswith(prefix+'dolphin_removal_'): del st.session_state[stored]
+                    st.caption('Access duration and removal: N/A because the dolphin was not provided.')
+                elif provided is True:
+                    if removal.get('occurrence')==NA:
+                        removal['occurrence']=MISSING; removal['timing']=MISSING
+                    st.caption('Use the same 13–17 second duration rule for any dolphin access, including inappropriate delivery.')
+                    action_fields(next(c for c in TIMED_COMPONENTS if c['key']=='dolphin_removal'))
                 else:
-                    timing_current=action.get('timing',MISSING)
-                    answer=checked_choice(timing_question,[('Yes',CORRECT),('No','Outside window')],CORRECT if timing_current==CORRECT else 'Outside window' if timing_current in (TIMING_COMMISSION,TIMING_OMISSION) else MISSING,timing_key)
-                    if answer=='Outside window':
-                        if key=='earned_dolphin':
-                            action['timing']=TIMING_OMISSION
-                            st.caption('Late: the dolphin was given more than 3 seconds after the second problem was completed. Delivery before two problems were completed is scored separately as unearned delivery.')
-                        else:
-                            action['timing']=checked_choice('Was it early or late?',[('Early',TIMING_COMMISSION),('Late',TIMING_OMISSION)],timing_current,prefix+key+'_direction')
-                    else: action['timing']=answer
-            if key=='worksheet_removal':
-                action['branch']=choice('Removal reference',['Select reference','Second problem completed','Second prompt; no work','First problem completed after both prompts','Premature removal before a valid reference'],action.get('branch','Select reference'),prefix+key+'_branch')
-            action['notes']=text('Reference description / coding notes',action.get('notes',''),prefix+key+'_notes')
+                    st.caption('Select whether the dolphin was provided before scoring access duration.')
+        if key=='earned_dolphin':
+            with st.container(border=True):
+                st.markdown('**Inappropriate dolphin delivery**')
+                current=trial['behaviors'].get('no_unearned',MISSING)
+                value=checked_choice('Was the dolphin given before two problems were completed?',[('Yes',COMMISSION),('No',CORRECT)],CORRECT if current==INTERRUPTED else current,prefix+'no_unearned')
+                if value==CORRECT and trial['trial_status']=='Partial' and obs.get('incomplete_eligible') is False:
+                    value=INTERRUPTED
+                    st.caption('No inappropriate delivery occurred, but this partial trial had less than 3 seconds of opportunity, so withholding is excluded from fidelity.')
+                trial['behaviors']['no_unearned']=value
         if key=='prompt_2':
             count=checked_choice('Prompts delivered (exclude initial instruction)',[('0',0),('1',1),('2',2),('3 or more',3)],obs.get('prompts_delivered') if obs.get('prompts_delivered') is not None else MISSING,prefix+'prompt_count')
             obs['prompts_na']=False
             obs['prompts_delivered']=count if count in (0,1,2,3) else None
     for component in BEHAVIOR_COMPONENTS:
+        if component['key']=='no_unearned': continue
         with st.container(border=True):
             st.markdown(f"**{component['label']}**")
             behavior_key=component['key']
