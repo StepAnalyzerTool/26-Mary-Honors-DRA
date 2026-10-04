@@ -437,10 +437,12 @@ def results_tab():
     issues=finalization_issues(scores)
     final=not issues and scores['applicable']>0
     st.subheader('Session summary')
-    a,b,c=st.columns(3)
-    a.metric('Overall fidelity' if final else 'Provisional fidelity',f"{scores['percent']:.1f}%" if scores['percent'] is not None else '—')
-    b.metric('Correct / applicable scores',f"{scores['correct']} / {scores['applicable']}")
-    c.metric('Missing scores',scores['missing'])
+    a,b,c,d=st.columns(4)
+    included={record['trial'] for record in scores['details'] if record['result'] in (CORRECT,OMISSION,COMMISSION,TIMING_OMISSION,TIMING_COMMISSION)}
+    a.metric('Trials included in calculations',len(included))
+    b.metric('Overall fidelity' if final else 'Provisional fidelity',f"{scores['percent']:.1f}%" if scores['percent'] is not None else '—')
+    c.metric('Correct / applicable scores',f"{scores['correct']} / {scores['applicable']}")
+    d.metric('Missing scores',scores['missing'])
     st.caption('Occurrence and timing each contribute separately. Timing is N/A for omitted actions. Excluded opportunities do not enter the denominator.')
     if not final:
         st.warning('Draft: do not use this provisional percentage as a finalized graph point.')
