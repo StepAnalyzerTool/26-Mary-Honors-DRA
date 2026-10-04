@@ -132,6 +132,7 @@ def selector_tab():
     st.subheader('Select a fixed 10-trial session')
     st.write('Each catalog ID identifies both the scenarios and their exact order. Selecting a set never reshuffles it.')
     records=st.session_state.setdefault('learner_fidelity',{})
+    records_before=deepcopy(records)
     disabled=any(r.get('notes') or any(v!='Not recorded' for v in r.get('scores',{}).values()) for r in records.values())
     if disabled:
         st.info('This plan is locked because learner fidelity recording has begun. Download the record before starting a new plan.')
@@ -175,6 +176,8 @@ def selector_tab():
                 note_key=f'leader_trial_{number}_notes'
                 if note_key not in st.session_state: st.session_state[note_key]=record.get('notes','')
                 record['notes']=st.text_area('Other mistakes / notes',key=note_key)
+        if records!=records_before:
+            st.rerun()
         rows=fidelity_rows(session,records)
         summary=fidelity_summary(rows)
         st.metric('Simulated Learner fidelity (recorded items)',f"{summary['percent']:.1f}%" if summary['percent'] is not None else '—')
