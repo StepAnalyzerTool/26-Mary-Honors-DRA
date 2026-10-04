@@ -169,7 +169,7 @@ def selector_tab():
         st.subheader('3. Give earpiece instructions and record Simulated Learner fidelity')
         st.write('Read the short instructions, in full and as written, through the Bluetooth earpiece. You may repeat the instructions if the simulated learner indicates they need more information. If they make a mistake that can be corrected before it affects participant behavior (for example, not starting table banging), you may remind them. Otherwise, allow the scenario to play out.')
         st.write('Code simulated learner fidelity in real time. Indicate what the simulated learner actually did, rather than what is anticipated.')
-        st.caption('Check Yes when the instruction was followed, No for a learner error, or Not observed when the cue/opportunity never occurred or the session ended first. Leave unchecked until assessed. These scores are separate from participant fidelity.')
+        st.write('Check Yes when the instruction was followed, No for a learner error, or Not observed when the cue/opportunity never occurred or the session ended first. Leave unchecked until assessed.')
         for number,sid in enumerate(session['ordered_scenario_ids'],1):
             record=records.setdefault(str(number),{'scores':{},'notes':''})
             with st.container(border=True):
