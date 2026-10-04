@@ -165,12 +165,13 @@ def selector_tab():
         with b: leader['session_leader']=text('Session leader',leader.get('session_leader',''),'leader_name')
         with c: leader['simulated_learner']=text('Simulated Learner',leader.get('simulated_learner',''),'leader_learner')
         st.subheader('3. Give earpiece instructions and record Simulated Learner fidelity')
-        st.write('Read the short instructions through the Bluetooth earpiece. The next trial begins when the next worksheet is given; follow that trial’s instructions from that point. A reminder means a task direction after the initial instruction. Judge what the learner actually did, rather than checking items in advance.')
+        st.write('Read the short instructions through the Bluetooth earpiece. The next trial begins when the next worksheet is given; follow that trial’s instructions from that point. A reminder means the participant gave another task direction after the initial instruction. Judge what the learner actually did, rather than checking items in advance.')
         st.caption('Check Yes when the instruction was followed, No for a learner error, or Not observed when the cue/opportunity never occurred or the session ended first. Leave unchecked until assessed. These scores are separate from participant fidelity.')
         for number,sid in enumerate(session['ordered_scenario_ids'],1):
             record=records.setdefault(str(number),{'scores':{},'notes':''})
             with st.container(border=True):
-                st.markdown(f'**Trial {number} · Scenario {sid}**')
+                st.subheader(f'Trial {number}')
+                st.caption(f'(scenario {sid})')
                 for step in learner_steps(sid):
                     answer=checked_choice(step['instruction'],[('Yes','Yes'),('No','No'),('Not observed','Not observed')],record['scores'].get(step['id'],MISSING),f"leader_trial_{number}_{step['id']}")
                     record['scores'][step['id']]='Not recorded' if answer==MISSING else answer
