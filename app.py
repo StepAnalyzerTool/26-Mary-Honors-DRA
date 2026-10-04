@@ -129,8 +129,8 @@ def timers():
         </script>''', height=160)
 
 def selector_tab():
-    st.subheader('Select a fixed 10-trial session')
-    st.write('Each catalog ID identifies both the scenarios and their exact order. Selecting a set never reshuffles it.')
+    st.subheader('1. Select a fixed 10-trial session')
+    st.write('Each catalog ID identifies both the scenarios and their exact order.')
     records=st.session_state.setdefault('learner_fidelity',{})
     records_before=deepcopy(records)
     disabled=any(r.get('notes') or any(v!='Not recorded' for v in r.get('scores',{}).values()) for r in records.values())
@@ -158,12 +158,13 @@ def selector_tab():
         plan=pd.DataFrame(session_plan(session,catalog_data()))
         st.dataframe(plan,hide_index=True,use_container_width=True)
         st.download_button('Download session plan (CSV)',plan.to_csv(index=False).encode(),file_name=session['set_id']+'_trial_plan.csv',mime='text/csv')
+        st.subheader('2. Enter session information')
         leader=st.session_state.setdefault('leader_information',{})
         a,b,c=st.columns(3)
         with a: leader['session_id']=text('Session ID',leader.get('session_id',''),'leader_session_id')
         with b: leader['session_leader']=text('Session leader',leader.get('session_leader',''),'leader_name')
         with c: leader['simulated_learner']=text('Simulated Learner',leader.get('simulated_learner',''),'leader_learner')
-        st.markdown('**Earpiece instructions and Simulated Learner fidelity**')
+        st.subheader('3. Give earpiece instructions and record Simulated Learner fidelity')
         st.write('Read the short instructions through the Bluetooth earpiece. The next trial begins when the next worksheet is given; follow that trial’s instructions from that point. A reminder means a task direction after the initial instruction. Judge what the learner actually did, rather than checking items in advance.')
         st.caption('Check Yes when the instruction was followed, No for a learner error, or Not observed when the cue/opportunity never occurred or the session ended first. Leave unchecked until assessed. These scores are separate from participant fidelity.')
         for number,sid in enumerate(session['ordered_scenario_ids'],1):
@@ -180,6 +181,7 @@ def selector_tab():
             st.rerun()
         rows=fidelity_rows(session,records)
         summary=fidelity_summary(rows)
+        st.subheader('4. Review and download the learner fidelity record')
         st.metric('Simulated Learner fidelity (recorded items)',f"{summary['percent']:.1f}%" if summary['percent'] is not None else '—')
         st.caption(f"{summary['correct']} / {summary['applicable']} recorded applicable items followed. {summary['unrecorded']} items not yet recorded. Not observed items are excluded.")
         payload={'record_type':'simulated_learner_fidelity','selection':session,'leader':leader,'trials':records}
