@@ -135,7 +135,24 @@ def make_workbook(session: dict[str,Any],setup: dict[str,Any],trials: list[dict[
  output=BytesIO();observations=[];actions=[];events=[]
  canonical={(r['trial'],r['component'],r['measure']):r['result'] for r in scores['details']}
  for trial in trials:
-  observations.append({'Trial':trial['trial'],'Scenario':trial.get('scenario_id'),'Status':trial.get('trial_status'),**trial.get('observations',{}),'Notes':trial.get('notes','')})
+  obs=trial.get('observations',{})
+  observed=trial.get('trial_status')!='Not reached'
+  def answer(field,partial_only=False):
+   if not observed: return 'Not observed'
+   if partial_only and trial.get('trial_status')!='Partial': return 'N/A'
+   value=obs.get(field)
+   return 'Yes' if value is True else 'No' if value is False else 'Missing'
+  observations.append({
+   'Trial':trial['trial'],
+   'Trial status':'Not observed' if not observed else trial.get('trial_status'),
+   'Problems completed':('Not observed' if not observed else 'N/A' if obs.get('problems_na') else obs.get('problems') if obs.get('problems') is not None else 'Missing'),
+   'Finger tapping observed':answer('tapping_observed'),
+   'Table banging observed':answer('banging_observed'),
+   'Partial: opportunity to withhold unearned dolphin (at least 3 seconds)':answer('incomplete_eligible',True),
+   'Partial: tapping observable for at least 3 seconds':answer('tapping_eligible',True),
+   'Partial: banging observable for at least 3 seconds':answer('banging_eligible',True),
+   'Timer used (descriptive)':('Not observed' if not observed else {'Used':'Yes','Not used':'No'}.get(obs.get('timer_use'),'Missing')),
+   'Notes':trial.get('notes','')})
   actions.extend({'Trial':trial['trial'],'Scenario':trial.get('scenario_id'),'Component':key,**action,
                   'occurrence':canonical.get((trial['trial'],key,'Occurrence'),action.get('occurrence')),
                   'timing':canonical.get((trial['trial'],key,'Timing'),action.get('timing'))}
@@ -158,7 +175,6 @@ def make_workbook(session: dict[str,Any],setup: dict[str,Any],trials: list[dict[
   if session.get('set_id'): pd.DataFrame(session_plan(session,load_catalog())).to_excel(writer,sheet_name='Fixed Trial Plan',index=False)
   pd.DataFrame(observations).to_excel(writer,sheet_name='Observations',index=False)
   pd.DataFrame(actions).to_excel(writer,sheet_name='Action Records',index=False)
-  pd.DataFrame(scores['step_summary']).to_excel(writer,sheet_name='Step Summaries',index=False)
   pd.DataFrame(scores['details']).to_excel(writer,sheet_name='Scoring Details',index=False)
   pd.DataFrame(events,columns=['Trial','Scenario','Time','Event','Classification','Notes']).to_excel(writer,sheet_name='Event Log',index=False)
   pd.DataFrame(guide).to_excel(writer,sheet_name='Coding Instructions',index=False)
