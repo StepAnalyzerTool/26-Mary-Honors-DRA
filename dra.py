@@ -140,8 +140,16 @@ def make_workbook(session: dict[str,Any],setup: dict[str,Any],trials: list[dict[
   events.extend({'Trial':trial['trial'],'Scenario':trial.get('scenario_id'),**event} for event in trial.get('events',[]))
  guide=[r for entries in load_guide().values() for r in entries]
  with pd.ExcelWriter(output,engine='openpyxl') as writer:
+  summary=summary_row(session,scores,final=final)
+  for field in ('Trial order','Status','Provisional fidelity (%)'):
+   summary.pop(field,None)
+  denominator=scores['applicable']
+  counts=scores['counts']
+  summary['Commission error percentage']=100*counts.get('Commission',0)/denominator if final and denominator else None
+  summary['Omission error percentage']=100*counts.get('Omission',0)/denominator if final and denominator else None
+  summary['Timing error percentage']=100*(counts.get('Timing commission',0)+counts.get('Timing omission',0))/denominator if final and denominator else None
+  pd.DataFrame([summary]).to_excel(writer,sheet_name='Session Summary',index=False)
   pd.DataFrame(session_results_rows(trials,scores)).to_excel(writer,sheet_name='Session Results',index=False)
-  pd.DataFrame([summary_row(session,scores,final=final)]).to_excel(writer,sheet_name='Session Summary',index=False)
   pd.DataFrame([{'Field':k,'Value':json.dumps(v,default=str) if isinstance(v,(list,dict)) else str(v)} for k,v in session.items()]).to_excel(writer,sheet_name='Session',index=False)
   pd.DataFrame([{'Field':k,'Value':v} for k,v in setup.items()]).to_excel(writer,sheet_name='Setup Observations',index=False)
   if session.get('set_id'): pd.DataFrame(session_plan(session,load_catalog())).to_excel(writer,sheet_name='Fixed Trial Plan',index=False)
