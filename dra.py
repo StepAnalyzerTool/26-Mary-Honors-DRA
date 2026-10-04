@@ -79,6 +79,54 @@ def summary_row(session: dict[str,Any],scores: dict[str,Any],*,final: bool) -> d
          'Overall fidelity (%)':scores['percent'] if final else None,'Provisional fidelity (%)':scores['percent'] if not final else None,
          'Missing scores':scores['missing'],**scores['counts']}
 
+
+def session_results_rows(trials: list[dict[str,Any]],scores: dict[str,Any]) -> list[dict[str,Any]]:
+ """Wide, human-readable coding view; canonical scores remain authoritative."""
+ canonical={(r['trial'],r['component'],r['measure']):r['result'] for r in scores['details']}
+ by_trial={t['trial']:t for t in trials}
+ rows=[]
+ def add(label,getter):
+  rows.append({'Behavior / step':label,**{f'Trial {i}':getter(by_trial[i]) if i in by_trial else 'Not observed' for i in range(1,11)}})
+ def observation(t,key):
+  if t.get('trial_status')=='Not reached': return 'Not observed'
+  value=t.get('observations',{}).get(key)
+  if isinstance(value,bool): return 'Yes' if value else 'No'
+  return value if value is not None else 'Missing'
+ def response(t,key,measure,inverse=False):
+  if t.get('trial_status')=='Not reached': return 'Not observed'
+  result=canonical.get((t['trial'],key,measure),'Missing')
+  if result=='Correct': return 'No' if inverse else 'Yes'
+  if result in ('Omission','Commission'): return 'Yes' if inverse else 'No'
+  if result=='Timing commission': return 'No (early)'
+  if result=='Timing omission': return 'No (late)'
+  if result=='Terminated by participant': return 'Ended early by participant'
+  return result
+ add('Trial status',lambda t:'Not observed' if t.get('trial_status')=='Not reached' else t.get('trial_status'))
+ add('Problems completed',lambda t:'Not observed' if t.get('trial_status')=='Not reached' else ('N/A' if t.get('observations',{}).get('problems_na') else observation(t,'problems')))
+ add('Finger tapping occurred',lambda t:observation(t,'tapping_observed'))
+ add('Table banging occurred',lambda t:observation(t,'banging_observed'))
+ items=[
+ ('worksheet','Worksheet presented','Worksheet presented within 3 seconds'),
+ ('instruction','Initial instruction given','Initial instruction given within 3 seconds'),
+ ('prompt_1','First required prompt given','First prompt given on time'),
+ ('prompt_2','Second required prompt given','Second prompt given on time'),
+ ('worksheet_removal','Worksheet removed','Worksheet removed on time'),
+ ('earned_dolphin','Dolphin given after two problems completed','Earned dolphin given within 3 seconds'),
+ ('dolphin_removal','Dolphin removed after earned access','Earned dolphin access lasted 13–17 seconds')]
+ for key,label,timing_label in items:
+  add(label,lambda t,k=key:response(t,k,'Occurrence'))
+  add(timing_label,lambda t,k=key:response(t,k,'Timing'))
+ for key,label,inverse in [
+ ('no_unearned','Dolphin given before two problems completed',True),
+ ('no_excess','No more than two prompts given',False),
+ ('no_work_prompts','No prompts given during ongoing work',False),
+ ('no_tapping_comments','No stop statements for finger tapping',False),
+ ('no_banging_comments','No stop statements for table banging',False)]:
+  add(label,lambda t,k=key,inv=inverse:response(t,k,'Behavior',inv))
+ add('Timer used (descriptive)',lambda t:observation(t,'timer_use'))
+ add('Trial notes',lambda t:t.get('notes',''))
+ return rows
+
 def make_workbook(session: dict[str,Any],setup: dict[str,Any],trials: list[dict[str,Any]],scores: dict[str,Any],*,final: bool=False) -> bytes:
  """Runtime export preserves the app's pandas/openpyxl implementation."""
  output=BytesIO();observations=[];actions=[];events=[]
@@ -92,6 +140,7 @@ def make_workbook(session: dict[str,Any],setup: dict[str,Any],trials: list[dict[
   events.extend({'Trial':trial['trial'],'Scenario':trial.get('scenario_id'),**event} for event in trial.get('events',[]))
  guide=[r for entries in load_guide().values() for r in entries]
  with pd.ExcelWriter(output,engine='openpyxl') as writer:
+  pd.DataFrame(session_results_rows(trials,scores)).to_excel(writer,sheet_name='Session Results',index=False)
   pd.DataFrame([summary_row(session,scores,final=final)]).to_excel(writer,sheet_name='Session Summary',index=False)
   pd.DataFrame([{'Field':k,'Value':json.dumps(v,default=str) if isinstance(v,(list,dict)) else str(v)} for k,v in session.items()]).to_excel(writer,sheet_name='Session',index=False)
   pd.DataFrame([{'Field':k,'Value':v} for k,v in setup.items()]).to_excel(writer,sheet_name='Setup Observations',index=False)
@@ -110,4 +159,19 @@ def make_workbook(session: dict[str,Any],setup: dict[str,Any],trials: list[dict[
      from openpyxl.styles import Alignment
      cell.alignment=Alignment(vertical='top',wrap_text=True)
      if isinstance(cell.value,str) and cell.value.startswith('='): cell.data_type='s'
+
+  sheet=writer.book['Session Results']
+  sheet.freeze_panes='B2';sheet.auto_filter.ref=None
+  sheet.column_dimensions['A'].width=54
+  from openpyxl.styles import Font, PatternFill
+  for cell in sheet[1]:
+   cell.font=Font(bold=True,color='FFFFFF');cell.fill=PatternFill('solid',fgColor='243F54')
+  for row in sheet.iter_rows(min_row=2):
+   sheet.row_dimensions[row[0].row].height=36
+   row[0].font=Font(bold=True)
+   for cell in row[1:]:
+    sheet.column_dimensions[cell.column_letter].width=18
+    cell.alignment=Alignment(horizontal='center',vertical='center',wrap_text=True)
+   if row[0].row%2==0:
+    for cell in row: cell.fill=PatternFill('solid',fgColor='EDF2F5')
  return output.getvalue()
