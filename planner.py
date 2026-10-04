@@ -22,12 +22,11 @@ def learner_steps(scenario_id):
     ][pattern]
     behavior_step=[
         'Do not finger tap or table bang.',
-        'Finger tap while the worksheet is available. Keep tapping after any request to stop.',
-        'Table bang while the worksheet is available. Keep banging after any request to stop.',
+        'Finger tap. Keep tapping after any request to stop or worksheet removal.',
+        'Table bang. Keep banging after any request to stop or worksheet removal.',
     ][behavior]
     return [{'id':f'step_{i}', 'instruction':instruction}
-            for i,instruction in enumerate(starts+[behavior_step,
-                'When the worksheet is taken away, stop working and stop any finger tapping or table banging.'],1)]
+            for i,instruction in enumerate(starts+[behavior_step],1)]
 
 def fidelity_rows(selection, records):
     rows=[]
