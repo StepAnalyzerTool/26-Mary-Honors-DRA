@@ -232,7 +232,6 @@ def session_info():
         session['simulated_learner']=text('Simulated learner',session.get('simulated_learner',''),'meta_learner')
     with c:
         session['end_reason']=choice('Session end reason',['Not recorded','10 trials completed','10-minute limit reached'],session.get('end_reason','Not recorded'),'meta_end_reason')
-        st.caption('No exact session end time is required. Mark a cutoff trial Partial and later trials Not Observed; score cutoff opportunities using the Coding Instructions.')
         session['notes']=text('Session notes',session.get('notes',''),'meta_notes')
     st.subheader('Setup Observations')
     st.caption('Descriptive observations; excluded from fidelity.')
