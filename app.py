@@ -77,11 +77,11 @@ def checked_choice(label, options, current, key, disabled=False):
     return st.session_state[key]
 
 ACTION_QUESTIONS={
- 'worksheet':('Was the worksheet presented?','Was it presented within 3 seconds of the session start or preceding trial ending?'),
+ 'worksheet':('Was the worksheet presented?','Was it presented within 3 seconds of session start (trial 1), or removal of the dolphin or preceding unfinished worksheet (trials 2–10)?'),
  'instruction':('Was an initial instruction given?','Was it given within 3 seconds of worksheet presentation?'),
- 'prompt_1':('Was the first required prompt given?','Was it given on time (8–12 seconds after the applicable reference)?'),
- 'prompt_2':('Was the second required prompt given?','Was it given on time (8–12 seconds after the applicable reference)?'),
- 'worksheet_removal':('Was the worksheet removed?','Was it removed on time for the selected removal reference?'),
+ 'prompt_1':('Was the first required prompt given?','Was it given after 8–12 seconds without starting work since the initial instruction, or since completing the first problem if work started without a prompt?'),
+ 'prompt_2':('Was the second required prompt given?','Was it given after 8–12 seconds without starting work since the first prompt, or since completing the first problem if that happened after the first prompt?'),
+ 'worksheet_removal':('Was the worksheet removed?','Was it removed within 3 seconds of completing the second problem, or after 8–12 seconds without work since the second prompt (or since the first problem was completed after both prompts)?'),
  'earned_dolphin':('Was the dolphin given after two problems were completed?','Was it given within 3 seconds of the second problem being completed?'),
  'dolphin_removal':('Was the dolphin removed?','Was it removed after 13–17 seconds of access?'),
 }
@@ -103,7 +103,8 @@ def rule_help(sections):
         entries=guide_data().get(section, [])
         if entries:
             st.markdown(f'**{section}**')
-            st.dataframe(pd.DataFrame([{'Entry':e['entry'],'Rule':e['rule'],'Example':e.get('example','')} for e in entries]), hide_index=True, use_container_width=True)
+            table=pd.DataFrame([{'Entry':e['entry'],'Rule':e['rule'],'Example':e.get('example','')} for e in entries]).to_html(index=False,escape=True,classes='scoring-rules')
+            st.html('<style>.scoring-rules{width:100%;table-layout:fixed;border-collapse:collapse}.scoring-rules th,.scoring-rules td{white-space:normal!important;overflow-wrap:anywhere;padding:10px;border:1px solid #aaa;vertical-align:top;text-align:left}.scoring-rules th:first-child{width:20%}</style>'+table)
 
 def timers():
     with st.expander('Optional timing tools'):
@@ -217,7 +218,7 @@ def session_info():
         session['end_reason']=choice('Session end reason',['Not recorded','10 trials completed','10-minute limit reached'],session.get('end_reason','Not recorded'),'meta_end_reason')
         session['end_at']=text('Session endpoint (seconds or MM:SS.s)',session.get('end_at',''),'meta_end_at',help='Session-relative time. Session start is 0:00.')
         session['notes']=text('Session notes',session.get('notes',''),'meta_notes')
-    st.markdown('**Setup observations**')
+    st.subheader('Setup Observations')
     st.caption('Descriptive observations; excluded from fidelity.')
     for key,label in [('arrange_materials','Were materials arranged outside reach?'),('prepare_reinforcers','Were reinforcers prepared?')]:
         with st.container(border=True):
@@ -274,28 +275,18 @@ def collection_tab():
     for field,label in [('tapping_observed','Was finger tapping observed?'),('banging_observed','Was table banging observed?')]:
         value=checked_choice(label,[('Yes',True),('No',False),('N/A',None)],obs.get(field,MISSING),prefix+field)
         obs[field]=value
-    st.markdown('**Participant Behavior**')
-    count=checked_choice('Prompts delivered (exclude initial instruction)',[('0',0),('1',1),('2',2),('3 or more',3),('N/A',None)],obs.get('prompts_delivered') if obs.get('prompts_delivered') is not None else MISSING,prefix+'prompt_count')
-    obs['prompts_na']=count is None
-    obs['prompts_delivered']=count if count in (0,1,2,3) else None
-    obs['timer_use']=checked_choice('Did the participant use a timer?',[('Yes','Used'),('No','Not used'),('N/A','N/A')],obs.get('timer_use',MISSING),prefix+'timer')
     if trial['trial_status']=='Partial':
         st.write('Partial-trial scoring checks')
         st.caption('Judge whether there was at least 3 seconds of opportunity; no exact duration needs to be entered.')
         for field,label in [('incomplete_eligible','Was there at least 3 seconds with fewer than two problems completed?'),('tapping_eligible','Was finger tapping observable for at least 3 seconds?'),('banging_eligible','Was table banging observable for at least 3 seconds?')]:
             obs[field]=checked_choice(label,[('Yes',True),('No',False),('N/A',None)],obs.get(field,MISSING),prefix+field)
     st.caption('Beginning: first writing movement directed at solving the problem. Completion: written answer finished. Brief pauses within a problem remain ongoing work.')
+    st.subheader('Participant Behavior')
     for component in TIMED_COMPONENTS:
         key=component['key'];action=trial['actions'][key]
         with st.container(border=True):
-            st.markdown(f"**{component['label']}**")
-            sections=[component['guide']]
-            if key.startswith('prompt'):
-                sections+=['Prompt After One Completed Problem Scoring','Task Direction Classification and Prompt Limit']
-            if key=='worksheet_removal':
-                sections+=['One Problem Completed After Both Prompts: Removal Scoring','Completed Worksheet Removal Scoring','Worksheet Removal: Component Assignment']
-            with st.expander('Scoring rules and examples'):
-                rule_help(sections)
+            label={'worksheet':'Worksheet Presented','instruction':'Instruction Given'}.get(key,component['label'])
+            st.markdown(f'**{label}**')
             question,timing_question=ACTION_QUESTIONS[key]
             action['occurrence']=checked_choice(question,[('Yes',CORRECT),('No',OMISSION),('N/A',NA),('Interrupted',INTERRUPTED),('Ended early by participant',TERMINATED)],action.get('occurrence',MISSING),prefix+key+'_occ')
             st.caption('N/A: no opportunity arose. Interrupted: the session ended before the deadline. Ended early: premature worksheet removal closed this opportunity.')
@@ -317,12 +308,15 @@ def collection_tab():
             if key=='worksheet_removal':
                 action['branch']=choice('Removal reference',['Select reference','Second problem completed','Second prompt; no work','First problem completed after both prompts','Premature removal before a valid reference'],action.get('branch','Select reference'),prefix+key+'_branch')
             action['notes']=text('Reference description / coding notes',action.get('notes',''),prefix+key+'_notes')
+        if key=='prompt_2':
+            count=checked_choice('Prompts delivered (exclude initial instruction)',[('0',0),('1',1),('2',2),('3 or more',3),('N/A',None)],obs.get('prompts_delivered') if obs.get('prompts_delivered') is not None else MISSING,prefix+'prompt_count')
+            obs['prompts_na']=count is None
+            obs['prompts_delivered']=count if count in (0,1,2,3) else None
     for component in BEHAVIOR_COMPONENTS:
         with st.container(border=True):
             st.markdown(f"**{component['label']}**")
-            with st.expander('Scoring rules and examples'):
-                rule_help([component['guide']])
             trial['behaviors'][component['key']]=checked_choice(BEHAVIOR_QUESTIONS[component['key']],[('Yes',CORRECT),('No',COMMISSION),('N/A',NA),('Interrupted',INTERRUPTED),('Ended early by participant',TERMINATED)],trial['behaviors'].get(component['key'],MISSING),prefix+component['key'])
+    obs['timer_use']=checked_choice('Did the participant use a timer?',[('Yes','Used'),('No','Not used'),('N/A','N/A')],obs.get('timer_use',MISSING),prefix+'timer')
     with st.expander('Detailed event log'):
         st.caption('Record individual errors and learner events here. Repeated commissions are logged individually; the per-trial behavior measure is still scored once. The event log does not silently add scores to the overall denominator.')
         event_frame=pd.DataFrame(trial.get('events',[]),columns=['Time','Event','Classification','Notes'])
@@ -337,6 +331,8 @@ def collection_tab():
     if st.button('Mark this trial reviewed',key=prefix+'review',disabled=bool(trial_scores['missing'] or trial_scores['validation_issues'])):
         trial['reviewed']=True
     st.caption('Reviewed' if trial.get('reviewed') else 'Not reviewed / scores incomplete')
+    with st.expander('Scoring rules and examples'):
+        rule_help(list(guide_data()))
 
 def finalization_issues(scores):
     session=st.session_state.session;issues=list(scores['validation_issues'])
