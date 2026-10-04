@@ -11,6 +11,7 @@ import streamlit.components.v1 as components
 
 from dra import (load_catalog, load_guide, select_session, session_plan,
                  serialize_session, summary_row, make_workbook, session_results_rows)
+from ioa import compare_records, ioa_workbook
 from planner import learner_steps, fidelity_rows, fidelity_summary, fidelity_filename, fidelity_workbook
 
 from scoring import (TIMED_COMPONENTS, BEHAVIOR_COMPONENTS, RULES_VERSION,
@@ -443,12 +444,45 @@ def results_tab():
     st.dataframe(trial_data,hide_index=True,use_container_width=True)
     with st.expander('All scored opportunities'):
         st.dataframe(pd.DataFrame(scores['details']),hide_index=True,use_container_width=True)
+    st.info('Save all downloadable files for this session: the Excel workbook, CSV summary, and full JSON record. Independently coded JSON records are needed for IOA.')
     name=filename()
     st.download_button('Download session workbook (Excel)',make_workbook(st.session_state.session,st.session_state.setup,st.session_state.trials,scores,final=final),file_name=name+('.xlsx' if final else '_DRAFT.xlsx'),mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     row=summary_row(st.session_state.session,scores,final=final)
     st.download_button('Download session summary (CSV)',pd.DataFrame([row]).to_csv(index=False).encode(),file_name=name+('_summary.csv' if final else '_DRAFT_summary.csv'),mime='text/csv')
     st.download_button('Download full session record (JSON)',serialize_session(st.session_state.session,st.session_state.setup,st.session_state.trials),file_name=name+'.json',mime='application/json')
 
+
+def ioa_tab():
+    st.subheader('Interobserver agreement')
+    st.write('Upload two independently coded JSON records for the same participant, session, and date. Uploads are compared here and do not replace the current coding session.')
+    st.caption('Exact score agreement: agreements ÷ compared items × 100. Items both coders excluded are omitted; a score versus an exclusion is a disagreement. Missing entries are flagged and omitted until completed. Descriptive learner observations and timer use are excluded from fidelity IOA.')
+    primary=st.file_uploader('Primary coder JSON record',type=['json'],key='ioa_primary')
+    secondary=st.file_uploader('Secondary coder JSON record',type=['json'],key='ioa_secondary')
+    if primary is None or secondary is None: return
+    try:
+        result=compare_records(primary.getvalue(),secondary.getvalue())
+    except (ValueError,TypeError,KeyError,AttributeError) as exc:
+        st.error(str(exc));return
+    first=result['primary'];second=result['secondary'];overall=result['overall']
+    st.write(f"Participant {first['participant_id']} · Session {first['session_number']} · {first['date']}")
+    st.write(f"Primary coder: {first.get('data_collector','Not recorded')} · Secondary coder: {second.get('data_collector','Not recorded')}")
+    if first.get('data_collector')==second.get('data_collector'):
+        st.warning('Both records list the same coder. Verify that these were coded independently.')
+    x,y,z=st.columns(3)
+    x.metric('Provisional IOA' if overall['Missing items'] else 'Overall IOA',f"{overall['Agreement (%)']:.1f}%" if overall['Agreement (%)'] is not None else '—')
+    y.metric('Agreements / compared items',f"{overall['Agreements']} / {overall['Compared items']}")
+    z.metric('Missing comparison items',overall['Missing items'])
+    if overall['Missing items']: st.warning('Complete missing entries in the source records before treating this IOA percentage as final.')
+    st.markdown('**Agreement by measure and step**')
+    st.dataframe(pd.DataFrame(result['summary']),hide_index=True,use_container_width=True)
+    st.markdown('**Disagreements and missing entries**')
+    differences=[r for r in result['details'] if r['Comparison'] in ('Disagreement','Missing')]
+    if differences: st.dataframe(pd.DataFrame(differences),hide_index=True,use_container_width=True)
+    else: st.success('No disagreements or missing entries.')
+    with st.expander('All trial comparisons'):
+        st.dataframe(pd.DataFrame(result['details']),hide_index=True,use_container_width=True)
+    name=re.sub(r'[^A-Za-z0-9_.-]+','_',f"IOA_P{first['participant_id']}_S{first['session_number']}")
+    st.download_button('Download IOA results (Excel)',ioa_workbook(result),file_name=name+'.xlsx',mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
 
 initialize()
 clear_plan_from_coding()
@@ -472,5 +506,4 @@ with instructions:
         with st.expander(section): rule_help([section])
 with ioa:
     st.header('IOA')
-    st.subheader('Interobserver agreement')
-    st.info('Primary and secondary coding identities are retained in exports. The comparison module remains to be implemented.')
+    ioa_tab()
