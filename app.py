@@ -339,13 +339,6 @@ def collection_tab():
         with st.container(border=True):
             action_fields(component)
             if key=='earned_dolphin':
-                st.markdown('**Inappropriate dolphin delivery**')
-                current=trial['behaviors'].get('no_unearned',MISSING)
-                value=checked_choice('Was the dolphin given before two problems were completed?',[('Yes',COMMISSION),('No',CORRECT)],CORRECT if current==INTERRUPTED else current,prefix+'no_unearned')
-                if value==CORRECT and trial['trial_status']=='Partial' and obs.get('incomplete_eligible') is False:
-                    value=INTERRUPTED
-                    st.caption('No inappropriate delivery occurred, but this partial trial had less than 3 seconds of opportunity, so withholding is excluded from fidelity.')
-                trial['behaviors']['no_unearned']=value
                 st.markdown('**Dolphin access duration**')
                 earned=trial['actions']['earned_dolphin']['occurrence']
                 inappropriate=trial['behaviors']['no_unearned']
@@ -364,7 +357,16 @@ def collection_tab():
                     st.caption('Use the same 13–17 second duration rule for any dolphin access, including inappropriate delivery.')
                     action_fields(next(c for c in TIMED_COMPONENTS if c['key']=='dolphin_removal'))
                 else:
-                    st.caption('Answer the earned- and inappropriate-delivery questions above before scoring access duration.')
+                    st.caption('Answer the earned-delivery question or the inappropriate-delivery question below to establish whether access occurred.')
+                st.markdown('**Inappropriate dolphin delivery**')
+                current=trial['behaviors'].get('no_unearned',MISSING)
+                value=checked_choice('Was the dolphin given before two problems were completed?',[('Yes',COMMISSION),('No',CORRECT)],CORRECT if current==INTERRUPTED else current,prefix+'no_unearned')
+                if value==CORRECT and trial['trial_status']=='Partial' and obs.get('incomplete_eligible') is False:
+                    value=INTERRUPTED
+                    st.caption('No inappropriate delivery occurred, but this partial trial had less than 3 seconds of opportunity, so withholding is excluded from fidelity.')
+                trial['behaviors']['no_unearned']=value
+                if value!=current:
+                    st.rerun()
     for component in BEHAVIOR_COMPONENTS:
         if component['key']=='no_unearned': continue
         with st.container(border=True):
