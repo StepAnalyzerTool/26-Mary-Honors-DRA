@@ -1,0 +1,245 @@
+{
+  "review_date": "2026-10-04",
+  "review_method": "Duration metadata and twelve sampled frames per clip; event times, sound, loop seams and transition continuity not yet fully verified.",
+  "status": "Inventory and preliminary scenario mapping; not approved for automatic scoring",
+  "behavior_order": "Within each group: no behavior, finger tapping, table banging",
+  "clips": [
+    {
+      "filename": "0-problems-interfering-behavior.mov",
+      "duration": 11.633333,
+      "width": 3840,
+      "height": 2160,
+      "audio": true,
+      "event_tags": [],
+      "tag_status": "Not yet frame-verified"
+    },
+    {
+      "filename": "0-problems-minor-behavior.mov",
+      "duration": 10.733333,
+      "width": 3840,
+      "height": 2160,
+      "audio": true,
+      "event_tags": [],
+      "tag_status": "Not yet frame-verified"
+    },
+    {
+      "filename": "0-problems-no-behavior.mov",
+      "duration": 8.666667,
+      "width": 3840,
+      "height": 2160,
+      "audio": true,
+      "event_tags": [],
+      "tag_status": "Not yet frame-verified"
+    },
+    {
+      "filename": "1-problem-interfering-behavior.mov",
+      "duration": 14.0317,
+      "width": 3840,
+      "height": 2160,
+      "audio": true,
+      "event_tags": [],
+      "tag_status": "Not yet frame-verified"
+    },
+    {
+      "filename": "1-problem-minor-behavior.mov",
+      "duration": 16.4,
+      "width": 3840,
+      "height": 2160,
+      "audio": true,
+      "event_tags": [],
+      "tag_status": "Not yet frame-verified"
+    },
+    {
+      "filename": "1-problem-no-behavior.mov",
+      "duration": 17.4,
+      "width": 3840,
+      "height": 2160,
+      "audio": true,
+      "event_tags": [],
+      "tag_status": "Not yet frame-verified"
+    },
+    {
+      "filename": "2-problems-interfering-behavior.mov",
+      "duration": 18.733333,
+      "width": 3840,
+      "height": 2160,
+      "audio": true,
+      "event_tags": [],
+      "tag_status": "Not yet frame-verified"
+    },
+    {
+      "filename": "2-problems-minor-behavior.mov",
+      "duration": 16.8,
+      "width": 3840,
+      "height": 2160,
+      "audio": true,
+      "event_tags": [],
+      "tag_status": "Not yet frame-verified"
+    },
+    {
+      "filename": "2-problems-no-behavior.mov",
+      "duration": 19.833333,
+      "width": 3840,
+      "height": 2160,
+      "audio": true,
+      "event_tags": [],
+      "tag_status": "Not yet frame-verified"
+    },
+    {
+      "filename": "doplhin-rewarded-taken-away.mov",
+      "duration": 26.766667,
+      "width": 3840,
+      "height": 2160,
+      "audio": true,
+      "event_tags": [],
+      "tag_status": "Not yet frame-verified"
+    },
+    {
+      "filename": "finish-problems-interfering-behavior.mov",
+      "duration": 8.133333,
+      "width": 3840,
+      "height": 2160,
+      "audio": true,
+      "event_tags": [],
+      "tag_status": "Not yet frame-verified"
+    },
+    {
+      "filename": "finish-problems-no-behavior.mov",
+      "duration": 8,
+      "width": 3840,
+      "height": 2160,
+      "audio": true,
+      "event_tags": [],
+      "tag_status": "Not yet frame-verified"
+    },
+    {
+      "filename": "finish.problems.minor.behavior.mov",
+      "duration": 8.365,
+      "width": 3840,
+      "height": 2160,
+      "audio": true,
+      "event_tags": [],
+      "tag_status": "Not yet frame-verified"
+    },
+    {
+      "filename": "reinforcer-given-1.mov",
+      "duration": 27.633333,
+      "width": 3840,
+      "height": 2160,
+      "audio": true,
+      "event_tags": [],
+      "tag_status": "Not yet frame-verified"
+    },
+    {
+      "filename": "worksheet-taken-away-minor-behavior.mov",
+      "duration": 5.6,
+      "width": 3840,
+      "height": 2160,
+      "audio": true,
+      "event_tags": [],
+      "tag_status": "Not yet frame-verified"
+    },
+    {
+      "filename": "worksheet-taken-away-no-behavior.mov",
+      "duration": 6.833333,
+      "width": 3840,
+      "height": 2160,
+      "audio": true,
+      "event_tags": [],
+      "tag_status": "Not yet frame-verified"
+    }
+  ],
+  "scenario_groups": [
+    {
+      "scenarios": [
+        1,
+        2,
+        3
+      ],
+      "pattern": "Complete two without a reminder",
+      "segments": [
+        "2-problems-*"
+      ],
+      "status": "Candidate work sections; separate worksheet presentation and removal"
+    },
+    {
+      "scenarios": [
+        4,
+        5,
+        6
+      ],
+      "pattern": "Complete one; never complete second",
+      "segments": [
+        "1-problem-*"
+      ],
+      "status": "Candidate work and post-completion waiting sections"
+    },
+    {
+      "scenarios": [
+        7,
+        8,
+        9
+      ],
+      "pattern": "Wait; first reminder leads to two completed",
+      "segments": [
+        "0-problems-*",
+        "2-problems-*"
+      ],
+      "status": "Splice waiting to work after reminder; match worksheet and posture"
+    },
+    {
+      "scenarios": [
+        10,
+        11,
+        12
+      ],
+      "pattern": "Wait; first reminder leads to one completed",
+      "segments": [
+        "0-problems-*",
+        "1-problem-*"
+      ],
+      "status": "Splice waiting to work after reminder; match worksheet and posture"
+    },
+    {
+      "scenarios": [
+        13,
+        14,
+        15
+      ],
+      "pattern": "Never begin, including after reminders",
+      "segments": [
+        "0-problems-*"
+      ],
+      "status": "Candidate repeating waiting sections"
+    },
+    {
+      "scenarios": [
+        16,
+        17,
+        18
+      ],
+      "pattern": "Complete one; reminder leads to second completed",
+      "segments": [
+        "1-problem-*",
+        "finish-problems-*",
+        "finish.problems.minor.behavior.mov"
+      ],
+      "status": "Second-problem footage exists; splice after reminder and preserve worksheet continuity"
+    }
+  ],
+  "requirements": [
+    "Use existing scoring.py and canonical occurrence/timing/behavior records; no separate denominator implementation",
+    "Keep fixed 324 session IDs and trial orders",
+    "Record events when actually displayed; do not start learner-event timing from button press or end of source file",
+    "Separate worksheet delivery, work, waiting, worksheet removal, dolphin delivery, access and removal sections",
+    "Continue tapping and banging after worksheet removal; do not stop in response to stop-statement buttons",
+    "Loop waiting and dolphin play without replaying delivery/removal",
+    "Review audio and retain table-banging sound while removing filming instructions"
+  ],
+  "open_checks": [
+    "No separate table-banging worksheet-removal file among 16 retrieved videos; finish-problems-interfering-behavior has banging before and after removal and may supply candidate sections",
+    "Dolphin clips show no worksheet, so worksheet-left-in-place and unearned-dolphin states need a defined visual solution",
+    "Immediate work latency and all problem completion tags require finer frame review",
+    "Cross-clip sheet answers, marker/cap and posture must match before splicing"
+  ]
+}
