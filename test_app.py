@@ -36,6 +36,8 @@ class AppWorkflowTests(unittest.TestCase):
                  date='2026-10-03',end_reason='10 trials completed',end_at='8:00')
   app=self.app();app.session_state['session']=session;app.session_state['trials']=trials
   app.run();self.assert_no_exception(app)
+  app.session_state['trials'][0]['reviewed']=True
+  app.run();self.assert_no_exception(app)
   self.assertEqual(next(m.value for m in app.metric if m.label=='Overall fidelity'),'100.0%')
   app.checkbox(key='code_1_instruction_timing_check_1').check().run()
   app.checkbox(key='code_1_instruction_direction_check_1').check().run()
