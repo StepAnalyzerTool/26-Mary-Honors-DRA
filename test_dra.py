@@ -93,6 +93,22 @@ class SummaryTests(unittest.TestCase):
   self.assertTrue(all(d['result']==NA for d in removal))
   self.assertEqual(r['counts'][COMMISSION],1)
   self.assertEqual(r['counts'][TIMING_COMMISSION],0)
+ def test_manual_coding_uses_checkbox_judgments_without_legacy_counts_or_times(self):
+  _,trials=perfect_session();t=trials[0]
+  t['manual_checkbox_coding']=True
+  t['actions']['instruction']['action_at']='100'
+  t['observations']['prompts_delivered']=5
+  self.assertFalse(score_trials([t])['validation_issues'])
+ def test_earned_delivery_has_no_early_timing_category(self):
+  _,trials=perfect_session();t=next(t for t in trials if t['actions']['earned_dolphin']['occurrence']==CORRECT)
+  t['actions']['earned_dolphin']['timing']=TIMING_COMMISSION
+  self.assertTrue(any('on time or late' in x for x in score_trials([t])['validation_issues']))
+ def test_partial_checkbox_exposure_qualifies_correct_withholding(self):
+  _,trials=perfect_session();t=trials[0]
+  t['manual_checkbox_coding']=True;t['trial_status']='Partial'
+  t['observations']['incomplete_seconds']=None;t['observations']['banging_seconds']=None
+  t['observations']['incomplete_eligible']=True;t['observations']['banging_eligible']=True
+  self.assertFalse(score_trials([t])['validation_issues'])
  def test_multiple_extra_events_one_trial_score(self):
   _,trials=perfect_session();t=trials[0]
   t['observations']['prompts_delivered']=4;t['behaviors']['no_excess']=COMMISSION
@@ -133,6 +149,17 @@ class CatalogAndPersistenceTests(unittest.TestCase):
   with self.assertRaises(ValueError):restore_session(json.dumps(altered).encode())
  def test_legacy_files_are_not_silently_rescored(self):
   with self.assertRaises(ValueError):restore_session(b'{"schema_version":1}')
+ def test_workbook_uses_same_removal_exclusions_as_summary(self):
+  session,trials=perfect_session()
+  t=next(t for t in trials if t['actions']['earned_dolphin']['occurrence']==NA)
+  t['behaviors']['no_unearned']=COMMISSION
+  t['actions']['dolphin_removal'].update(occurrence=CORRECT,timing=TIMING_COMMISSION)
+  data=make_workbook(session,{},trials,score_trials(trials))
+  book=pd.ExcelFile(BytesIO(data))
+  actions=pd.read_excel(book,sheet_name='Action Records',keep_default_na=False)
+  row=actions[(actions['Trial']==t['trial'])&(actions['Component']=='dolphin_removal')].iloc[0]
+  self.assertEqual(row['occurrence'],NA);self.assertEqual(row['timing'],NA)
+  self.assertIn('Coding Instructions',book.sheet_names)
  def test_workbook_contains_real_summary_and_preserves_order(self):
   session,trials=perfect_session();session.update(participant_id='P1',session_number='1',notes='=2+2')
   scores=score_trials(trials);data=make_workbook(session,{},trials,scores,final=True)

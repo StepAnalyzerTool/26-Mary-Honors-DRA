@@ -41,9 +41,17 @@ class AppWorkflowTests(unittest.TestCase):
   self.assertEqual(next(m.value for m in app.metric if m.label=='Overall fidelity'),'100.0%')
   app.checkbox(key='code_1_instruction_timing_check_1').check().run()
   app.checkbox(key='code_1_instruction_direction_check_1').check().run()
-  self.assertTrue(any('timing conflicts' in e.value for e in app.error))
+  self.assertFalse(any('timing conflicts' in e.value for e in app.error))
+  self.assertEqual(app.session_state['trials'][0]['actions']['instruction']['timing'],TIMING_OMISSION)
   self.assertFalse(app.session_state['trials'][0]['reviewed'])
   self.assertTrue(any(m.label=='Provisional fidelity' for m in app.metric))
+ def test_instructions_only_in_coding_instructions_tab(self):
+  app=self.app().run()
+  self.assertIn('Coding Instructions',[tab.label for tab in app.tabs])
+  collection=next(tab for tab in app.tabs if tab.label=='Session Coding')
+  self.assertFalse(any(e.label=='Scoring rules and examples' for e in collection.expander))
+  self.assertFalse(any(t.label in ('Reference event time','Action time','Prompts delivered (exclude initial instruction)') for t in collection.text_input))
+  self.assert_no_exception(app)
  def test_learner_fidelity_stays_separate_and_locks_plan(self):
   app=self.app().run()
   next(b for b in app.button if b.label=='Use this set').click().run()

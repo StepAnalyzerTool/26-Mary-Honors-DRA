@@ -262,6 +262,7 @@ def collection_tab():
     index=st.radio('Trial to code',list(range(1,11)),format_func=lambda i:f'T{i}',horizontal=True,key='trial_index')
     trial=st.session_state.trials[index-1]
     before=deepcopy(trial)
+    trial['manual_checkbox_coding']=True
     prefix=f'code_{index}_'
     if prefix+'status_initialized' not in st.session_state:
         if trial['trial_status']=='Not reached': trial['trial_status']='Complete'
@@ -343,7 +344,8 @@ def collection_tab():
                 earned=trial['actions']['earned_dolphin']['occurrence']
                 inappropriate=trial['behaviors']['no_unearned']
                 provided=True if earned==CORRECT else False if earned!=MISSING else MISSING
-                obs['dolphin_provided']=provided
+                obs['earned_dolphin_provided']=provided
+                obs.pop('dolphin_provided',None)
                 removal=trial['actions']['dolphin_removal']
                 if provided is False:
                     removal['occurrence']=NA; removal['timing']=NA
@@ -392,8 +394,6 @@ def collection_tab():
     if st.button('Mark this trial reviewed',key=prefix+'review',disabled=bool(trial_scores['missing'] or trial_scores['validation_issues'])):
         trial['reviewed']=True
     st.caption('Reviewed' if trial.get('reviewed') else 'Not reviewed / scores incomplete')
-    with st.expander('Scoring rules and examples'):
-        rule_help(list(guide_data()))
 
 def finalization_issues(scores):
     session=st.session_state.session;issues=list(scores['validation_issues'])
@@ -413,7 +413,7 @@ def finalization_issues(scores):
         obs=trial['observations']
         if obs.get('problems') is None and not obs.get('problems_na'):
             issues.append(f"Trial {trial['trial']}: record problems completed.")
-        for action in trial.get('actions',{}).values():
+        for action in ([] if trial.get('manual_checkbox_coding') else trial.get('actions',{}).values()):
             for field in ('reference_at','action_at'):
                 try:
                     timestamp=parse_time(action.get(field))
@@ -469,6 +469,8 @@ def restore_tab():
                 if key.startswith(('code_','meta_','setup_')): del st.session_state[key]
             st.session_state.session=payload['session'];st.session_state.setup=payload['setup'];st.session_state.trials=payload['trials']
             clear_plan_from_coding()
+            for restored_trial in st.session_state.trials:
+                st.session_state[f"code_{restored_trial['trial']}_status_initialized"]=True
             st.session_state.trial_index=1
             st.rerun()
         except (ValueError,TypeError,KeyError,json.JSONDecodeError) as exc: st.error(str(exc))
@@ -482,7 +484,7 @@ initialize()
 clear_plan_from_coding()
 st.title('DRA Session Coder')
 st.caption("Mary’s Honors Thesis · 2026-2027 - Planning and Coding Recordings of In-Person Simulated-Learner Sessions")
-selection,collection,results,instructions,resume,ioa=st.tabs(['Scenario Selection and Simulated-Learner Fidelity','Session Coding','Results','Scoring Instructions','Resume / New Session','IOA'])
+selection,collection,results,instructions,resume,ioa=st.tabs(['Scenario Selection and Simulated-Learner Fidelity','Session Coding','Results','Coding Instructions','Resume / New Session','IOA'])
 with selection:
     st.header('Scenario Selection and Simulated-Learner Fidelity')
     selector_tab()
@@ -493,8 +495,9 @@ with results:
     st.header('Results')
     results_tab()
 with instructions:
-    st.header('Scoring Instructions')
-    st.subheader('Scoring appendix and coder examples')
+    st.header('Coding Instructions')
+    st.subheader('Coding rules and examples')
+    st.write('Use these instructions for Session Coding. Timing examples illustrate the scoring windows; exact timestamps and numeric prompt counts are not required. Scenario selection and Simulated-Learner fidelity remain separate from observer coding.')
     for section in guide_data():
         with st.expander(section): rule_help([section])
 with resume:

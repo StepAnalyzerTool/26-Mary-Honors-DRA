@@ -143,23 +143,27 @@ def validate_trials(trials: list[dict[str,Any]]) -> list[str]:
    if occurrence not in {CORRECT,OMISSION,*EXCLUDED,MISSING}: issues.append(f"{prefix}: invalid occurrence for {c['label']}.")
    if occurrence==CORRECT and action.get('timing',MISSING) not in {CORRECT,TIMING_COMMISSION,TIMING_OMISSION,MISSING}:
     issues.append(f"{prefix}: delivered {c['label']} needs a timing score.")
-   for field in ('reference_at','action_at'):
-    try: parse_time(action.get(field))
-    except (ValueError,TypeError): issues.append(f"{prefix}: invalid {field} for {c['label']}.")
-   try:
-    reference=parse_time(action.get('reference_at'));at=parse_time(action.get('action_at'))
-    if occurrence not in (CORRECT,MISSING) and at is not None:
-     issues.append(f"{prefix}: {c['label']} has an action time but is marked not performed/excluded.")
-    window=c['window']
-    if c['key']=='worksheet_removal':
-     branch=action.get('branch')
-     window=(0,3) if branch=='Second problem completed' else (8,12) if branch in ('Second prompt; no work','First problem completed after both prompts') else None
-    if occurrence==CORRECT and at is not None and reference is not None and window:
-     expected=timing_result(at-reference,*window)
-     if action.get('timing') not in (MISSING,expected): issues.append(f"{prefix}: {c['label']} timing conflicts with its timestamps.")
-   except (ValueError,TypeError): pass
+   if c['key']=='earned_dolphin' and occurrence==CORRECT and action.get('timing')==TIMING_COMMISSION:
+    issues.append(f'{prefix}: earned dolphin delivery can be on time or late; before-completion delivery is inappropriate delivery.')
+   if not trial.get('manual_checkbox_coding'):
+    for field in ('reference_at','action_at'):
+     try: parse_time(action.get(field))
+     except (ValueError,TypeError): issues.append(f"{prefix}: invalid {field} for {c['label']}.")
+    try:
+     reference=parse_time(action.get('reference_at'));at=parse_time(action.get('action_at'))
+     if occurrence not in (CORRECT,MISSING) and at is not None:
+      issues.append(f"{prefix}: {c['label']} has an action time but is marked not performed/excluded.")
+     window=c['window']
+     if c['key']=='worksheet_removal':
+      branch=action.get('branch')
+      window=(0,3) if branch=='Second problem completed' else (8,12) if branch in ('Second prompt; no work','First problem completed after both prompts') else None
+     if occurrence==CORRECT and at is not None and reference is not None and window:
+      expected=timing_result(at-reference,*window)
+      if action.get('timing') not in (MISSING,expected): issues.append(f"{prefix}: {c['label']} timing conflicts with its timestamps.")
+    except (ValueError,TypeError): pass
   obs=trial.get('observations',{})
-  for field in ('problems','prompts_delivered','tapping_seconds','banging_seconds','incomplete_seconds'):
+  numeric_fields=('problems',) if trial.get('manual_checkbox_coding') else ('problems','prompts_delivered','tapping_seconds','banging_seconds','incomplete_seconds')
+  for field in numeric_fields:
    value=obs.get(field)
    if value is not None and (not isinstance(value,(int,float)) or not math.isfinite(value) or value<0):
     issues.append(f'{prefix}: invalid {field}.')
@@ -176,7 +180,7 @@ def validate_trials(trials: list[dict[str,Any]]) -> list[str]:
      eligible=eligibility is True if eligibility is not None and eligibility!=MISSING else isinstance(value,(int,float)) and math.isfinite(value) and value>=3
      if not eligible: issues.append(f"{prefix}: correct {COMPONENTS[key]['label']} on a partial trial needs confirmation of at least 3 seconds of exposure.")
   count=obs.get('prompts_delivered');result=trial.get('behaviors',{}).get('no_excess')
-  if isinstance(count,(int,float)):
+  if isinstance(count,(int,float)) and not trial.get('manual_checkbox_coding'):
    if count>2 and result!=COMMISSION: issues.append(f'{prefix}: more than two prompts requires an excess-prompt commission.')
    if count<=2 and result==COMMISSION: issues.append(f'{prefix}: excess-prompt commission conflicts with prompt count.')
   for c in BEHAVIOR_COMPONENTS:

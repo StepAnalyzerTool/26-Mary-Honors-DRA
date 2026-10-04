@@ -16,7 +16,7 @@
     {
       "section": "General Scoring Conventions",
       "entry": "Two measures",
-      "rule": "For required actions, record occurrence separately from timing. Preserve event timestamps. A late action is delivered with a timing omission; do not also record it as entirely omitted.",
+      "rule": "Record whether each required action occurred and whether its timing was correct using the checkboxes. Timing is N/A for an omitted or excluded action. Exact timestamp entry is not required for in-person coding; the future simulator records event times automatically. A late action is not also an entire omission.",
       "example": ""
     },
     {
@@ -58,19 +58,19 @@
     {
       "section": "General Scoring Conventions",
       "entry": "Actual opportunities",
-      "rule": "Score opportunities actually reached. A complete correctly implemented catalog session plans 10 worksheet presentations, 10 initial instructions, 13 prompts, 5 earned deliveries, 10 worksheet removals, 5 dolphin removals, 4 tapping trials, and 4 banging trials. No unearned delivery and no excess prompts are scored once per trial; ongoing-work prompting is scored per applicable trial. Errors and cutoff may alter actual opportunities.",
+      "rule": "Score what was observed, independently of the selected scenario. Each applicable required action has separate occurrence and timing scores. No-excess-prompts and no-inappropriate-delivery are scored once per observed trial; work/tapping/banging response measures apply only when that opportunity arose. Errors, omissions, and cutoff can alter the denominator.",
       "example": ""
     },
     {
       "section": "General Scoring Conventions",
       "entry": "Trial attribution",
-      "rule": "Assign worksheet presentation to the trial being introduced. Retain the scenario ID and fixed catalog trial position for every coded trial.",
+      "rule": "A new trial begins when the next worksheet is provided. Assign worksheet presentation to the incoming trial. The observer codes trial number and observed behavior without receiving the selected set or scenario IDs.",
       "example": ""
     },
     {
       "section": "General Scoring Conventions",
       "entry": "Coder access",
-      "rule": "Coders must be able to review the relevant preceding event as well as the current trial. Record correct actions, errors, N/A, and Interrupted; preserve timestamps when actions occur.",
+      "rule": "Review the relevant preceding trial endpoint and the current trial. Record direct Yes/No judgments and the specifically defined exclusions. Use notes for uncertainty; do not assume actions from a scenario plan.",
       "example": ""
     },
     {
@@ -82,7 +82,7 @@
     {
       "section": "Worksheet Presentation Scoring",
       "entry": "Coder instructions",
-      "rule": "Identify trial number and reference event; record its time, worksheet presentation time, and session endpoint. Presentation is when the worksheet is placed in front of the learner and available to work on.",
+      "rule": "Identify session start for trial 1, or prior dolphin removal/unfinished worksheet removal for trials 2–10. Judge presentation and its three-second timing separately. Presentation means the worksheet is in front of the learner and available. Exact timestamp entry is not required.",
       "example": ""
     },
     {
@@ -118,7 +118,7 @@
     {
       "section": "Worksheet Presentation Scoring",
       "entry": "N/A",
-      "rule": "No further presentation opportunity arises because 10 trials are complete or the session has already ended.",
+      "rule": "No worksheet-presentation N/A checkbox is needed for an observed trial: presentation is required. Mark an unobserved trial Not Observed; it contributes no scores. No trial 11 is required.",
       "example": "No trial 11 is required."
     },
     {
@@ -142,7 +142,7 @@
     {
       "section": "Initial Instruction Scoring",
       "entry": "Coder instructions",
-      "rule": "Record worksheet presentation and speech onset of the first subsequent task direction. In the simulator, use the task-direction button-press time.",
+      "rule": "Judge whether the first task direction after worksheet presentation began within three seconds. Use speech onset, not the end of the sentence. Exact wording is not required. The future simulator uses the task-direction button-press time.",
       "example": ""
     },
     {
@@ -202,7 +202,7 @@
     {
       "section": "First Prompt Scoring",
       "entry": "Coder instructions",
-      "rule": "Record the initial instruction, work onset or resumption, and speech onset of the prompt. Check the number of prompts already delivered.",
+      "rule": "Judge whether the first required prompt occurred after 8–12 seconds without work following the initial instruction; if problem 1 was completed before any prompt, use its completion as the waiting reference. No numeric count or exact timestamp entry is required.",
       "example": ""
     },
     {
@@ -274,7 +274,7 @@
     {
       "section": "Second Prompt Following No Work Scoring",
       "entry": "Coder instructions",
-      "rule": "Record the first prompt, work onset or resumption, and speech onset of the prompt. Check the number of prompts already delivered.",
+      "rule": "Judge whether the second required prompt occurred after 8–12 seconds without work following prompt 1. If prompt 1 produced completion of problem 1, use that completion as the next waiting reference. No third prompt is permitted.",
       "example": ""
     },
     {
@@ -346,7 +346,7 @@
     {
       "section": "Prompt After One Completed Problem Scoring",
       "entry": "Coder instructions",
-      "rule": "Record completion of the first problem, work onset or resumption, and speech onset of the prompt. Check the number of prompts already delivered.",
+      "rule": "After the first problem is completed, judge the next available required prompt after 8–12 seconds without starting problem 2. This is prompt 1 or prompt 2 depending on prior directions; the limit never resets.",
       "example": ""
     },
     {
@@ -448,7 +448,7 @@
     {
       "section": "Task Direction Classification and Prompt Limit",
       "entry": "Coder instructions",
-      "rule": "Keep a running count of task directions and prompts for each worksheet. Reset for the next worksheet. Do not assign initial-instruction status repeatedly to the same wording.",
+      "rule": "Distinguish the initial instruction from later task directions, even when wording is identical. Score the first and second required prompts separately, then answer whether no more than two prompts occurred. Do not enter a separate numeric prompt count.",
       "example": ""
     },
     {
@@ -460,7 +460,7 @@
     {
       "section": "Unfinished Worksheet Removal Scoring",
       "entry": "Coder instructions",
-      "rule": "Record second-prompt onset, any subsequent work, and worksheet removal. Verify that two prompts were delivered and that work did not begin or resume during the final wait.",
+      "rule": "Confirm that two prompts were used and work did not start or resume. Judge removal after 8–12 seconds from the second prompt. If work resumes, allow the individual problem to finish; exact event timestamps are not required.",
       "example": ""
     },
     {
@@ -514,7 +514,7 @@
     {
       "section": "One Problem Completed After Both Prompts: Removal Scoring",
       "entry": "Coder instructions",
-      "rule": "Verify both prompts were used. Record first-problem completion, whether problem 2 begins, and removal time.",
+      "rule": "Confirm that two prompts were used. If the first problem is then completed, judge whether the learner started problem 2 and whether removal occurred after 8–12 seconds of inactivity from first-problem completion. Exact timestamp entry is not required.",
       "example": ""
     },
     {
@@ -550,7 +550,7 @@
     {
       "section": "One Problem Completed After Both Prompts: Removal Scoring",
       "entry": "N/A",
-      "rule": "This sequence does not occur, or problem 2 begins before removal is required.",
+      "rule": "This particular removal branch did not arise, or problem 2 began before removal was due. Use the actual completed/unfinished-work reference for the single worksheet-removal component rather than adding a separate N/A component.",
       "example": ""
     },
     {
@@ -562,7 +562,7 @@
     {
       "section": "Completed Worksheet Removal Scoring",
       "entry": "Coder instructions",
-      "rule": "Record second-problem completion and when the worksheet is removed. Score independently of the other action.",
+      "rule": "Judge worksheet removal separately from dolphin delivery. Both are due within three seconds of second-problem completion, in either order.",
       "example": ""
     },
     {
@@ -592,7 +592,7 @@
     {
       "section": "Completed Worksheet Removal Scoring",
       "entry": "N/A",
-      "rule": "Two problems are not completed, so this earned-action opportunity does not arise. Score any inappropriate action under the relevant commission rule.",
+      "rule": "This completed-work branch is not applicable when fewer than two problems were completed. Still score the single worksheet-removal component under the unfinished-work or premature-removal rule; do not automatically mark all worksheet removal N/A.",
       "example": ""
     },
     {
@@ -610,7 +610,7 @@
     {
       "section": "Earned Dolphin Delivery Scoring",
       "entry": "Coder instructions",
-      "rule": "Record second-problem completion and when the dolphin becomes available to the learner. Score independently of the other action.",
+      "rule": "Answer whether the dolphin was given after two completed problems, then whether it was given within three seconds. Timing No means late (timing omission); there is no Early option for earned delivery. Before-two-problems delivery belongs to the separate inappropriate-delivery item.",
       "example": ""
     },
     {
@@ -676,7 +676,7 @@
     {
       "section": "Unearned Dolphin Delivery Scoring",
       "entry": "Coder instructions",
-      "rule": "Review dolphin deliveries throughout the trial and determine how many problems had been completed at each delivery.",
+      "rule": "Answer Was the dolphin given before two problems were completed? Yes is a commission; No is correct withholding when the observation opportunity is adequate. Do not infer correctness from the checkbox word Yes alone.",
       "example": ""
     },
     {
@@ -688,7 +688,7 @@
     {
       "section": "Unearned Dolphin Delivery Scoring",
       "entry": "Commission",
-      "rule": "Dolphin delivered before two problems are complete. Record each observed delivery with its timestamp.",
+      "rule": "Any dolphin delivery before two problems are complete is an inappropriate-delivery commission, scored once per trial. Use optional notes/event entries for repeated instances; no additional duration/timing error is scored for that inappropriate access.",
       "example": "Dolphin given while Sam bangs and has completed zero problems."
     },
     {
@@ -736,7 +736,7 @@
     {
       "section": "Dolphin Removal Scoring",
       "entry": "Correct",
-      "rule": "Removal at 13–17 seconds of access, inclusive. Record Removed: Yes; Timing: Correct.",
+      "rule": "After earned delivery, removal at 13–17 seconds of access, inclusive. Removed Yes and duration/timing Yes each contribute a correct score.",
       "example": ""
     },
     {
@@ -778,7 +778,7 @@
     {
       "section": "Dolphin Removal Scoring",
       "entry": "Cutoff",
-      "rule": "If the dolphin is removed before cutoff, retain the score, even if the window would otherwise have been interrupted.",
+      "rule": "For earned access only, removal before cutoff retains its occurrence and timing scores even if the full duration window would otherwise be interrupted. Inappropriate-only access remains N/A for both.",
       "example": "Removal at 10 seconds of access followed by session end: timing commission remains."
     },
     {
@@ -802,13 +802,13 @@
     {
       "section": "Finger Tapping Scoring",
       "entry": "Commission",
-      "rule": "Say Please stop tapping the table, or an equivalent statement directing the learner to stop the behavior. Record the statement onset.",
+      "rule": "An instruction to stop finger tapping, such as Please stop tapping the table, is a commission. Record the direct score; an exact statement timestamp is not required.",
       "example": ""
     },
     {
       "section": "Finger Tapping Scoring",
       "entry": "N/A",
-      "rule": "No finger tapping observation opportunity arises. An inappropriate stop statement actually delivered is still retained as a commission event.",
+      "rule": "Finger tapping did not occur, so the participant's response-to-tapping item is N/A. The separate learner-behavior question is No, not N/A. Any actual inappropriate stop statement remains a commission.",
       "example": ""
     },
     {
@@ -850,13 +850,13 @@
     {
       "section": "Table Banging Scoring",
       "entry": "Commission",
-      "rule": "Say Please stop banging the table, or an equivalent statement directing the learner to stop the behavior. Record the statement onset.",
+      "rule": "An instruction to stop table banging, such as Please stop banging the table, is a commission. Record the direct score; an exact statement timestamp is not required.",
       "example": ""
     },
     {
       "section": "Table Banging Scoring",
       "entry": "N/A",
-      "rule": "No table banging observation opportunity arises. An inappropriate stop statement actually delivered is still retained as a commission event.",
+      "rule": "Table banging did not occur, so the participant's response-to-banging item is N/A. The separate learner-behavior question is No, not N/A. Any actual inappropriate stop statement remains a commission.",
       "example": ""
     },
     {
@@ -880,7 +880,7 @@
     {
       "section": "Optional Timer Use",
       "entry": "Participant choice",
-      "rule": "Two independent unlabeled timers may be used for reminders, waits, or dolphin access. The separate visible session clock runs automatically.",
+      "rule": "Participants may choose to use two independent, unlabeled timing aids. In-person sessions need a visible session clock; Session Coding also offers optional coding timers. Participant timer use is descriptive and does not enter fidelity.",
       "example": ""
     },
     {
@@ -928,19 +928,19 @@
     {
       "section": "Session Endpoint and Cutoff Scoring",
       "entry": "Example: timing commission",
-      "rule": "Dolphin removed after 10 seconds of access and session then ends: retain timing commission.",
+      "rule": "After earned dolphin delivery: Dolphin removed after 10 seconds of access and session then ends: retain timing commission.",
       "example": ""
     },
     {
       "section": "Session Endpoint and Cutoff Scoring",
       "entry": "Example: Interrupted",
-      "rule": "Session ends at 10 seconds of access without removal: Interrupted.",
+      "rule": "After earned dolphin delivery: Session ends at 10 seconds of access without removal: Interrupted.",
       "example": ""
     },
     {
       "section": "Session Endpoint and Cutoff Scoring",
       "entry": "Example: omission",
-      "rule": "Dolphin access exceeds 17 seconds and no removal occurs before cutoff: omission; timing N/A.",
+      "rule": "After earned dolphin delivery: Dolphin access exceeds 17 seconds and no removal occurs before cutoff: omission; timing N/A.",
       "example": ""
     },
     {
@@ -988,13 +988,13 @@
     {
       "section": "No Excess Prompts Scoring",
       "entry": "One score per trial",
-      "rule": "Correct if no third prompt occurs. Incorrect as a commission if one or more third/later prompts occur. Exclude the initial instruction from the prompt count.",
+      "rule": "Answer Did the participant give no more than two prompts in this trial? Yes = Correct; No = Commission. Exclude the initial instruction. Zero, one, and two prompts satisfy this prohibition; no numeric prompt-count field is required.",
       "example": ""
     },
     {
       "section": "No Excess Prompts Scoring",
       "entry": "Detailed log",
-      "rule": "Record every excess prompt and its timestamp, but give only one incorrect no-excess-prompts score per trial.",
+      "rule": "If useful, note individual excess prompts in the optional event log; exact timestamps are not required. One trial receives at most one incorrect no-excess-prompts score regardless of how many extra prompts occurred.",
       "example": ""
     },
     {
@@ -1024,7 +1024,7 @@
     {
       "section": "No Prompts During Ongoing Work Scoring",
       "entry": "Detailed log",
-      "rule": "Record each prompt during ongoing work. Every delivered prompt counts toward the two-prompt limit.",
+      "rule": "Score the direct checkbox for withholding prompts during ongoing work. Extra event notes are optional. Every actual prompt still uses one of the two allowed prompts, even though no numeric count is entered.",
       "example": ""
     },
     {
@@ -1078,7 +1078,7 @@
     {
       "section": "Overall Session Score and Individual Summaries",
       "entry": "Entirely omitted",
-      "rule": "Occurrence omission; timing N/A: 0 correct scores out of 1 applicable score. Do not add an incorrect timing score for an omitted action.",
+      "rule": "Occurrence omission; timing N/A: 0 correct scores out of 1 applicable score. Do not add an incorrect timing score for an omitted action. If earned delivery is omitted, the earned-access removal and duration scores are also N/A.",
       "example": ""
     },
     {
@@ -1096,7 +1096,7 @@
     {
       "section": "Overall Session Score and Individual Summaries",
       "entry": "Individual summaries",
-      "rule": "Report each component’s occurrence and timing separately, along with commission, omission, timing commission, and timing omission classifications. Preserve raw event counts as well as per-trial scores.",
+      "rule": "Report each component’s occurrence and timing separately with correct, commission, omission, timing commission, and timing omission classifications. Learner behavior, setup observations, timer use, and optional notes do not add scores. Event entries provide detail and do not automatically add denominator units.",
       "example": ""
     },
     {
@@ -1132,7 +1132,7 @@
     {
       "section": "Math Work: Beginning, Completion, and Pauses",
       "entry": "Coder instructions",
-      "rule": "Record problem 1 and problem 2 start/completion timestamps using the same definitions. Do not code a brief within-problem pause as a new prompt opportunity.",
+      "rule": "Use the writing/answer markers to judge when work began and finished; do not enter individual problem timestamps. Brief pauses within an unfinished individual problem remain ongoing work.",
       "example": ""
     },
     {
@@ -1180,7 +1180,7 @@
     {
       "section": "In-Person Coding Program: Recording Requirements",
       "entry": "Session and observer",
-      "rule": "Record participant ID, session ID, date/time, catalog version, set ID, fixed planned order, observer ID, and primary/secondary role.",
+      "rule": "Enter participant ID, session number, date, data collector, primary/secondary role, simulated learner, and the session endpoint/reason. Scenario Selection and Simulated-Learner Fidelity retains the organizer's set/order separately; observer coding never imports it.",
       "example": ""
     },
     {
@@ -1192,38 +1192,87 @@
     {
       "section": "In-Person Coding Program: Recording Requirements",
       "entry": "Event coding",
-      "rule": "Record session start/end, worksheet events, speech onset of task directions and stop statements, problem starts/completions, dolphin access/removal, and timer use.",
+      "rule": "Use checkboxes for worksheet actions, task instructions/prompts, earned/inappropriate delivery, earned access duration, and responses to work/tapping/banging. Record observed problems (0/1/2, or N/A when no worksheet), tapping Yes/No, banging Yes/No, and descriptive timer use. Detailed event entries are optional.",
       "example": ""
     },
     {
       "section": "In-Person Coding Program: Recording Requirements",
       "entry": "Score entry",
-      "rule": "Provide explicit correct/error choices and occurrence/timing fields for each component. Include component-specific N/A and Interrupted guidance rather than generic buttons without definitions.",
+      "rule": "Use the visible paired checkboxes, with occurrence and timing grouped for each action. Choose Early/Late only where both are possible; earned-delivery timing No is Late. Each retained N/A is explained beside its item; Interrupted and Ended early refer to distinct cutoff mechanisms.",
       "example": ""
     },
     {
       "section": "In-Person Coding Program: Recording Requirements",
       "entry": "Timing support",
-      "rule": "Calculate elapsed times from coded event timestamps to assist score entry and flag inconsistencies for review. Preserve the coder’s observation and any corrections.",
+      "rule": "Judge the displayed timing questions directly: 0–3 seconds, 8–12 seconds, or 13–17 seconds inclusive. When timing is No, choose Early/Late where both are possible; earned-delivery No is Late automatically. Exact per-action timestamps and per-second duration entry are not required. Historical event times in a restored backup do not override a new in-person checkbox judgment; they remain optional source detail.",
       "example": ""
     },
     {
       "section": "In-Person Coding Program: Recording Requirements",
       "entry": "Observed versus planned",
-      "rule": "Record actual events, including departures from the selected scenario. Do not fill in actions merely because the script called for them.",
+      "rule": "Code actual observed events without consulting the selected scenario. The organizer's planner and learner-fidelity checklist are independent of participant coding.",
       "example": ""
     },
     {
       "section": "In-Person Coding Program: Recording Requirements",
       "entry": "Uncertainty",
-      "rule": "Provide notes for script deviations, obscured events, and unreliable timestamps. Flag uncertain events for review rather than assuming a score.",
+      "rule": "Use notes for unclear events or recording limitations. Leave an unresolved score unselected rather than guessing; it keeps the session summary provisional.",
       "example": ""
     },
     {
       "section": "In-Person Coding Program: Recording Requirements",
       "entry": "Export",
-      "rule": "Export event log, trial scores, and session summary with observer identity, catalog version, set ID, and actual sequence.",
+      "rule": "Export participant/observer identity, trial observations, canonical action and behavior scores, individual summaries, and overall fidelity. Participant coding exports do not import selected scenarios or organizer learner-fidelity scores.",
+      "example": ""
+    },
+    {
+      "section": "Earned Dolphin Delivery Scoring",
+      "entry": "No early earned delivery",
+      "rule": "Earned-delivery timing has only On time or Late. Delivery before two completed problems is inappropriate delivery, not an early earned-delivery timing score.",
+      "example": "Dolphin after one problem: inappropriate-delivery Yes (Commission); earned delivery N/A until a separate earned-delivery opportunity arises."
+    },
+    {
+      "section": "Dolphin Removal Scoring",
+      "entry": "Placement and applicability",
+      "rule": "Removal occurrence and the 13–17 second duration check appear within Earned dolphin delivery only when that action is scored Yes. No separate Was the dolphin provided? question is required. If no earned delivery occurs, both removal measures are N/A and excluded.",
+      "example": ""
+    },
+    {
+      "section": "Overall Session Score and Individual Summaries",
+      "entry": "Inappropriate delivery example",
+      "rule": "With only inappropriate access, retain the one inappropriate-delivery Commission. Earned delivery may separately be N/A or omitted depending on whether two problems were eventually completed; removal occurrence and access-duration timing are N/A. Do not add an early-earned-delivery timing error or an inappropriate-access-duration error.",
+      "example": ""
+    },
+    {
+      "section": "In-Person Coding Program: Recording Requirements",
+      "entry": "Trial status",
+      "rule": "Each newly opened trial defaults to Complete and immediately displays its coding fields. Complete means the whole trial was observed, even if math remained unfinished. Use adjacent Partial/Not Observed buttons when needed. Not Observed trials are excluded; changing/restoring status must not erase recorded observations.",
+      "example": ""
+    },
+    {
+      "section": "In-Person Coding Program: Recording Requirements",
+      "entry": "Checkbox meanings",
+      "rule": "Paired selections are mutually exclusive and stay left aligned. A blank means not yet coded. Yes/No means action occurred/did not occur for required actions; timing Yes means on time. Inappropriate-delivery Yes is an error, whereas no-excess-prompts Yes is correct.",
+      "example": ""
+    },
+    {
+      "section": "In-Person Coding Program: Recording Requirements",
+      "entry": "Descriptive items and N/A",
+      "rule": "Setup, tapping occurrence, banging occurrence, and timer use have Yes/No only. Problems completed offer 0, 1, 2, and N/A (no worksheet). Do not confuse No behavior observed with N/A on the separate participant response-to-behavior measure.",
+      "example": ""
+    },
+    {
+      "section": "In-Person Coding Program: Recording Requirements",
+      "entry": "Partial exposure",
+      "rule": "For partial trials, check whether at least three seconds of the relevant opportunity were observable; exact durations are not entered. Actual commissions count even during shorter exposure. Without a commission, a shorter or interrupted opportunity is excluded.",
+      "example": ""
+    },
+    {
+      "section": "In-Person Coding Program: Recording Requirements",
+      "entry": "Instructions location",
+      "rule": "Rules and wrapped example tables are available only in Coding Instructions, not repeated within Session Coding.",
       "example": ""
     }
-  ]
+  ],
+  "instructions_revision": "2026-10-04"
 }

@@ -1,62 +1,49 @@
 # DRA Session Coder
 
-Streamlit application for coding recordings of in-person Differential Reinforcement of Alternative Behavior (DRA) sessions for Mary's honors thesis.
+Planning and coding in-person Differential Reinforcement of Alternative Behavior (DRA) sessions for Mary's honors thesis, 2026–2027.
 
-## Current scope
+## Independent records
 
-- A Session Selection tab with 324 validated fixed 10-trial sets, DRA-001 through DRA-324
-- Random set selection or lookup of the set used in a recorded session; the stored order is never reshuffled
-- Trial-by-trial coding with separate required-action occurrence and timing scores
-- Correct, omission, commission, timing omission, timing commission, N/A, interrupted, and participant-terminated classifications
-- Two optional independent timing aids
-- A scoring appendix and concrete undergraduate-coder examples beside each measure
-- A shared dependency-free `scoring.py` module for the future simulator and this coding app
-- Overall procedural fidelity, individual occurrence/timing summaries, and error classifications
-- Draft/final distinction: incomplete or inconsistent coding is not exported as a finalized graph point
-- Excel exports with session summary, fixed plan, observations, action records, step summaries, scored opportunities, event log, and coding instructions
-- CSV summary downloads and editable JSON backups for resuming a session
-- Placeholder for the planned interobserver agreement module
+- **Scenario Selection and Simulated-Learner Fidelity:** uniformly select one of 324 fixed 10-trial sets. Retain its set ID and exact order. Show short earpiece scripts, learner-fidelity Yes/No/Not observed checks, and notes. Download participant/session-named JSON and Excel files containing session information, fidelity totals, and the checklist.
+- **Session Coding:** code only observed participant and learner behavior. The selected plan, scenario IDs, and organizer fidelity scores are not imported. Trials open as Complete; Partial and Not Observed are optional statuses.
+- **Coding Instructions:** the only rules/examples location. Tables wrap text.
+- **Results:** correct/applicable counts, overall fidelity, individual occurrence/timing summaries, errors, draft/final validation, Excel/CSV summaries, and editable JSON backups.
+- **Resume / New Session:** restores participant coding without exposing scenario plans.
+- **IOA:** observer identities are retained; the comparison module is still planned.
 
-The videos are stored and viewed outside this application. The app does not upload, process, or store video.
+Videos are viewed outside the app. This program does not upload or automatically analyze recordings.
 
-## Scoring and consistency
+## Scoring
 
-Rules version: `DRA-2026-10-03`. Catalog version: `DRA-v1.1`.
+The shared `scoring.py` engine computes correct applicable scores / all applicable scores × 100. Required-action occurrence and timing contribute separately. An on-time action is 2/2; a late required action is 1/2; an omitted action is 0/1 because its timing is N/A. N/A, Interrupted, Terminated by participant, and missing values are excluded from the denominator; missing values prevent a final summary.
 
-The agreed main dependent variable is correct applicable scores divided by all applicable scores, multiplied by 100. Occurrence and timing contribute separately. An action delivered late contributes occurrence correct and timing incorrect. An action entirely omitted contributes occurrence incorrect and timing N/A. N/A, Interrupted, and Terminated by participant are excluded. There is no fixed denominator.
+Participant targets remain 10-second waits and 15-second earned dolphin access. Inclusive scoring windows are 8–12 seconds and 13–17 seconds. Worksheet presentation, initial instruction, earned dolphin delivery, and completed worksheet removal use three-second deadlines. There is no one-minute trial limit; sessions end after 10 trials or at 10 minutes.
 
-Early required prompts and early worksheet removal receive occurrence correct and timing commission. Unearned dolphin delivery, excess prompts, prompts during ongoing work, and stop statements are commission behaviors. Each behavior measure is scored once per applicable trial; individual instances remain in the event log. One event may violate more than one independently agreed behavior measure.
+Earned dolphin delivery has only on-time/late timing. Delivery before two completed problems is a separate inappropriate-delivery commission. Removal occurrence and access-duration timing apply **only after earned delivery**; inappropriate-only access produces no duration error and both removal measures are N/A. Action records and scored details in Excel use the same exclusions as the summary.
 
-The timer targets are 10 seconds for waits and 15 seconds for dolphin access. Accepted scoring windows are 8–12 and 13–17 seconds respectively. Worksheet presentation, initial instruction, earned delivery, and completed worksheet removal have 3-second deadlines. Tapping and banging do not alter task requirements.
+Two prompts maximum per trial exclude the initial instruction. First/second required prompts retain occurrence and timing; a separate Yes/No no-excess-prompts measure captures third/later prompts. No numeric count is required. Ongoing work continues from writing onset through answer completion, including brief pauses.
 
-Setup observations are retained descriptively and do not add unagreed measures to the main dependent variable. Partial trials may count correct withholding or no-stop-statement scores after at least 3 seconds of relevant exposure. All actual commissions remain recorded regardless of exposure length.
+Finger tapping and table banging do not change the work requirement. No-stop-statement scores apply to observed behavior; actual statements remain commissions even in brief observations. Correct withholding/no-comment scores on partial trials need confirmation of at least three seconds of the relevant opportunity; no exact duration is entered.
 
-`scoring.py` is the only summary/denominator implementation. Both modes must submit the same canonical records to `summarize()`. It also supplies required-action timing and prohibition classifiers. The simulator's playback-event adapter will be implemented with that program; this revision does not build the simulator or infer live behavior from video.
+Setup, observed problems/tapping/banging, and timer use are descriptive, outside the participant fidelity denominator. Organizer Simulated-Learner fidelity is a separate calculation: Yes / (Yes + No), excluding Not observed/unrecorded.
 
 ## Coding workflow
 
-1. Use Session Selection to randomly draw a set for a new live session or look up its existing ID. Download the fixed plan. Once coding begins the selected set is locked.
-2. Enter session/observer information and the observed session endpoint.
-3. Code each reached trial as Complete or Partial. Record observations, occurrence, timing, timestamps when available, and error events. Read the per-component rules/examples to decide applicability; the planned script never substitutes for observations.
-4. Mark each reached trial reviewed. Results show validation issues and unscored fields. Timing selections that conflict with entered timestamps block finalization.
-5. Download the final workbook/CSV for completed coding. Download a JSON backup to resume later; browser state alone is not durable storage.
+1. Enter participant, session, observer, and endpoint information independently of the organizer plan.
+2. Open each observed trial. Use Partial or Not Observed as appropriate.
+3. Record learner behavior, then participant actions and timing with compact left-aligned checkboxes. Exact per-action timestamps and numeric prompt counts are not required.
+4. Consult Coding Instructions for definitions and examples. Optional notes/event details do not add denominator units.
+5. Mark each trial reviewed. Resolve missing or inconsistent scores; drafts keep the final graph field blank.
+6. Download the final workbook/summary and a JSON backup before leaving. Browser state is temporary.
 
-The final graph field is blank in draft exports; provisional accuracy is in a separate column. Record the final numerator and denominator with the percentage. Primary and secondary observer identity is retained for future IOA comparison.
+Historical event times can remain as optional details in restored records. In-person checkbox judgments govern manual coding; automatic event-based checks remain available for the future simulator. The simulator itself is not implemented.
 
-Legacy Excel exports used materially different rules (including 20-second access and removal following banging). Preserve them as historical files; they cannot be silently rescored as the new format. New JSON backups include schema, rules, catalog, and set-order checks.
-
-## Run locally
+## Run and test
 
 ```bash
 pip install -r requirements.txt
 streamlit run app.py
+python -m unittest -v test_dra test_app
 ```
 
-## Validation
-
-```bash
-python -m unittest -v test_dra
-```
-
-Tests cover timing boundaries, omission versus late delivery, session/participant cutoff, partial-trial exposure, separate occurrence/timing denominators, all 324 catalog sets/orders, backup integrity, and workbook summary/export consistency. `test_app.py` additionally exercises selection, navigation, scoring choices, and final summaries using Streamlit AppTest.
-
+Tests cover all 324 catalog orders, separate denominators, early/late/omitted actions, cutoffs, partial exposure, earned-only duration, export consistency, independent coding, checkbox persistence, and planner fidelity.

@@ -82,9 +82,13 @@ def summary_row(session: dict[str,Any],scores: dict[str,Any],*,final: bool) -> d
 def make_workbook(session: dict[str,Any],setup: dict[str,Any],trials: list[dict[str,Any]],scores: dict[str,Any],*,final: bool=False) -> bytes:
  """Runtime export preserves the app's pandas/openpyxl implementation."""
  output=BytesIO();observations=[];actions=[];events=[]
+ canonical={(r['trial'],r['component'],r['measure']):r['result'] for r in scores['details']}
  for trial in trials:
   observations.append({'Trial':trial['trial'],'Scenario':trial.get('scenario_id'),'Status':trial.get('trial_status'),**trial.get('observations',{}),'Notes':trial.get('notes','')})
-  actions.extend({'Trial':trial['trial'],'Scenario':trial.get('scenario_id'),'Component':key,**action} for key,action in trial.get('actions',{}).items())
+  actions.extend({'Trial':trial['trial'],'Scenario':trial.get('scenario_id'),'Component':key,**action,
+                  'occurrence':canonical.get((trial['trial'],key,'Occurrence'),action.get('occurrence')),
+                  'timing':canonical.get((trial['trial'],key,'Timing'),action.get('timing'))}
+                 for key,action in trial.get('actions',{}).items())
   events.extend({'Trial':trial['trial'],'Scenario':trial.get('scenario_id'),**event} for event in trial.get('events',[]))
  guide=[r for entries in load_guide().values() for r in entries]
  with pd.ExcelWriter(output,engine='openpyxl') as writer:
@@ -97,11 +101,13 @@ def make_workbook(session: dict[str,Any],setup: dict[str,Any],trials: list[dict[
   pd.DataFrame(scores['step_summary']).to_excel(writer,sheet_name='Step Summaries',index=False)
   pd.DataFrame(scores['details']).to_excel(writer,sheet_name='Scoring Details',index=False)
   pd.DataFrame(events,columns=['Trial','Scenario','Time','Event','Classification','Notes']).to_excel(writer,sheet_name='Event Log',index=False)
-  pd.DataFrame(guide).to_excel(writer,sheet_name='Scoring Instructions',index=False)
+  pd.DataFrame(guide).to_excel(writer,sheet_name='Coding Instructions',index=False)
   for sheet in writer.book.worksheets:
    sheet.freeze_panes='A2';sheet.auto_filter.ref=sheet.dimensions
    for column in sheet.columns:
     sheet.column_dimensions[column[0].column_letter].width=max(14,min(max(len(str(c.value or '')) for c in column)+2,70))
     for cell in column:
+     from openpyxl.styles import Alignment
+     cell.alignment=Alignment(vertical='top',wrap_text=True)
      if isinstance(cell.value,str) and cell.value.startswith('='): cell.data_type='s'
  return output.getvalue()
