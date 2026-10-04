@@ -173,7 +173,11 @@ def selector_tab():
             with st.container(border=True):
                 st.subheader(f'Trial {number}')
                 st.caption(f'(scenario {sid})')
-                for step in learner_steps(sid):
+                steps=learner_steps(sid)
+                st.markdown('**Instructions:**')
+                st.write(' '.join(step['instruction'] for step in steps))
+                st.markdown('**Fidelity check:**')
+                for step in steps:
                     answer=checked_choice(step['instruction'],[('Yes','Yes'),('No','No'),('Not observed','Not observed')],record['scores'].get(step['id'],MISSING),f"leader_trial_{number}_{step['id']}")
                     record['scores'][step['id']]='Not recorded' if answer==MISSING else answer
                 note_key=f'leader_trial_{number}_notes'
