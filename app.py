@@ -444,9 +444,9 @@ def results_tab():
     with st.expander('All scored opportunities'):
         st.dataframe(pd.DataFrame(scores['details']),hide_index=True,use_container_width=True)
     name=filename()
-    st.download_button('Download '+('final' if final else 'draft')+' session workbook',make_workbook(st.session_state.session,st.session_state.setup,st.session_state.trials,scores,final=final),file_name=name+('.xlsx' if final else '_DRAFT.xlsx'),mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    st.download_button('Download session workbook (Excel)',make_workbook(st.session_state.session,st.session_state.setup,st.session_state.trials,scores,final=final),file_name=name+('.xlsx' if final else '_DRAFT.xlsx'),mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     row=summary_row(st.session_state.session,scores,final=final)
-    st.download_button('Download '+('final' if final else 'draft')+' summary (CSV)',pd.DataFrame([row]).to_csv(index=False).encode(),file_name=name+('_summary.csv' if final else '_DRAFT_summary.csv'),mime='text/csv')
+    st.download_button('Download session summary (CSV)',pd.DataFrame([row]).to_csv(index=False).encode(),file_name=name+('_summary.csv' if final else '_DRAFT_summary.csv'),mime='text/csv')
     st.download_button('Download full session record (JSON)',serialize_session(st.session_state.session,st.session_state.setup,st.session_state.trials),file_name=name+'.json',mime='application/json')
 
 
