@@ -11,7 +11,7 @@ import streamlit.components.v1 as components
 
 from dra import (load_catalog, load_guide, select_session, session_plan,
                  serialize_session, restore_session, summary_row, make_workbook)
-from planner import learner_steps, fidelity_rows, fidelity_summary
+from planner import learner_steps, fidelity_rows, fidelity_summary, fidelity_filename, fidelity_workbook
 
 from scoring import (TIMED_COMPONENTS, BEHAVIOR_COMPONENTS, RULES_VERSION,
                      CORRECT, OMISSION, COMMISSION, TIMING_OMISSION, TIMING_COMMISSION,
@@ -195,8 +195,9 @@ def selector_tab():
         st.metric('Simulated Learner fidelity (recorded items)',f"{summary['percent']:.1f}%" if summary['percent'] is not None else '—')
         st.caption(f"{summary['correct']} / {summary['applicable']} recorded applicable items followed. {summary['unrecorded']} items not yet recorded. Not observed items are excluded.")
         payload={'record_type':'simulated_learner_fidelity','selection':session,'leader':leader,'trials':records}
-        st.download_button('Download learner fidelity record (JSON)',json.dumps(payload,indent=2).encode(),file_name=session['set_id']+'_learner_fidelity.json',mime='application/json')
-        st.download_button('Download learner fidelity checklist (CSV)',pd.DataFrame(rows).to_csv(index=False).encode(),file_name=session['set_id']+'_learner_fidelity.csv',mime='text/csv')
+        name=fidelity_filename(leader)
+        st.download_button('Download learner fidelity record (JSON)',json.dumps(payload,indent=2).encode(),file_name=name+'.json',mime='application/json')
+        st.download_button('Download learner fidelity workbook (Excel)',fidelity_workbook(session,leader,records),file_name=name+'.xlsx',mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
         st.caption('Download your record before leaving this browser session. The set ID and exact trial order are retained in the JSON record.')
 
 def session_info():

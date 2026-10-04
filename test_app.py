@@ -52,6 +52,20 @@ class AppWorkflowTests(unittest.TestCase):
   self.assertTrue(all(t['trial_status']=='Not reached' for t in app.session_state['trials']))
   self.assertNotIn('set_id',app.session_state['session'])
   self.assert_no_exception(app)
+ def test_learner_workbook_and_file_identity(self):
+  from planner import fidelity_workbook, fidelity_filename
+  from dra import select_session, load_catalog
+  from io import BytesIO
+  from openpyxl import load_workbook
+  selection=select_session(load_catalog(),'DRA-001')
+  leader={'participant_id':'P12','session_id':'S3','session_leader':'Mary','simulated_learner':'Sam'}
+  records={'1':{'scores':{'step_1':'Yes','step_2':'No'},'notes':'Learner error'}}
+  book=load_workbook(BytesIO(fidelity_workbook(selection,leader,records)))
+  self.assertEqual(fidelity_filename(leader),'P12_S3_Simulated_Learner_Fidelity')
+  self.assertEqual(book['Session Summary']['B2'].value,'P12')
+  self.assertEqual(book['Session Summary']['B15'].value,0.5)
+  self.assertEqual(book['Session Summary']['B15'].number_format,'0.0%')
+  self.assertIn('Trial Checklist',book.sheetnames)
  def test_random_selection_does_not_redraw_on_rerun(self):
   app=self.app().run()
   next(b for b in app.button if b.label=='Randomly select a session').click().run()

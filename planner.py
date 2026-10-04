@@ -45,3 +45,51 @@ def fidelity_summary(rows):
     return {'correct':yes,'applicable':yes+no,
             'percent':100*yes/(yes+no) if yes+no else None,
             'unrecorded':sum(r['Followed']=='Not recorded' for r in rows)}
+
+def fidelity_filename(leader):
+    import re
+    def identifier(value, prefix):
+        value=str(value or '').strip()
+        if value[:1].upper()==prefix: value=value[1:]
+        return re.sub(r'[^A-Za-z0-9_.-]+','_',value) or 'unknown'
+    return f"P{identifier(leader.get('participant_id'),'P')}_S{identifier(leader.get('session_id'),'S')}_Simulated_Learner_Fidelity"
+
+def fidelity_workbook(selection, leader, records):
+    from io import BytesIO
+    import pandas as pd
+    from openpyxl.styles import Alignment, Font
+    rows=fidelity_rows(selection,records)
+    summary=fidelity_summary(rows)
+    fields=[
+        ('Participant ID',leader.get('participant_id','')),
+        ('Session ID',leader.get('session_id','')),
+        ('Session leader',leader.get('session_leader','')),
+        ('Simulated Learner',leader.get('simulated_learner','')),
+        ('Set ID',selection['set_id']),
+        ('Catalog version',selection['catalog_version']),
+        ('Selection time',selection['selected_at']),
+        ('Exact scenario order',', '.join(map(str,selection['ordered_scenario_ids']))),
+        ('Instructions followed (Yes)',summary['correct']),
+        ('Learner errors (No)',summary['applicable']-summary['correct']),
+        ('Recorded applicable items (Yes + No)',summary['applicable']),
+        ('Not observed items (excluded)',sum(r['Followed']=='Not observed' for r in rows)),
+        ('Items not yet recorded',summary['unrecorded']),
+        ('Simulated Learner fidelity',summary['percent']/100 if summary['percent'] is not None else None),
+        ('Calculation','Yes / (Yes + No). Not observed and not recorded items are excluded.'),
+    ]
+    output=BytesIO()
+    with pd.ExcelWriter(output,engine='openpyxl') as writer:
+        pd.DataFrame(fields,columns=['Field','Value']).to_excel(writer,sheet_name='Session Summary',index=False)
+        pd.DataFrame(rows).to_excel(writer,sheet_name='Trial Checklist',index=False)
+        for sheet in writer.book.worksheets:
+            sheet.freeze_panes='A2'
+            sheet.auto_filter.ref=sheet.dimensions
+            for cell in sheet[1]: cell.font=Font(bold=True)
+            for column in sheet.columns:
+                sheet.column_dimensions[column[0].column_letter].width=min(80,max(18,max(len(str(c.value or '')) for c in column)+2))
+                for cell in column:
+                    cell.alignment=Alignment(vertical='top',wrap_text=True)
+                    if isinstance(cell.value,str) and cell.value.startswith('='):
+                        cell.data_type='s'
+        writer.book['Session Summary']['B15'].number_format='0.0%'
+    return output.getvalue()
