@@ -160,6 +160,8 @@ def selector_tab():
         st.download_button('Download session plan (CSV)',plan.to_csv(index=False).encode(),file_name=session['set_id']+'_trial_plan.csv',mime='text/csv')
         st.subheader('2. Enter session information')
         leader=st.session_state.setdefault('leader_information',{})
+        participant_column,=st.columns(1)
+        with participant_column: leader['participant_id']=text('Participant ID',leader.get('participant_id',''),'leader_participant_id')
         a,b,c=st.columns(3)
         with a: leader['session_id']=text('Session ID',leader.get('session_id',''),'leader_session_id')
         with b: leader['session_leader']=text('Session leader',leader.get('session_leader',''),'leader_name')
