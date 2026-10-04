@@ -194,25 +194,6 @@ def selector_tab():
         st.download_button('Download learner fidelity record (JSON)',json.dumps(payload,indent=2).encode(),file_name=session['set_id']+'_learner_fidelity.json',mime='application/json')
         st.download_button('Download learner fidelity checklist (CSV)',pd.DataFrame(rows).to_csv(index=False).encode(),file_name=session['set_id']+'_learner_fidelity.csv',mime='text/csv')
         st.caption('Download your record before leaving this browser session. The set ID and exact trial order are retained in the JSON record.')
-    with st.expander('Numbered Scenario Details'):
-        st.dataframe(pd.DataFrame([{'Scenario':item['scenario_id'],'Description':item['task_pattern'],'Behavior':item['behavior'],'Dolphin earned': 'Yes' if item['completed'] else 'No','Required prompts':item['required_prompts']} for item in catalog_data()['scenarios']]),hide_index=True,use_container_width=True)
-    with st.expander('All 324 fixed sets'):
-        st.dataframe(pd.DataFrame([{'Set ID':s['set_id'],**{f'Trial {i}':sid for i,sid in enumerate(s['ordered_scenario_ids'],1)}} for s in catalog_data()['sets']]),hide_index=True,use_container_width=True)
-
-    with st.expander('Selection Rules'):
-        st.markdown('**Scenario selection**')
-        for rule in [
-            '10 distinct scenarios per session, selected from scenarios 1–18.',
-            'Five completed trials where the dolphin is earned: 1, 2, 3, 7, 8, 9, 16, 17, 18.',
-            'Five incomplete trials where the dolphin should be withheld: 4, 5, 6, 10, 11, 12, 13, 14, 15.',
-            'Two trials without tapping or banging: one completed from 1, 7, 16; one incomplete from 4, 10, 13.',
-            'Four finger-tapping trials: two completed from 2, 8, 17; two incomplete from 5, 11, 14.',
-            'Four table-banging trials: two completed from 3, 9, 18; two incomplete from 6, 12, 15.',
-            'Equal prompting opportunities: two completed trials require no prompts; three completed trials require one prompt each; all five incomplete trials require two prompts each. Total: 13 required prompts per session.',
-            '324 eligible scenario sets. Random selection gives each set an equal chance; the selected set ID and exact order are retained in the plan record.',
-        ]: st.write('• '+rule)
-        st.markdown('**Trial ordering**')
-        for rule in catalog_data()['ordering_rules']: st.write('• '+rule)
 
 def session_info():
     session=st.session_state.session
