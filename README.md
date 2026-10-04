@@ -7,8 +7,7 @@ Planning and coding in-person Differential Reinforcement of Alternative Behavior
 - **Scenario Selection and Simulated-Learner Fidelity:** uniformly select one of 324 fixed 10-trial sets. Retain its set ID and exact order. Show short earpiece scripts, learner-fidelity Yes/No/Not observed checks, and notes. Download participant/session-named JSON and Excel files containing session information, fidelity totals, and the checklist.
 - **Session Coding:** code only observed participant and learner behavior. The selected plan, scenario IDs, and organizer fidelity scores are not imported. Trials open as Complete; Partial and Not Observed are optional statuses.
 - **Coding Instructions:** the only rules/examples location. Tables wrap text.
-- **Results:** correct/applicable counts, overall fidelity, individual occurrence/timing summaries, errors, draft/final validation, Excel/CSV summaries, and editable JSON backups.
-- **Resume / New Session:** restores participant coding without exposing scenario plans.
+- **Results:** correct/applicable counts, overall fidelity, individual occurrence/timing summaries, errors, draft/final validation, Excel/CSV summaries, and full JSON session records.
 - **IOA:** observer identities are retained; the comparison module is still planned.
 
 Videos are viewed outside the app. This program does not upload or automatically analyze recordings.
@@ -34,9 +33,9 @@ Setup, observed problems/tapping/banging, and timer use are descriptive, outside
 3. Record learner behavior, then participant actions and timing with compact left-aligned checkboxes. Exact per-action timestamps and numeric prompt counts are not required.
 4. Consult Coding Instructions for definitions and examples. Optional notes/event details do not add denominator units.
 5. Mark each trial reviewed. Resolve missing or inconsistent scores; drafts keep the final graph field blank.
-6. Download the final workbook/summary and a JSON backup before leaving. Browser state is temporary.
+6. Complete coding in one sitting, then download the final workbook/summary and full JSON record before leaving. Browser state is temporary.
 
-Historical event times can remain as optional details in restored records. In-person checkbox judgments govern manual coding; automatic event-based checks remain available for the future simulator. The simulator itself is not implemented.
+Historical event times can remain as optional source details in archived records. In-person checkbox judgments govern manual coding; automatic event-based checks remain available for the future simulator. The simulator itself is not implemented.
 
 ## Run and test
 

@@ -1204,7 +1204,7 @@
     {
       "section": "In-Person Coding Program: Recording Requirements",
       "entry": "Timing support",
-      "rule": "Judge the displayed timing questions directly: 0–3 seconds, 8–12 seconds, or 13–17 seconds inclusive. When timing is No, choose Early/Late where both are possible; earned-delivery No is Late automatically. Exact per-action timestamps and per-second duration entry are not required. Historical event times in a restored backup do not override a new in-person checkbox judgment; they remain optional source detail.",
+      "rule": "Judge the displayed timing questions directly: 0–3 seconds, 8–12 seconds, or 13–17 seconds inclusive. When timing is No, choose Early/Late where both are possible; earned-delivery No is Late automatically. Exact per-action timestamps and per-second duration entry are not required. Historical event times in a archived source record do not override a new in-person checkbox judgment; they remain optional source detail.",
       "example": ""
     },
     {
@@ -1246,7 +1246,7 @@
     {
       "section": "In-Person Coding Program: Recording Requirements",
       "entry": "Trial status",
-      "rule": "Each newly opened trial defaults to Complete and immediately displays its coding fields. Complete means the whole trial was observed, even if math remained unfinished. Use adjacent Partial/Not Observed buttons when needed. Not Observed trials are excluded; changing/restoring status must not erase recorded observations.",
+      "rule": "Each newly opened trial defaults to Complete and immediately displays its coding fields. Complete means the whole trial was observed, even if math remained unfinished. Use adjacent Partial/Not Observed buttons when needed. Not Observed trials are excluded; changing status must not erase recorded observations.",
       "example": ""
     },
     {
@@ -1271,6 +1271,12 @@
       "section": "In-Person Coding Program: Recording Requirements",
       "entry": "Instructions location",
       "rule": "Rules and wrapped example tables are available only in Coding Instructions, not repeated within Session Coding.",
+      "example": ""
+    },
+    {
+      "section": "In-Person Coding Program: Recording Requirements",
+      "entry": "One-sitting workflow",
+      "rule": "Complete coding and review in one sitting. Results shares the same record across tabs. Download the full JSON record and Excel results before leaving; the app has no Resume / New Session tab.",
       "example": ""
     }
   ],
