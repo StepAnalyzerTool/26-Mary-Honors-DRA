@@ -323,7 +323,11 @@ def collection_tab():
                     timing_current=action.get('timing',MISSING)
                     answer=checked_choice(timing_question,[('Yes',CORRECT),('No','Outside window')],CORRECT if timing_current==CORRECT else 'Outside window' if timing_current in (TIMING_COMMISSION,TIMING_OMISSION) else MISSING,timing_key)
                     if answer=='Outside window':
-                        action['timing']=checked_choice('Was it early or late?',[('Early',TIMING_COMMISSION),('Late',TIMING_OMISSION)],timing_current,prefix+key+'_direction')
+                        if key=='earned_dolphin':
+                            action['timing']=TIMING_OMISSION
+                            st.caption('Late: the dolphin was given more than 3 seconds after the second problem was completed. Delivery before two problems were completed is scored separately as unearned delivery.')
+                        else:
+                            action['timing']=checked_choice('Was it early or late?',[('Early',TIMING_COMMISSION),('Late',TIMING_OMISSION)],timing_current,prefix+key+'_direction')
                     else: action['timing']=answer
             if key=='worksheet_removal':
                 action['branch']=choice('Removal reference',['Select reference','Second problem completed','Second prompt; no work','First problem completed after both prompts','Premature removal before a valid reference'],action.get('branch','Select reference'),prefix+key+'_branch')
