@@ -284,6 +284,8 @@ def collection_tab():
         return
     st.markdown('**Simulated Learner Behavior**')
     obs=trial['observations']
+    obs['prompts_delivered']=None
+    obs.pop('prompts_na',None)
     problems=checked_choice('Problems completed',[('0',0),('1',1),('2',2),('N/A',None)],None if obs.get('problems_na') else obs.get('problems',MISSING) if obs.get('problems') is not None else MISSING,prefix+'problems')
     obs['problems_na']=problems is None
     obs['problems']=problems if problems in (0,1,2) else None
@@ -363,10 +365,6 @@ def collection_tab():
                     action_fields(next(c for c in TIMED_COMPONENTS if c['key']=='dolphin_removal'))
                 else:
                     st.caption('Answer the earned- and inappropriate-delivery questions above before scoring access duration.')
-        if key=='prompt_2':
-            count=checked_choice('Prompts delivered (exclude initial instruction)',[('0',0),('1',1),('2',2),('3 or more',3)],obs.get('prompts_delivered') if obs.get('prompts_delivered') is not None else MISSING,prefix+'prompt_count')
-            obs['prompts_na']=False
-            obs['prompts_delivered']=count if count in (0,1,2,3) else None
     for component in BEHAVIOR_COMPONENTS:
         if component['key']=='no_unearned': continue
         with st.container(border=True):
@@ -411,8 +409,8 @@ def finalization_issues(scores):
     reached=[t for t in st.session_state.trials if t['trial_status']!='Not reached']
     for trial in reached:
         obs=trial['observations']
-        if (obs.get('problems') is None and not obs.get('problems_na')) or (obs.get('prompts_delivered') is None and not obs.get('prompts_na')):
-            issues.append(f"Trial {trial['trial']}: record problems completed and prompts delivered.")
+        if obs.get('problems') is None and not obs.get('problems_na'):
+            issues.append(f"Trial {trial['trial']}: record problems completed.")
         for action in trial.get('actions',{}).values():
             for field in ('reference_at','action_at'):
                 try:
