@@ -52,7 +52,7 @@
     {
       "section": "General Scoring Conventions",
       "entry": "Interval boundaries",
-      "rule": "All accepted windows include their endpoints: 0\u20133, 8\u201312, and 13\u201317 seconds.",
+      "rule": "All accepted windows include their endpoints: 0–3, 8–12, and 13–17 seconds.",
       "example": ""
     },
     {
@@ -76,7 +76,7 @@
     {
       "section": "Worksheet Presentation Scoring",
       "entry": "Required action",
-      "rule": "Provide one worksheet at a time. Present trial 1 within 3 seconds of session start. For trials 2\u201310, present within 3 seconds of dolphin removal or removal of the preceding unfinished worksheet.",
+      "rule": "Provide one worksheet at a time. Present trial 1 within 3 seconds of session start. For trials 2–10, present within 3 seconds of dolphin removal or removal of the preceding unfinished worksheet.",
       "example": ""
     },
     {
@@ -208,7 +208,7 @@
     {
       "section": "First Prompt Scoring",
       "entry": "Correct",
-      "rule": "Delivered 8\u201312 seconds after the initial instruction, while the stated condition still applies. Record Delivered: Yes; Timing: Correct.",
+      "rule": "Delivered 8–12 seconds after the initial instruction, while the stated condition still applies. Record Delivered: Yes; Timing: Correct.",
       "example": "Instruction at 0:02; prompt at 0:12: on time."
     },
     {
@@ -280,7 +280,7 @@
     {
       "section": "Second Prompt Following No Work Scoring",
       "entry": "Correct",
-      "rule": "Delivered 8\u201312 seconds after the first prompt, while the stated condition still applies. Record Delivered: Yes; Timing: Correct.",
+      "rule": "Delivered 8–12 seconds after the first prompt, while the stated condition still applies. Record Delivered: Yes; Timing: Correct.",
       "example": "First prompt at 0:12; second prompt at 0:22: on time."
     },
     {
@@ -352,7 +352,7 @@
     {
       "section": "Prompt After One Completed Problem Scoring",
       "entry": "Correct",
-      "rule": "Delivered 8\u201312 seconds after completion of the first problem, while the stated condition still applies. Record Delivered: Yes; Timing: Correct.",
+      "rule": "Delivered 8–12 seconds after completion of the first problem, while the stated condition still applies. Record Delivered: Yes; Timing: Correct.",
       "example": "First problem completed at 0:20; prompt at 0:30: on time."
     },
     {
@@ -466,7 +466,7 @@
     {
       "section": "Unfinished Worksheet Removal Scoring",
       "entry": "Correct",
-      "rule": "Removal 8\u201312 seconds after the second prompt while the learner remains inactive. Record Removed: Yes; Timing: Correct.",
+      "rule": "Removal 8–12 seconds after the second prompt while the learner remains inactive. Record Removed: Yes; Timing: Correct.",
       "example": "Second prompt at 0:22; no work; removal at 0:32."
     },
     {
@@ -520,7 +520,7 @@
     {
       "section": "One Problem Completed After Both Prompts: Removal Scoring",
       "entry": "Correct",
-      "rule": "Removal at 8\u201312 seconds after first-problem completion, if problem 2 has not begun.",
+      "rule": "Removal at 8–12 seconds after first-problem completion, if problem 2 has not begun.",
       "example": "Problem 1 completed at 0:35; no second-problem work; removal at 0:45."
     },
     {
@@ -724,19 +724,19 @@
     {
       "section": "Dolphin Removal Scoring",
       "entry": "Required action",
-      "rule": "Allow 15 seconds of access, then remove the dolphin.",
+      "rule": "After earned dolphin delivery, allow 15 seconds of access, then remove the dolphin.",
       "example": ""
     },
     {
       "section": "Dolphin Removal Scoring",
       "entry": "Coder instructions",
-      "rule": "Record when dolphin access begins and when it ends. Calculate access duration. Record removal occurrence separately from timing; do not add a duplicate duration score.",
+      "rule": "For earned delivery only, judge whether removal occurred and whether access lasted 13–17 seconds. Score occurrence and timing separately; do not add a duplicate duration score. Exact timestamp entry is not required.",
       "example": ""
     },
     {
       "section": "Dolphin Removal Scoring",
       "entry": "Correct",
-      "rule": "Removal at 13\u201317 seconds of access, inclusive. Record Removed: Yes; Timing: Correct.",
+      "rule": "Removal at 13–17 seconds of access, inclusive. Record Removed: Yes; Timing: Correct.",
       "example": ""
     },
     {
@@ -766,13 +766,13 @@
     {
       "section": "Dolphin Removal Scoring",
       "entry": "N/A",
-      "rule": "Dolphin access never occurs.",
+      "rule": "No earned dolphin delivery occurred, including trials with only inappropriate delivery. Exclude both removal occurrence and duration/timing.",
       "example": ""
     },
     {
       "section": "Dolphin Removal Scoring",
       "entry": "Unearned access",
-      "rule": "Apply this same removal and duration rule even if dolphin delivery was unearned. Retain the separate unearned-delivery commission.",
+      "rule": "Do not score removal or access duration for inappropriate delivery. Record the inappropriate-delivery commission; removal occurrence and timing are N/A.",
       "example": ""
     },
     {
@@ -1096,7 +1096,7 @@
     {
       "section": "Overall Session Score and Individual Summaries",
       "entry": "Individual summaries",
-      "rule": "Report each component\u2019s occurrence and timing separately, along with commission, omission, timing commission, and timing omission classifications. Preserve raw event counts as well as per-trial scores.",
+      "rule": "Report each component’s occurrence and timing separately, along with commission, omission, timing commission, and timing omission classifications. Preserve raw event counts as well as per-trial scores.",
       "example": ""
     },
     {
@@ -1204,7 +1204,7 @@
     {
       "section": "In-Person Coding Program: Recording Requirements",
       "entry": "Timing support",
-      "rule": "Calculate elapsed times from coded event timestamps to assist score entry and flag inconsistencies for review. Preserve the coder\u2019s observation and any corrections.",
+      "rule": "Calculate elapsed times from coded event timestamps to assist score entry and flag inconsistencies for review. Preserve the coder’s observation and any corrections.",
       "example": ""
     },
     {

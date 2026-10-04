@@ -342,7 +342,7 @@ def collection_tab():
                 st.markdown('**Dolphin access duration**')
                 earned=trial['actions']['earned_dolphin']['occurrence']
                 inappropriate=trial['behaviors']['no_unearned']
-                provided=True if earned==CORRECT or inappropriate==COMMISSION else False if earned not in (CORRECT,MISSING) and inappropriate in (CORRECT,INTERRUPTED,TERMINATED) else MISSING
+                provided=True if earned==CORRECT else False if earned!=MISSING else MISSING
                 obs['dolphin_provided']=provided
                 removal=trial['actions']['dolphin_removal']
                 if provided is False:
@@ -350,14 +350,14 @@ def collection_tab():
                     removal['reference_at']=''; removal['action_at']=''
                     for stored in list(st.session_state):
                         if stored.startswith(prefix+'dolphin_removal_'): del st.session_state[stored]
-                    st.caption('Access duration and removal: N/A because the dolphin was not provided.')
+                    st.caption('Access duration and removal: N/A because no earned dolphin delivery occurred. Any inappropriate delivery is scored separately.')
                 elif provided is True:
                     if removal.get('occurrence')==NA:
                         removal['occurrence']=MISSING; removal['timing']=MISSING
-                    st.caption('Use the same 13–17 second duration rule for any dolphin access, including inappropriate delivery.')
+                    st.caption('Score the 13–17 second access duration only for dolphin delivery after two problems were completed.')
                     action_fields(next(c for c in TIMED_COMPONENTS if c['key']=='dolphin_removal'))
                 else:
-                    st.caption('Answer the earned-delivery question or the inappropriate-delivery question below to establish whether access occurred.')
+                    st.caption('Answer the earned-delivery question above before scoring access duration.')
                 st.markdown('**Inappropriate dolphin delivery**')
                 current=trial['behaviors'].get('no_unearned',MISSING)
                 value=checked_choice('Was the dolphin given before two problems were completed?',[('Yes',COMMISSION),('No',CORRECT)],CORRECT if current==INTERRUPTED else current,prefix+'no_unearned')

@@ -103,6 +103,8 @@ def trial_records(trial: dict[str,Any]) -> list[dict[str,Any]]:
  for c in TIMED_COMPONENTS:
   action=trial.get('actions',{}).get(c['key'],{})
   occurrence=action.get('occurrence',MISSING)
+  if c['key']=='dolphin_removal' and trial.get('actions',{}).get('earned_dolphin',{}).get('occurrence') in (OMISSION,NA,INTERRUPTED,TERMINATED):
+   occurrence=NA
   timing=action.get('timing',MISSING) if occurrence==CORRECT else NA
   for measure,result in (('Occurrence',occurrence),('Timing',timing)):
    records.append({**base,'component':c['key'],'step':c['label'],'measure':measure,'result':result,
@@ -137,6 +139,7 @@ def validate_trials(trials: list[dict[str,Any]]) -> list[str]:
   prefix=f"Trial {trial['trial']}";actions=trial.get('actions',{})
   for c in TIMED_COMPONENTS:
    action=actions.get(c['key'],{});occurrence=action.get('occurrence',MISSING)
+   if c['key']=='dolphin_removal' and actions.get('earned_dolphin',{}).get('occurrence') in (OMISSION,NA,INTERRUPTED,TERMINATED): continue
    if occurrence not in {CORRECT,OMISSION,*EXCLUDED,MISSING}: issues.append(f"{prefix}: invalid occurrence for {c['label']}.")
    if occurrence==CORRECT and action.get('timing',MISSING) not in {CORRECT,TIMING_COMMISSION,TIMING_OMISSION,MISSING}:
     issues.append(f"{prefix}: delivered {c['label']} needs a timing score.")
