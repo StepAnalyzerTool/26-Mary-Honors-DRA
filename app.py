@@ -282,7 +282,7 @@ def collection_tab():
     if trial['trial_status']=='Not reached':
         st.write('This trial is marked Not Observed and contributes no scores. Select Complete or Partial to code it.')
         return
-    st.markdown('**Simulated Learner Behavior**')
+    st.subheader('Simulated Learner Behavior')
     obs=trial['observations']
     obs['prompts_delivered']=None
     obs.pop('prompts_na',None)
