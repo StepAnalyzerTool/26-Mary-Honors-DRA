@@ -1,0 +1,89 @@
+MARY DRA — EXISTING FOOTAGE AUDIT AND CONSOLIDATED RECORDING LIST
+October 4, 2026
+
+REVIEW SCOPE
+All 16 retrieved video files were examined using duration/stream metadata and images sampled every 0.25 seconds across each entire clip. This establishes visual coverage and candidate editing sections, not final frame-accurate event tags, seamless-loop certification, or an auditory review. Every source has an audio track; its intelligibility, spoken content, and suitability have not been verified by listening. Playback testing and final event tagging remain implementation work.
+
+WHAT CAN BE REUSED
+1. 0-problems-no-behavior.mov (8.67 seconds): blank worksheet presentation and no-work waiting. Candidate waiting section after approximately 3.5 seconds.
+2. 0-problems-minor-behavior.mov (10.73 seconds): blank worksheet presentation and finger tapping without work. Candidate tapping section after approximately 5 seconds.
+3. 0-problems-interfering-behavior.mov (11.63 seconds): blank worksheet presentation and table banging without work. Candidate banging section approximately 6.5–10 seconds. Later frames include quieter hand positions; do not assume the whole tail is an uninterrupted banging loop.
+4. 1-problem-no-behavior.mov (17.40 seconds): completes one problem, then waits; marker is recapped and placed upright. Candidate post-completion waiting approximately 14.5–17 seconds.
+5. 1-problem-minor-behavior.mov (16.40 seconds): completes one while tapping, then caps the marker. Short post-completion tapping section approximately 11.5–12.5 seconds; capping temporarily occupies the hands.
+6. 1-problem-interfering-behavior.mov (14.03 seconds): completes one while banging, then keeps banging. Candidate post-completion waiting approximately 10.5–13.5 seconds.
+7. 2-problems-no-behavior.mov (19.83 seconds): two work periods, marker capping, then worksheet removal. Separate completion from capping/removal; do not replay removal automatically.
+8. 2-problems-minor-behavior.mov (16.80 seconds): two work periods with finger tapping, then removal. Short completed-work tapping section before the removal hand enters.
+9. 2-problems-interfering-behavior.mov (18.73 seconds): two work periods with banging, then removal. The later tail contains a face/sleeve movement; do not use it as continuous banging.
+10. finish-problems-no-behavior.mov (8.00 seconds): begins with one answer present, completes the second, waits, then removal.
+11. finish.problems.minor.behavior.mov (8.37 seconds): begins with one answer present, completes the second while tapping, then removal and continued tapping.
+12. finish-problems-interfering-behavior.mov (8.13 seconds): begins with one answer present, completes the second, then bangs during and after removal. Provides an existing completed-worksheet banging-removal section.
+13. worksheet-taken-away-no-behavior.mov (6.83 seconds): worksheet removal and empty-table waiting. The worksheet already has visible markings, so it is not a visually matched blank-worksheet removal for every scenario.
+14. worksheet-taken-away-minor-behavior.mov (5.60 seconds): removal with finger tapping before and after. Short empty-table tapping section available.
+15. doplhin-rewarded-taken-away.mov (26.77 seconds): dolphin delivery, sustained play, removal, and brief empty-table waiting; no worksheet, no sustained tapping/banging. Separate the three actions for participant control.
+16. reinforcer-given-1.mov (27.63 seconds): dolphin delivery, play, removal, and brief empty-table waiting; no worksheet. Several play movements extend the toy toward the other person; choose a section that will not appear to surrender the toy before the removal button is pressed.
+
+The one-problem and corresponding finish-problem recordings use matching problem pairs:
+- No behavior: 6+6 and 2+2.
+- Finger tapping: 9+6 and 20-11.
+- Table banging: 4x3 and 25+5.
+Check answer state, worksheet orientation, marker cap, hand position and posture at each splice. Matching problem text alone does not prove a seamless join.
+
+SCENARIO COVERAGE
+Scenarios 1–3: two-problem footage.
+Scenarios 4–6: one-problem footage followed by waiting.
+Scenarios 7–9: blank-sheet waiting followed by two-problem work after a reminder.
+Scenarios 10–12: blank-sheet waiting followed by one-problem work after a reminder.
+Scenarios 13–15: blank-sheet waiting maintained across both reminders.
+Scenarios 16–18: one-problem footage followed by matching finish-problem footage after a reminder.
+Within each group the order is no behavior, finger tapping, table banging.
+Delayed-start joins may show different worksheets across the zero-work and work sources. Either match the source sheet in additional waiting takes or resolve the visible sheet consistently in editing.
+
+CONFIRMED NEW VIDEO COVERAGE
+A. Dolphin delivery and play with the worksheet still present, for 0, 1 and 2 completed problems.
+B. Worksheet removal while the learner retains the dolphin; continue play after worksheet removal.
+C. Dolphin removal while the worksheet remains; leave the worksheet visibly available.
+These are absent from the retrieved footage. Record both removal orders:
+   Take 1: dolphin given -> play -> worksheet removed -> play -> dolphin removed.
+   Take 2: dolphin given -> play -> dolphin removed -> worksheet remains -> worksheet removed.
+Do not remove either item simply because 15 seconds has elapsed during filming. Film actions on a separate filming cue; the program will later let participant buttons control them.
+
+BEHAVIOR COVERAGE TO CAPTURE IN THE SAME VISIT
+Film the above sequences with no tapping/banging, finger tapping, and table banging if the scenario's assigned behavior is intended to continue during toy access. Existing toy footage only shows the no-behavior version. Whether toy access changes that assigned behavior has not yet been specified; do not silently build that effect into the simulator.
+To avoid a second filming visit, capture these additional variants now, using one hand for the toy and the other for tapping/banging where feasible. No change in tapping/banging should be produced by a stop statement or worksheet removal.
+
+RECOMMENDED BACKUP VIDEO TAKES — NOT ALL ARE PROVEN MISSING
+For each worksheet state (0, 1 and 2 completed) and each behavior (none, tapping, banging), record:
+- 20–30 seconds with the worksheet present and no new work.
+- Worksheet removal.
+- 10–20 seconds with no worksheet, maintaining the assigned behavior.
+- A new blank worksheet being provided, with no work before the filming cue.
+These nine state/behavior combinations cover short waits, late actions, omission waits, premature removal and transition continuity. Existing no-work, one-problem and removal footage can supply some sections, but short tails have not yet passed actual looping tests.
+Use the same worksheet problems and answers as the matching work clip whenever possible.
+Extra long takes are filming buffers, not new trial maximums or prescribed behavior durations.
+
+NO NEW FULL MATH PERFORMANCE REQUEST AT THIS STAGE
+The recordings already contain zero-work, one-problem, two-problem and second-problem completion for all three behavior types. Refilm work only if final tagging or splice testing reveals an unusable segment. The simulator must permit a participant to remove the worksheet during work; it must not play on to a completed answer after removal.
+
+AUDIO RECORDINGS — FOUR SEPARATE FILES
+1. “Do your math work.”
+   One recording serves both the initial instruction and later prompts, consistent with the agreed single task-direction button. Context determines which score it receives.
+2. “Please stop tapping on the table.”
+3. “Please stop banging on the table.”
+4. “Good job!”
+   Button label: Praise — “Good job!”
+   Praise is optional descriptive data: neither required nor a fidelity error. It does not enter the numerator or denominator and does not change work, tapping, banging, or timing references.
+
+Record all four using the same speaker and microphone, with a neutral natural voice, no music, no filming cues and a short quiet margin before/after the phrase. Record a few takes of each. Stop statements must not produce a change in the learner footage.
+Also capture clean room tone and several clean tapping/banging cycles without speech as backup sound for edited loops. These are recommended sound assets, not additional participant responses.
+The study training video/instructions are a separate deliverable; these four recordings are button audio only.
+
+FILMING CONTINUITY
+Match camera position, landscape framing, actor clothing, room lighting, marker/cap location, worksheet orientation and dolphin. Keep the camera fixed. Keep other people's hands out of waiting/play sections; hands enter only for actual delivery/removal.
+Use neutral waiting behavior and clearly distinguish finger tapping from fist/table banging. Do not add claps, spontaneous speech or a visible reaction to praise/stop statements.
+Hold the last state long enough for editing. Program-controlled waiting or toy play may need to continue beyond a short source file; the clip ending must never trigger removal or reinforcement automatically.
+
+IMPLEMENTATION AND SCORING
+All simulator scores must use the existing shared occurrence/timing/behavior records and scoring.py calculations. The new praise event is descriptive only.
+Tag worksheet presentation, first writing on each problem, each answer's completion, behavior onset/segments, actual worksheet removal, dolphin access and removal. The 3-second delivery window starts at the displayed completion of problem 2, not at clip end.
+A button press and the time an action becomes visible are separate events. Final action-timing policy must handle animation latency consistently with the in-person definitions.
+The fixed 324 scenario sets and their orders must be reused. Filming cues and extra recording duration do not alter the established task rules.
