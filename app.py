@@ -232,7 +232,7 @@ def session_info():
         session['simulated_learner']=text('Simulated learner',session.get('simulated_learner',''),'meta_learner')
     with c:
         session['end_reason']=choice('Session end reason',['Not recorded','10 trials completed','10-minute limit reached'],session.get('end_reason','Not recorded'),'meta_end_reason')
-        session['end_at']=text('Session endpoint (seconds or MM:SS.s)',session.get('end_at',''),'meta_end_at',help='Session-relative time. Session start is 0:00.')
+        st.caption('No exact session end time is required. Mark a cutoff trial Partial and later trials Not Observed; score cutoff opportunities using the Coding Instructions.')
         session['notes']=text('Session notes',session.get('notes',''),'meta_notes')
     st.subheader('Setup Observations')
     st.caption('Descriptive observations; excluded from fidelity.')
@@ -402,24 +402,13 @@ def finalization_issues(scores):
     try:
         date.fromisoformat(session.get('date',''))
     except (ValueError,TypeError): issues.append('Enter a valid date in YYYY-MM-DD format.')
-    try: end=parse_time(session.get('end_at'))
-    except (ValueError,TypeError): end=None
-    if end is None or end>600: issues.append('Record a valid session endpoint, no later than 10:00.')
     reason=session.get('end_reason')
     if reason=='Not recorded' or reason is None: issues.append('Record the session end reason.')
-    if reason=='10-minute limit reached' and end!=600: issues.append('The 10-minute cutoff endpoint must be 10:00.')
     reached=[t for t in st.session_state.trials if t['trial_status']!='Not reached']
     for trial in reached:
         obs=trial['observations']
         if obs.get('problems') is None and not obs.get('problems_na'):
             issues.append(f"Trial {trial['trial']}: record problems completed.")
-        for action in ([] if trial.get('manual_checkbox_coding') else trial.get('actions',{}).values()):
-            for field in ('reference_at','action_at'):
-                try:
-                    timestamp=parse_time(action.get(field))
-                    if timestamp is not None and end is not None and timestamp>end:
-                        issues.append(f"Trial {trial['trial']}: an action/reference timestamp is after session end.")
-                except (ValueError,TypeError): pass
     if not reached: issues.append('No trial has been coded.')
     if reason=='10 trials completed' and (len(reached)!=10 or any(t['trial_status']!='Complete' for t in reached)):
         issues.append('All ten trials must be Complete for the ten-trial endpoint.')

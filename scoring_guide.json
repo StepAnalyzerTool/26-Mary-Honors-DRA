@@ -1180,7 +1180,7 @@
     {
       "section": "In-Person Coding Program: Recording Requirements",
       "entry": "Session and observer",
-      "rule": "Enter participant ID, session number, date, data collector, primary/secondary role, simulated learner, and the session endpoint/reason. Scenario Selection and Simulated-Learner Fidelity retains the organizer's set/order separately; observer coding never imports it.",
+      "rule": "Enter participant ID, session number, date, data collector, primary/secondary role, simulated learner, and the session end reason. An exact session end time is not required. When the 10-minute limit interrupts a trial, mark it Partial and mark later trials Not Observed. Retain actions/errors already observed; use Interrupted when the cutoff prevented judging an opportunity, as defined below. Scenario Selection and Simulated-Learner Fidelity retains the organizer's set/order separately; observer coding never imports it.",
       "example": ""
     },
     {

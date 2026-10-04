@@ -33,12 +33,13 @@ class AppWorkflowTests(unittest.TestCase):
  def test_completed_session_final_summary_and_dirty_review(self):
   session,trials=perfect_session()
   session.update(participant_id='P1',session_number='1',data_collector='Mary',collector_role='Primary',
-                 date='2026-10-03',end_reason='10 trials completed',end_at='8:00')
+                 date='2026-10-03',end_reason='10 trials completed')
   app=self.app();app.session_state['session']=session;app.session_state['trials']=trials
   app.run();self.assert_no_exception(app)
   app.session_state['trials'][0]['reviewed']=True
   app.run();self.assert_no_exception(app)
   self.assertEqual(next(m.value for m in app.metric if m.label=='Overall fidelity'),'100.0%')
+  self.assertFalse(any(x.label.startswith('Session endpoint') for x in app.text_input))
   app.checkbox(key='code_1_instruction_timing_check_1').check().run()
   app.checkbox(key='code_1_instruction_direction_check_1').check().run()
   self.assertFalse(any('timing conflicts' in e.value for e in app.error))
