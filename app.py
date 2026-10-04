@@ -10,7 +10,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 
 from dra import (load_catalog, load_guide, select_session, session_plan,
-                 serialize_session, restore_session, summary_row, make_workbook)
+                 serialize_session, summary_row, make_workbook)
 from planner import learner_steps, fidelity_rows, fidelity_summary, fidelity_filename, fidelity_workbook
 
 from scoring import (TIMED_COMPONENTS, BEHAVIOR_COMPONENTS, RULES_VERSION,
@@ -258,7 +258,7 @@ def collection_tab():
     session_info()
     timers()
     st.subheader('Trial-by-trial coding')
-    st.caption('Changes are retained while this browser session is open. Download a JSON backup before leaving; restore it to continue later.')
+    st.caption('Complete and review this session in one sitting. Entries remain available across tabs while this browser session is open. Download the full JSON record and results before leaving.')
     index=st.radio('Trial to code',list(range(1,11)),format_func=lambda i:f'T{i}',horizontal=True,key='trial_index')
     trial=st.session_state.trials[index-1]
     before=deepcopy(trial)
@@ -455,36 +455,14 @@ def results_tab():
     st.download_button('Download '+('final' if final else 'draft')+' session workbook',make_workbook(st.session_state.session,st.session_state.setup,st.session_state.trials,scores,final=final),file_name=name+('.xlsx' if final else '_DRAFT.xlsx'),mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     row=summary_row(st.session_state.session,scores,final=final)
     st.download_button('Download '+('final' if final else 'draft')+' summary (CSV)',pd.DataFrame([row]).to_csv(index=False).encode(),file_name=name+('_summary.csv' if final else '_DRAFT_summary.csv'),mime='text/csv')
-    st.download_button('Download editable session backup (JSON)',serialize_session(st.session_state.session,st.session_state.setup,st.session_state.trials),file_name=name+'.json',mime='application/json')
+    st.download_button('Download full session record (JSON)',serialize_session(st.session_state.session,st.session_state.setup,st.session_state.trials),file_name=name+'.json',mime='application/json')
 
-def restore_tab():
-    st.subheader('Resume or start a coding session')
-    st.write('Upload the JSON backup exported by this version. Restoring replaces the current browser session; download a backup first if needed.')
-    upload=st.file_uploader('Session backup',type=['json'],key='restore_upload')
-    acknowledge=st.checkbox('Replace the current browser session',key='replace_ack')
-    if st.button('Restore session',disabled=upload is None or not acknowledge):
-        try:
-            payload=restore_session(upload.getvalue())
-            for key in list(st.session_state):
-                if key.startswith(('code_','meta_','setup_')): del st.session_state[key]
-            st.session_state.session=payload['session'];st.session_state.setup=payload['setup'];st.session_state.trials=payload['trials']
-            clear_plan_from_coding()
-            for restored_trial in st.session_state.trials:
-                st.session_state[f"code_{restored_trial['trial']}_status_initialized"]=True
-            st.session_state.trial_index=1
-            st.rerun()
-        except (ValueError,TypeError,KeyError,json.JSONDecodeError) as exc: st.error(str(exc))
-    if st.button('Start a new blank session',disabled=not acknowledge):
-        for key in list(st.session_state):
-            if key.startswith(('code_','meta_','setup_')): del st.session_state[key]
-        st.session_state.trials=empty_trials();st.session_state.session={'date':str(date.today()),'mode':'in_person'};st.session_state.setup={'arrange_materials':'Not recorded','prepare_reinforcers':'Not recorded'};st.session_state.trial_index=1
-        st.rerun()
 
 initialize()
 clear_plan_from_coding()
 st.title('DRA Session Coder')
 st.caption("Mary’s Honors Thesis · 2026-2027 - Planning and Coding Recordings of In-Person Simulated-Learner Sessions")
-selection,collection,results,instructions,resume,ioa=st.tabs(['Scenario Selection and Simulated-Learner Fidelity','Session Coding','Results','Coding Instructions','Resume / New Session','IOA'])
+selection,collection,results,instructions,ioa=st.tabs(['Scenario Selection and Simulated-Learner Fidelity','Session Coding','Results','Coding Instructions','IOA'])
 with selection:
     st.header('Scenario Selection and Simulated-Learner Fidelity')
     selector_tab()
@@ -500,9 +478,6 @@ with instructions:
     st.write('Use these instructions for Session Coding. Timing examples illustrate the scoring windows; exact timestamps and numeric prompt counts are not required. Scenario selection and Simulated-Learner fidelity remain separate from observer coding.')
     for section in guide_data():
         with st.expander(section): rule_help([section])
-with resume:
-    st.header('Resume / New Session')
-    restore_tab()
 with ioa:
     st.header('IOA')
     st.subheader('Interobserver agreement')
