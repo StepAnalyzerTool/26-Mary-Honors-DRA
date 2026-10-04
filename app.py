@@ -337,8 +337,17 @@ def collection_tab():
         with st.container(border=True):
             action_fields(component)
             if key=='earned_dolphin':
+                st.markdown('**Inappropriate dolphin delivery**')
+                current=trial['behaviors'].get('no_unearned',MISSING)
+                value=checked_choice('Was the dolphin given before two problems were completed?',[('Yes',COMMISSION),('No',CORRECT)],CORRECT if current==INTERRUPTED else current,prefix+'no_unearned')
+                if value==CORRECT and trial['trial_status']=='Partial' and obs.get('incomplete_eligible') is False:
+                    value=INTERRUPTED
+                    st.caption('No inappropriate delivery occurred, but this partial trial had less than 3 seconds of opportunity, so withholding is excluded from fidelity.')
+                trial['behaviors']['no_unearned']=value
                 st.markdown('**Dolphin access duration**')
-                provided=checked_choice('Was the dolphin provided at any point in this trial?',[('Yes',True),('No',False)],obs.get('dolphin_provided',MISSING),prefix+'dolphin_provided')
+                earned=trial['actions']['earned_dolphin']['occurrence']
+                inappropriate=trial['behaviors']['no_unearned']
+                provided=True if earned==CORRECT or inappropriate==COMMISSION else False if earned not in (CORRECT,MISSING) and inappropriate in (CORRECT,INTERRUPTED,TERMINATED) else MISSING
                 obs['dolphin_provided']=provided
                 removal=trial['actions']['dolphin_removal']
                 if provided is False:
@@ -353,16 +362,7 @@ def collection_tab():
                     st.caption('Use the same 13–17 second duration rule for any dolphin access, including inappropriate delivery.')
                     action_fields(next(c for c in TIMED_COMPONENTS if c['key']=='dolphin_removal'))
                 else:
-                    st.caption('Select whether the dolphin was provided before scoring access duration.')
-        if key=='earned_dolphin':
-            with st.container(border=True):
-                st.markdown('**Inappropriate dolphin delivery**')
-                current=trial['behaviors'].get('no_unearned',MISSING)
-                value=checked_choice('Was the dolphin given before two problems were completed?',[('Yes',COMMISSION),('No',CORRECT)],CORRECT if current==INTERRUPTED else current,prefix+'no_unearned')
-                if value==CORRECT and trial['trial_status']=='Partial' and obs.get('incomplete_eligible') is False:
-                    value=INTERRUPTED
-                    st.caption('No inappropriate delivery occurred, but this partial trial had less than 3 seconds of opportunity, so withholding is excluded from fidelity.')
-                trial['behaviors']['no_unearned']=value
+                    st.caption('Answer the earned- and inappropriate-delivery questions above before scoring access duration.')
         if key=='prompt_2':
             count=checked_choice('Prompts delivered (exclude initial instruction)',[('0',0),('1',1),('2',2),('3 or more',3)],obs.get('prompts_delivered') if obs.get('prompts_delivered') is not None else MISSING,prefix+'prompt_count')
             obs['prompts_na']=False
