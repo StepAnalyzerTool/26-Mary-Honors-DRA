@@ -300,6 +300,20 @@ def collection_tab():
     st.subheader('Participant Behavior')
     for component in TIMED_COMPONENTS:
         key=component['key'];action=trial['actions'][key]
+        if key=='dolphin_removal':
+            provided=checked_choice('Was the dolphin provided at any point in this trial?',[('Yes',True),('No',False)],obs.get('dolphin_provided',MISSING),prefix+'dolphin_provided')
+            obs['dolphin_provided']=provided
+            if provided is False:
+                action['occurrence']=NA; action['timing']=NA
+                action['reference_at']=''; action['action_at']=''
+                for stored in list(st.session_state):
+                    if stored.startswith(prefix+'dolphin_removal_'): del st.session_state[stored]
+                st.caption('Dolphin removal: N/A because the dolphin was not provided in this trial.')
+                continue
+            if provided!=True:
+                st.caption('Select whether the dolphin was provided before scoring removal.')
+                continue
+            st.caption('Score removal even if the dolphin was provided before two problems were completed.')
         with st.container(border=True):
             label={'worksheet':'Worksheet Presented','instruction':'Instruction Given'}.get(key,component['label'])
             st.markdown(f'**{label}**')
