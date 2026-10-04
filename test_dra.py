@@ -82,7 +82,17 @@ class SummaryTests(unittest.TestCase):
   _,trials=perfect_session();t=next(t for t in trials if t['actions']['earned_dolphin']['occurrence']==CORRECT)
   t['actions']['earned_dolphin'].update(occurrence=OMISSION,timing=NA,action_at='')
   r=score_trials(trials)
-  self.assertEqual((r['correct'],r['applicable']),(142,143))
+  self.assertEqual((r['correct'],r['applicable']),(140,141))
+ def test_inappropriate_delivery_excludes_removal_and_retains_commission(self):
+  _,trials=perfect_session()
+  t=next(t for t in trials if t['actions']['earned_dolphin']['occurrence']==NA)
+  t['behaviors']['no_unearned']=COMMISSION
+  t['actions']['dolphin_removal'].update(occurrence=CORRECT,timing=TIMING_COMMISSION)
+  r=score_trials([t])
+  removal=[d for d in r['details'] if d['component']=='dolphin_removal']
+  self.assertTrue(all(d['result']==NA for d in removal))
+  self.assertEqual(r['counts'][COMMISSION],1)
+  self.assertEqual(r['counts'][TIMING_COMMISSION],0)
  def test_multiple_extra_events_one_trial_score(self):
   _,trials=perfect_session();t=trials[0]
   t['observations']['prompts_delivered']=4;t['behaviors']['no_excess']=COMMISSION
