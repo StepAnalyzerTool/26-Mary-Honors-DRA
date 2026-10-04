@@ -11,6 +11,8 @@ import streamlit.components.v1 as components
 
 from dra import (load_catalog, load_guide, select_session, session_plan,
                  serialize_session, restore_session, summary_row, make_workbook)
+from planner import learner_steps, fidelity_rows, fidelity_summary
+
 from scoring import (TIMED_COMPONENTS, BEHAVIOR_COMPONENTS, RULES_VERSION,
                      CORRECT, OMISSION, COMMISSION, TIMING_OMISSION, TIMING_COMMISSION,
                      NA, INTERRUPTED, TERMINATED, MISSING, empty_trials, score_trials,
@@ -44,6 +46,9 @@ def has_coding():
 
 def set_selection(selection):
     st.session_state['planner_selection']=dict(selection)
+    st.session_state['learner_fidelity']={}
+    for key in list(st.session_state):
+        if key.startswith('leader_trial_'): del st.session_state[key]
 
 def choice(label, options, current, key, **kwargs):
     if key not in st.session_state:
@@ -126,9 +131,16 @@ def timers():
 def selector_tab():
     st.subheader('Select a fixed 10-trial session')
     st.write('Each catalog ID identifies both the scenarios and their exact order. Selecting a set never reshuffles it.')
-    disabled=False
+    records=st.session_state.setdefault('learner_fidelity',{})
+    disabled=any(r.get('notes') or any(v!='Not recorded' for v in r.get('scores',{}).values()) for r in records.values())
     if disabled:
-        st.info('The set is locked because coding has begun. Download a backup and start a new coding session to use another set.')
+        st.info('This plan is locked because learner fidelity recording has begun. Download the record before starting a new plan.')
+        if st.button('Start a new scenario plan'):
+            st.session_state.pop('planner_selection',None)
+            st.session_state['learner_fidelity']={}
+            for key in list(st.session_state):
+                if key.startswith('leader_trial_'): del st.session_state[key]
+            st.rerun()
     c1,c2=st.columns(2)
     with c1:
         if st.button('Randomly select a session', disabled=disabled, type='primary'):
@@ -144,9 +156,33 @@ def selector_tab():
         st.markdown(f"**{session['set_id']} · {session['catalog_version']}**")
         plan=pd.DataFrame(session_plan(session,catalog_data()))
         st.dataframe(plan,hide_index=True,use_container_width=True)
-        st.caption('Expected behavior is the script, not a substitute for observed events.')
         st.download_button('Download session plan (CSV)',plan.to_csv(index=False).encode(),file_name=session['set_id']+'_trial_plan.csv',mime='text/csv')
-        st.download_button('Download set record (JSON)',json.dumps({k:session[k] for k in ('set_id','catalog_version','ordered_scenario_ids','selected_at','mode')},indent=2).encode(),file_name=session['set_id']+'_plan.json',mime='application/json')
+        leader=st.session_state.setdefault('leader_information',{})
+        a,b,c=st.columns(3)
+        with a: leader['session_id']=text('Session ID',leader.get('session_id',''),'leader_session_id')
+        with b: leader['session_leader']=text('Session leader',leader.get('session_leader',''),'leader_name')
+        with c: leader['simulated_learner']=text('Simulated Learner',leader.get('simulated_learner',''),'leader_learner')
+        st.markdown('**Earpiece instructions and Simulated Learner fidelity**')
+        st.write('Read the short instructions through the Bluetooth earpiece. A reminder means a task direction after the initial instruction. Judge what the learner actually did, rather than checking items in advance.')
+        st.caption('Check Yes when the instruction was followed, No for a learner error, or Not observed when the cue/opportunity never occurred or the session ended first. Leave unchecked until assessed. These scores are separate from participant fidelity.')
+        for number,sid in enumerate(session['ordered_scenario_ids'],1):
+            record=records.setdefault(str(number),{'scores':{},'notes':''})
+            with st.container(border=True):
+                st.markdown(f'**Trial {number} · Scenario {sid}**')
+                for step in learner_steps(sid):
+                    answer=checked_choice(step['instruction'],[('Yes','Yes'),('No','No'),('Not observed','Not observed')],record['scores'].get(step['id'],MISSING),f"leader_trial_{number}_{step['id']}")
+                    record['scores'][step['id']]='Not recorded' if answer==MISSING else answer
+                note_key=f'leader_trial_{number}_notes'
+                if note_key not in st.session_state: st.session_state[note_key]=record.get('notes','')
+                record['notes']=st.text_area('Other mistakes / notes',key=note_key)
+        rows=fidelity_rows(session,records)
+        summary=fidelity_summary(rows)
+        st.metric('Simulated Learner fidelity (recorded items)',f"{summary['percent']:.1f}%" if summary['percent'] is not None else '—')
+        st.caption(f"{summary['correct']} / {summary['applicable']} recorded applicable items followed. {summary['unrecorded']} items not yet recorded. Not observed items are excluded.")
+        payload={'record_type':'simulated_learner_fidelity','selection':session,'leader':leader,'trials':records}
+        st.download_button('Download learner fidelity record (JSON)',json.dumps(payload,indent=2).encode(),file_name=session['set_id']+'_learner_fidelity.json',mime='application/json')
+        st.download_button('Download learner fidelity checklist (CSV)',pd.DataFrame(rows).to_csv(index=False).encode(),file_name=session['set_id']+'_learner_fidelity.csv',mime='text/csv')
+        st.caption('Download your record before leaving this browser session. The set ID and exact trial order are retained in the JSON record.')
     with st.expander('All 324 fixed sets'):
         st.dataframe(pd.DataFrame([{'Set ID':s['set_id'],**{f'Trial {i}':sid for i,sid in enumerate(s['ordered_scenario_ids'],1)}} for s in catalog_data()['sets']]),hide_index=True,use_container_width=True)
 
@@ -370,12 +406,8 @@ initialize()
 clear_plan_from_coding()
 st.title('DRA Session Coder')
 st.caption("Mary’s honors thesis · Coding recordings of in-person simulated-learner sessions · "+RULES_VERSION)
-workspace=st.radio('Workspace',['Session coder','Session planner'],horizontal=True,key='workspace')
-if workspace=='Session planner':
-    st.caption('For session organizers. Plans are separate from observer coding and are not copied into coding records.')
-    selector_tab()
-    st.stop()
-collection,results,instructions,resume,ioa=st.tabs(['DRA Data Collection','Results','Scoring Instructions','Resume / New Session','IOA'])
+collection,results,instructions,resume,ioa,selection=st.tabs(['DRA Data Collection','Results','Scoring Instructions','Resume / New Session','IOA','Scenario Selection and Fidelity'])
+with selection: selector_tab()
 with collection: collection_tab()
 with results: results_tab()
 with instructions:
