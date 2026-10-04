@@ -67,12 +67,13 @@ def checked_choice(label, options, current, key, disabled=False):
             sibling=f'{key}_check_{i}'
             st.session_state[sibling]=st.session_state[key]==options[i][1]
     st.write(label)
-    columns=st.columns(len(options))
-    for i,(caption,value) in enumerate(options):
-        widget=f'{key}_check_{i}'
-        st.session_state[widget]=st.session_state[key]==value
-        with columns[i]:
-            st.checkbox(caption,key=widget,disabled=disabled,on_change=changed,args=(widget,value))
+    with st.container(width=min(650,130*len(options))):
+        columns=st.columns(len(options))
+        for i,(caption,value) in enumerate(options):
+            widget=f'{key}_check_{i}'
+            st.session_state[widget]=st.session_state[key]==value
+            with columns[i]:
+                st.checkbox(caption,key=widget,disabled=disabled,on_change=changed,args=(widget,value))
     return st.session_state[key]
 
 ACTION_QUESTIONS={
