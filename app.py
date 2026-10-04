@@ -420,12 +420,12 @@ initialize()
 clear_plan_from_coding()
 st.title('DRA Session Coder')
 st.caption("Mary’s Honors Thesis · 2026-2027 - Planning and Coding Recordings of In-Person Simulated-Learner Sessions")
-selection,collection,results,instructions,resume,ioa=st.tabs(['Scenario Selection and Simulated-Learner Fidelity','DRA Data Collection','Results','Scoring Instructions','Resume / New Session','IOA'])
+selection,collection,results,instructions,resume,ioa=st.tabs(['Scenario Selection and Simulated-Learner Fidelity','Session Coding','Results','Scoring Instructions','Resume / New Session','IOA'])
 with selection:
     st.header('Scenario Selection and Simulated-Learner Fidelity')
     selector_tab()
 with collection:
-    st.header('DRA Data Collection')
+    st.header('Session Coding')
     collection_tab()
 with results:
     st.header('Results')
