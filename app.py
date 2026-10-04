@@ -10,7 +10,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 
 from dra import (load_catalog, load_guide, select_session, session_plan,
-                 serialize_session, summary_row, make_workbook)
+                 serialize_session, summary_row, make_workbook, session_results_rows)
 from planner import learner_steps, fidelity_rows, fidelity_summary, fidelity_filename, fidelity_workbook
 
 from scoring import (TIMED_COMPONENTS, BEHAVIOR_COMPONENTS, RULES_VERSION,
@@ -437,8 +437,10 @@ def results_tab():
         with st.expander('What remains to finalize',expanded=bool(scores['validation_issues'])):
             for issue in issues: st.write('• '+issue)
     else: st.success('Coding complete: final session summary available.')
-    st.markdown('**Individual step and measure summaries**')
-    st.dataframe(pd.DataFrame(scores['step_summary']),hide_index=True,use_container_width=True)
+    st.markdown('**Trial by Trial Data**')
+    trial_data=pd.DataFrame(session_results_rows(st.session_state.trials,scores))
+    trial_data['Step fidelity (%)']=trial_data['Step fidelity (%)'].map(lambda value: f'{value:.1%}' if pd.notna(value) else '')
+    st.dataframe(trial_data,hide_index=True,use_container_width=True)
     with st.expander('All scored opportunities'):
         st.dataframe(pd.DataFrame(scores['details']),hide_index=True,use_container_width=True)
     name=filename()
