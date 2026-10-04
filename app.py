@@ -61,6 +61,8 @@ def checked_choice(label, options, current, key, disabled=False):
     """Exclusive checkboxes; preserve canonical scores and clear sibling choices."""
     if key not in st.session_state: st.session_state[key]=current
     if disabled: st.session_state[key]=current
+    if st.session_state[key] not in [value for _,value in options]:
+        st.session_state[key]=MISSING
     def changed(selected, value):
         st.session_state[key]=value if st.session_state[selected] else MISSING
         for i in range(len(options)):
@@ -91,6 +93,20 @@ BEHAVIOR_QUESTIONS={
  'no_work_prompts':'Did the participant refrain from prompting during ongoing work?',
  'no_tapping_comments':'Did the participant refrain from telling the learner to stop tapping?',
  'no_banging_comments':'Did the participant refrain from telling the learner to stop banging?',
+}
+
+ACTION_NA={
+ 'instruction':'N/A: no worksheet was provided, so a post-presentation initial instruction was not required.',
+ 'prompt_1':'N/A: no first prompt was needed because the learner began or continued work without a required pause.',
+ 'prompt_2':'N/A: no second prompt was needed because work began or both problems were completed before another prompt was required.',
+ 'worksheet_removal':'N/A: no worksheet was provided to remove.',
+ 'earned_dolphin':'N/A: the learner did not complete two problems.',
+ 'dolphin_removal':'N/A: the dolphin was never provided, including any unearned delivery.',
+}
+BEHAVIOR_NA={
+ 'no_work_prompts':'N/A: the learner never began working on a problem, so there was no ongoing work during which to withhold prompts.',
+ 'no_tapping_comments':'N/A: finger tapping did not occur.',
+ 'no_banging_comments':'N/A: table banging did not occur.',
 }
 
 def text(label, value, key, **kwargs):
@@ -223,7 +239,7 @@ def session_info():
     for key,label in [('arrange_materials','Were materials arranged outside reach?'),('prepare_reinforcers','Were reinforcers prepared?')]:
         with st.container(border=True):
             current=st.session_state.setup.get(key,'Not recorded')
-            answer=checked_choice(label,[('Yes','Yes'),('No','No'),('N/A','N/A')],MISSING if current=='Not recorded' else current,'setup_'+key)
+            answer=checked_choice(label,[('Yes','Yes'),('No','No')],MISSING if current=='Not recorded' else current,'setup_'+key)
             st.session_state.setup[key]='Not recorded' if answer==MISSING else answer
 
 def optional_number(label, value, key, integer=False):
@@ -273,13 +289,13 @@ def collection_tab():
     obs['problems']=problems if problems in (0,1,2) else None
     st.caption('N/A: no worksheet was provided.')
     for field,label in [('tapping_observed','Was finger tapping observed?'),('banging_observed','Was table banging observed?')]:
-        value=checked_choice(label,[('Yes',True),('No',False),('N/A',None)],obs.get(field,MISSING),prefix+field)
+        value=checked_choice(label,[('Yes',True),('No',False)],obs.get(field,MISSING),prefix+field)
         obs[field]=value
     if trial['trial_status']=='Partial':
         st.write('Partial-trial scoring checks')
         st.caption('Judge whether there was at least 3 seconds of opportunity; no exact duration needs to be entered.')
         for field,label in [('incomplete_eligible','Was there at least 3 seconds with fewer than two problems completed?'),('tapping_eligible','Was finger tapping observable for at least 3 seconds?'),('banging_eligible','Was table banging observable for at least 3 seconds?')]:
-            obs[field]=checked_choice(label,[('Yes',True),('No',False),('N/A',None)],obs.get(field,MISSING),prefix+field)
+            obs[field]=checked_choice(label,[('Yes',True),('No',False)],obs.get(field,MISSING),prefix+field)
     st.caption('Beginning: first writing movement directed at solving the problem. Completion: written answer finished. Brief pauses within a problem remain ongoing work.')
     st.subheader('Participant Behavior')
     for component in TIMED_COMPONENTS:
@@ -288,8 +304,12 @@ def collection_tab():
             label={'worksheet':'Worksheet Presented','instruction':'Instruction Given'}.get(key,component['label'])
             st.markdown(f'**{label}**')
             question,timing_question=ACTION_QUESTIONS[key]
-            action['occurrence']=checked_choice(question,[('Yes',CORRECT),('No',OMISSION),('N/A',NA),('Interrupted',INTERRUPTED),('Ended early by participant',TERMINATED)],action.get('occurrence',MISSING),prefix+key+'_occ')
-            st.caption('N/A: no opportunity arose. Interrupted: the session ended before the deadline. Ended early: premature worksheet removal closed this opportunity.')
+            options=[('Yes',CORRECT),('No',OMISSION)]
+            if key in ACTION_NA: options.append(('N/A',NA))
+            options.extend([('Interrupted',INTERRUPTED),('Ended early by participant',TERMINATED)])
+            action['occurrence']=checked_choice(question,options,action.get('occurrence',MISSING),prefix+key+'_occ')
+            if key in ACTION_NA: st.caption(ACTION_NA[key])
+            st.caption('Interrupted: the session ended before the deadline. Ended early: premature worksheet removal closed this opportunity.')
             with st.container(border=True):
                 timing_key=prefix+key+'_timing'
                 if action['occurrence']!=CORRECT:
@@ -309,14 +329,19 @@ def collection_tab():
                 action['branch']=choice('Removal reference',['Select reference','Second problem completed','Second prompt; no work','First problem completed after both prompts','Premature removal before a valid reference'],action.get('branch','Select reference'),prefix+key+'_branch')
             action['notes']=text('Reference description / coding notes',action.get('notes',''),prefix+key+'_notes')
         if key=='prompt_2':
-            count=checked_choice('Prompts delivered (exclude initial instruction)',[('0',0),('1',1),('2',2),('3 or more',3),('N/A',None)],obs.get('prompts_delivered') if obs.get('prompts_delivered') is not None else MISSING,prefix+'prompt_count')
-            obs['prompts_na']=count is None
+            count=checked_choice('Prompts delivered (exclude initial instruction)',[('0',0),('1',1),('2',2),('3 or more',3)],obs.get('prompts_delivered') if obs.get('prompts_delivered') is not None else MISSING,prefix+'prompt_count')
+            obs['prompts_na']=False
             obs['prompts_delivered']=count if count in (0,1,2,3) else None
     for component in BEHAVIOR_COMPONENTS:
         with st.container(border=True):
             st.markdown(f"**{component['label']}**")
-            trial['behaviors'][component['key']]=checked_choice(BEHAVIOR_QUESTIONS[component['key']],[('Yes',CORRECT),('No',COMMISSION),('N/A',NA),('Interrupted',INTERRUPTED),('Ended early by participant',TERMINATED)],trial['behaviors'].get(component['key'],MISSING),prefix+component['key'])
-    obs['timer_use']=checked_choice('Did the participant use a timer?',[('Yes','Used'),('No','Not used'),('N/A','N/A')],obs.get('timer_use',MISSING),prefix+'timer')
+            behavior_key=component['key']
+            options=[('Yes',CORRECT),('No',COMMISSION)]
+            if behavior_key in BEHAVIOR_NA: options.append(('N/A',NA))
+            options.extend([('Interrupted',INTERRUPTED),('Ended early by participant',TERMINATED)])
+            trial['behaviors'][behavior_key]=checked_choice(BEHAVIOR_QUESTIONS[behavior_key],options,trial['behaviors'].get(behavior_key,MISSING),prefix+behavior_key)
+            if behavior_key in BEHAVIOR_NA: st.caption(BEHAVIOR_NA[behavior_key])
+    obs['timer_use']=checked_choice('Did the participant use a timer?',[('Yes','Used'),('No','Not used')],obs.get('timer_use',MISSING),prefix+'timer')
     with st.expander('Detailed event log'):
         st.caption('Record individual errors and learner events here. Repeated commissions are logged individually; the per-trial behavior measure is still scored once. The event log does not silently add scores to the overall denominator.')
         event_frame=pd.DataFrame(trial.get('events',[]),columns=['Time','Event','Classification','Notes'])
