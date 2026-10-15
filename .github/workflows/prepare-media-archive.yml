@@ -1,0 +1,46 @@
+name: Prepare media archive
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/prepare-media-archive.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: prepare-dra-media-archive
+  cancel-in-progress: false
+
+jobs:
+  prepare-draft:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create source-recording draft if absent
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="dra-source-recordings-v1"
+          # Listing includes drafts visible to this repository token.
+          release_count=$(gh api --paginate "repos/$GH_REPO/releases?per_page=100" --jq '[.[] | select(.tag_name == "dra-source-recordings-v1")] | length')
+          if printf '%s\n' "$release_count" | awk '$1 > 0 {found=1} END {exit !found}'; then
+            echo "The recording archive already exists; leaving it unchanged."
+            exit 0
+          fi
+          cat > "$RUNNER_TEMP/dra-recording-notes.md" <<'NOTES'
+          Original video and audio recordings for Mary's Differential Reinforcement of Alternative Behavior (DRA) simulator.
+
+          Upload full original recordings in the attachment area below. Keep original filenames. Each file must be under 2 GiB. Save the draft after uploading.
+
+          Reopen and verify filenames and sizes, then download and open a copy before removing any local original. Keep a second verified backup.
+
+          This repository is public. Publishing this release makes the attached recordings publicly downloadable. Leave it as a draft while collecting and checking footage.
+
+          See media/README.md for organization and upload instructions. This archive does not mean the simulator or edited playback clips are ready.
+          NOTES
+          gh release create "$tag" --draft --target main --title "DRA source recordings" --notes-file "$RUNNER_TEMP/dra-recording-notes.md"

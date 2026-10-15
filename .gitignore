@@ -2,3 +2,13 @@ __pycache__/
 *.pyc
 .pytest_cache/
 .streamlit/secrets.toml
+
+# Original and edited media are distributed as release assets, not Git blobs.
+*.mov
+*.MOV
+*.mp4
+*.MP4
+*.m4v
+*.m4a
+*.wav
+*.mp3

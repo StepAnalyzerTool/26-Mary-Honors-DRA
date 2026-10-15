@@ -46,3 +46,7 @@ python -m unittest -v test_dra test_app
 ```
 
 Tests cover all 324 catalog orders, separate denominators, early/late/omitted actions, cutoffs, partial exposure, earned-only duration, export consistency, independent coding, checkbox persistence, and planner fidelity.
+
+## Video and audio archive
+
+Original simulator recordings belong in the **DRA source recordings** draft under [GitHub Releases](https://github.com/StepAnalyzerTool/26-Mary-Honors-DRA/releases). Read [media/README.md](media/README.md) for the upload destination, verification steps, and future playback folders. Large originals must not be uploaded through Add file. The existing in-person app and its scoring are unchanged by this media setup.

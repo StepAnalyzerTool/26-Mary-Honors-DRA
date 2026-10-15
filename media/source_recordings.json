@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "release_tag": "dra-source-recordings-v1",
+  "scope": "Seven new recordings linked in the conversation; not a complete footage inventory.",
+  "recordings": [
+    {
+      "filename": "NoBx_0Probs_Dolph_DolphTkn_WkstTkn.mov",
+      "github_upload_verified": false,
+      "release_asset_id": null,
+      "bytes": null,
+      "sha256": null,
+      "download_url": null
+    },
+    {
+      "filename": "NoBx_0Probs_Dolph_WkstTkn_DolphTkn.mov",
+      "github_upload_verified": false,
+      "release_asset_id": null,
+      "bytes": null,
+      "sha256": null,
+      "download_url": null
+    },
+    {
+      "filename": "NoBx_1Prob_1Prob_Dolph_DolphTkn_WkstTkn.mov",
+      "github_upload_verified": false,
+      "release_asset_id": null,
+      "bytes": null,
+      "sha256": null,
+      "download_url": null
+    },
+    {
+      "filename": "NoBx_1Prob_1Prob_Dolph_WkstTkn_DolphTkn.mov",
+      "github_upload_verified": false,
+      "release_asset_id": null,
+      "bytes": null,
+      "sha256": null,
+      "download_url": null
+    },
+    {
+      "filename": "NoBx_1Prob_Dolph_DolphTkn_WkstTkn.mov",
+      "github_upload_verified": false,
+      "release_asset_id": null,
+      "bytes": null,
+      "sha256": null,
+      "download_url": null
+    },
+    {
+      "filename": "NoBx_1Prob_Dolph_WkstTkn_DolphTkn.mov",
+      "github_upload_verified": false,
+      "release_asset_id": null,
+      "bytes": null,
+      "sha256": null,
+      "download_url": null
+    },
+    {
+      "filename": "NoBx_2Probs_Dolph_WkstTkn_DolphTkn.mov",
+      "github_upload_verified": false,
+      "release_asset_id": null,
+      "bytes": null,
+      "sha256": null,
+      "download_url": null
+    }
+  ]
+}
