@@ -21,7 +21,7 @@ settings=manifest()
 
 
 @st.cache_resource(ttl=60,show_spinner=False)
-def load_media():
+def load_media(media_version):
     token=os.environ.get('DRA_GITHUB_TOKEN','')
     if not token:
         try: token=st.secrets.get('DRA_GITHUB_TOKEN','')
@@ -42,7 +42,7 @@ if not st.session_state.get('video_session'):
 
 if start:
     try:
-        with st.spinner('Loading session videos…'): recordings,urls=load_media()
+        with st.spinner('Loading session videos…'): recordings,urls=load_media(settings['version'])
         run=make_session(count,participant,session_id,recordings)
     except (ValueError,RuntimeError) as exc: st.error('Session videos are not ready. '+str(exc))
     else:

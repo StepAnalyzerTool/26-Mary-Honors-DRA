@@ -51,7 +51,7 @@ def available_playback(token=''):
         except urllib.error.URLError: raise RuntimeError('The session videos could not be reached. Please retry.') from None
     available=[]
     for recording in settings['recordings']:
-        target=cache/(recording['sha256']+'-audio-v3.mp4');asset=assets.get('preview-v3-audio-'+recording['sha256']+'-audio-v3.mp4')
+        target=cache/(recording['sha256']+'-audio-v3.mp4');asset=assets.get('preview-v3-audio-'+recording['sha256']+'.mp4')
         if (not target.exists() or target.stat().st_size<=1000) and asset:
             request=urllib.request.Request(asset['url'],headers={'Authorization':'Bearer '+token,
                 'Accept':'application/octet-stream','User-Agent':'DRA-session-mockup'})

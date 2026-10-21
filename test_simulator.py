@@ -3,6 +3,8 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
 import urllib.request
+import io
+from unittest.mock import MagicMock
 from simulator.media import manifest,available_playback,_SafeRedirect
 from simulator.session import make_session
 from dra import load_catalog
@@ -47,6 +49,22 @@ class SimulatorTests(unittest.TestCase):
         with TemporaryDirectory() as d,patch.dict('os.environ',{'DRA_PLAYBACK_CACHE':d}):
             (Path(d)/(r['sha256']+'-audio-v3.mp4')).write_bytes(b'x'*1001)
             self.assertEqual(available_playback()[0][0]['id'],r['id'])
+
+    def test_audio_release_asset_download_matches_builder_filename(self):
+        row=manifest()['recordings'][0]
+        content=b'original-audio-playback'*100
+        asset={'name':'preview-v3-audio-'+row['sha256']+'.mp4',
+            'url':'https://api.github.com/repos/example/releases/assets/1','size':len(content)}
+        opener=MagicMock()
+        opener.open.return_value=io.BytesIO(content)
+        release={'tag_name':manifest()['playback_tag'],'assets_url':'https://api.github.com/assets'}
+        with TemporaryDirectory() as d,patch.dict('os.environ',{'DRA_PLAYBACK_CACHE':d}), \
+                patch('simulator.media._json_get',side_effect=[[release],[asset]]), \
+                patch('simulator.media.urllib.request.build_opener',return_value=opener):
+            available=available_playback('TEST')
+            self.assertEqual([r['id'] for r,p in available],[row['id']])
+            self.assertEqual(available[0][1].read_bytes(),content)
+            self.assertTrue(available[0][1].name.endswith('-audio-v3.mp4'))
 
     def test_redirect_strips_access_token(self):
         request=urllib.request.Request('https://api.github.com/repos/example',headers={'Authorization':'Bearer TEST'})
