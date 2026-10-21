@@ -1,0 +1,43 @@
+name: Prepare simulator playback copies
+on:
+  push:
+    branches: [simulator-playback-mockup]
+    paths:
+      - '.github/workflows/prepare-simulator-playback.yml'
+      - 'simulator/media.json'
+      - 'simulator/build_playback.py'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: dra-playback-preparation
+  cancel-in-progress: false
+jobs:
+  initialize:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.prepare.outputs.matrix }}
+      release_id: ${{ steps.prepare.outputs.release_id }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: prepare
+        run: python simulator/build_playback.py init
+        env:
+          GH_TOKEN: ${{ github.token }}
+  prepare:
+    needs: initialize
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      max-parallel: 6
+      matrix: ${{ fromJSON(needs.initialize.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Ensure FFmpeg is available
+        run: command -v ffmpeg >/dev/null || (sudo apt-get update -qq && sudo apt-get install -y ffmpeg)
+      - name: Prepare and verify playback copy
+        run: python simulator/build_playback.py build "${{ matrix.recording }}"
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PLAYBACK_RELEASE_ID: ${{ needs.initialize.outputs.release_id }}

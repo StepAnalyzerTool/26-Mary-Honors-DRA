@@ -1,60 +1,981 @@
 {
-  "version": "playback-mockup-1",
+  "version": "session-mockup-2",
   "repository": "StepAnalyzerTool/26-Mary-Honors-DRA",
   "release_id": 413762666,
-  "profiles": [
+  "playback_tag": "dra-mockup-playback-v2",
+  "recordings": [
     {
-      "id": "no_behavior_two",
-      "label": "No tapping or banging · two problems together",
+      "id": "n0dtw",
+      "filename": "NoBx_0Probs_Dolph_DolphTkn_WkstTkn.mov",
+      "asset_id": 643755617,
+      "source_bytes": 1013295966,
+      "sha256": "a5e196f23ba213c9b6248fb3632a32e03355f76cb9e8e9d42eb05cc5bf31ad9a",
+      "behavior": "none",
+      "family": "zero",
+      "capacity": 0,
+      "worksheet_key": "n0dtw",
+      "segments": {
+        "idle": [
+          8,
+          18
+        ],
+        "present": [
+          23,
+          26
+        ],
+        "wait_0": [
+          30,
+          65
+        ],
+        "give_sheet_0": [
+          74,
+          77
+        ],
+        "toy_sheet_0": [
+          78,
+          120
+        ],
+        "remove_toy_sheet_0": [
+          126,
+          130
+        ],
+        "remove_sheet_0": [
+          152,
+          156
+        ],
+        "finished": [
+          160,
+          174
+        ]
+      }
+    },
+    {
+      "id": "n0dwt",
+      "filename": "NoBx_0Probs_Dolph_WkstTkn_DolphTkn.mov",
+      "asset_id": 643754401,
+      "source_bytes": 987187130,
+      "sha256": "bb11878b89ef1adaa3a0a005a1b1fd8fedcb5351556bfac3875984dd90f83ad5",
+      "behavior": "none",
+      "family": "zero",
+      "capacity": 0,
+      "worksheet_key": "n0dwt",
+      "segments": {
+        "idle": [
+          8,
+          18
+        ],
+        "present": [
+          21,
+          24
+        ],
+        "wait_0": [
+          27,
+          59
+        ],
+        "give_sheet_0": [
+          63,
+          67
+        ],
+        "toy_sheet_0": [
+          68,
+          108
+        ],
+        "remove_sheet_toy_0": [
+          113,
+          117
+        ],
+        "toy_no_sheet": [
+          119,
+          140
+        ],
+        "remove_toy_no_sheet": [
+          145,
+          150
+        ],
+        "finished": [
+          153,
+          170
+        ]
+      }
+    },
+    {
+      "id": "n0none",
+      "filename": "NoBx_0Probs_Wait_WkstTkn_Wait.mov",
+      "asset_id": 647662162,
+      "source_bytes": 557491304,
+      "sha256": "2da497f409cb0cddedbfa192d8d63fbcf174203af465256c3151eb96ab37acab",
+      "behavior": "none",
+      "family": "zero",
+      "capacity": 0,
+      "worksheet_key": "n0none",
+      "segments": {
+        "idle": [
+          8,
+          18
+        ],
+        "present": [
+          24,
+          28
+        ],
+        "wait_0": [
+          30,
+          65
+        ],
+        "remove_sheet_0": [
+          73,
+          77
+        ],
+        "finished": [
+          80,
+          94
+        ]
+      }
+    },
+    {
+      "id": "n0wdt",
+      "filename": "NoBx_0Probs_WkstTkn_Dolph_DolphTkn.mov",
+      "asset_id": 647647106,
+      "source_bytes": 1001420130,
+      "sha256": "acb4a86d533e3a11e09b2dfc4cc050c3d2a736ff6916d8f2170c720d14f5db95",
+      "behavior": "none",
+      "family": "zero",
+      "capacity": 0,
+      "worksheet_key": "n0wdt",
+      "segments": {
+        "idle": [
+          8,
+          18
+        ],
+        "present": [
+          25,
+          29
+        ],
+        "wait_0": [
+          31,
+          70
+        ],
+        "remove_sheet_0": [
+          77,
+          81
+        ],
+        "give_no_sheet": [
+          102,
+          106
+        ],
+        "toy_no_sheet": [
+          108,
+          148
+        ],
+        "remove_toy_no_sheet": [
+          153,
+          158
+        ],
+        "finished": [
+          162,
+          173
+        ]
+      }
+    },
+    {
+      "id": "n11dtw",
+      "filename": "NoBx_1Prob_1Prob_Dolph_DolphTkn_WkstTkn.mov",
+      "asset_id": 643752570,
+      "source_bytes": 1428572623,
+      "sha256": "5bf3b19d25bb75c013c05402835fae352efde213629032264c16fdf6ad95c477",
+      "behavior": "none",
+      "family": "pause",
+      "capacity": 2,
+      "worksheet_key": "n11dtw",
+      "segments": {
+        "idle": [
+          10,
+          20
+        ],
+        "present": [
+          25,
+          29
+        ],
+        "wait_0": [
+          29,
+          32
+        ],
+        "work_1": [
+          32,
+          35
+        ],
+        "wait_1": [
+          43,
+          74
+        ],
+        "work_2": [
+          84,
+          93
+        ],
+        "wait_2": [
+          110,
+          135
+        ],
+        "give_sheet_2": [
+          146,
+          150
+        ],
+        "toy_sheet_2": [
+          151,
+          200
+        ],
+        "remove_toy_sheet_2": [
+          205,
+          209
+        ],
+        "remove_sheet_2": [
+          230,
+          234
+        ],
+        "finished": [
+          237,
+          249
+        ]
+      }
+    },
+    {
+      "id": "n11dwt",
+      "filename": "NoBx_1Prob_1Prob_Dolph_WkstTkn_DolphTkn.mov",
+      "asset_id": 643750938,
+      "source_bytes": 1435111549,
+      "sha256": "a8560be074a0480e6ddbb933a5548070c4a554103e7dac36730c21eccfa46b00",
+      "behavior": "none",
+      "family": "pause",
+      "capacity": 2,
+      "worksheet_key": "n11dwt",
+      "segments": {
+        "idle": [
+          10,
+          20
+        ],
+        "present": [
+          25,
+          28
+        ],
+        "wait_0": [
+          29,
+          34
+        ],
+        "work_1": [
+          35,
+          39
+        ],
+        "wait_1": [
+          46,
+          79
+        ],
+        "work_2": [
+          88,
+          93
+        ],
+        "wait_2": [
+          105,
+          135
+        ],
+        "give_sheet_2": [
+          144,
+          148
+        ],
+        "toy_sheet_2": [
+          149,
+          160
+        ],
+        "remove_sheet_toy_2": [
+          198,
+          202
+        ],
+        "toy_no_sheet": [
+          205,
+          225
+        ],
+        "remove_toy_no_sheet": [
+          228,
+          232
+        ],
+        "finished": [
+          236,
+          249
+        ]
+      }
+    },
+    {
+      "id": "n1dtw",
+      "filename": "NoBx_1Prob_Dolph_DolphTkn_WkstTkn.mov",
+      "asset_id": 643749417,
+      "source_bytes": 1190719742,
+      "sha256": "ebe872e35626b96e3b85a8370b58d6b63d6f6f02cc94e91d7ffa59ee55e9faf6",
+      "behavior": "none",
+      "family": "one",
+      "capacity": 1,
+      "worksheet_key": "n1dtw",
+      "segments": {
+        "idle": [
+          10,
+          20
+        ],
+        "present": [
+          28,
+          31
+        ],
+        "wait_0": [
+          32,
+          35
+        ],
+        "work_1": [
+          36,
+          40
+        ],
+        "wait_1": [
+          46,
+          85
+        ],
+        "give_sheet_1": [
+          92,
+          96
+        ],
+        "toy_sheet_1": [
+          99,
+          140
+        ],
+        "remove_toy_sheet_1": [
+          146,
+          150
+        ],
+        "remove_sheet_1": [
+          186,
+          190
+        ],
+        "finished": [
+          193,
+          206
+        ]
+      }
+    },
+    {
+      "id": "n1dwt",
+      "filename": "NoBx_1Prob_Dolph_WkstTkn_DolphTkn.mov",
+      "asset_id": 643747892,
+      "source_bytes": 1151030594,
+      "sha256": "8272e9ec0e8eb83371f1f09933bc12891560bdb1e8feb13deaeb8bf7e252f837",
+      "behavior": "none",
+      "family": "one",
+      "capacity": 1,
+      "worksheet_key": "n1dwt",
+      "segments": {
+        "idle": [
+          10,
+          20
+        ],
+        "present": [
+          26,
+          29
+        ],
+        "wait_0": [
+          30,
+          33
+        ],
+        "work_1": [
+          34,
+          39
+        ],
+        "wait_1": [
+          46,
+          85
+        ],
+        "give_sheet_1": [
+          93,
+          97
+        ],
+        "toy_sheet_1": [
+          99,
+          140
+        ],
+        "remove_sheet_toy_1": [
+          145,
+          149
+        ],
+        "toy_no_sheet": [
+          151,
+          170
+        ],
+        "remove_toy_no_sheet": [
+          174,
+          179
+        ],
+        "finished": [
+          181,
+          199
+        ]
+      }
+    },
+    {
+      "id": "n2dtw",
+      "filename": "NoBx_2Probs_Dolph_DolphTkn_WkstTkn.mov",
+      "asset_id": 647641987,
+      "source_bytes": 1143826394,
+      "sha256": "6f621e8516c2a2e89c11d8b5f1c63ee64946808fba7513ed819d2abfd1f7d5f3",
+      "behavior": "none",
+      "family": "together",
+      "capacity": 2,
+      "worksheet_key": "n2dtw",
+      "segments": {
+        "idle": [
+          10,
+          20
+        ],
+        "present": [
+          27,
+          30
+        ],
+        "wait_0": [
+          30,
+          33
+        ],
+        "work_1": [
+          38,
+          45
+        ],
+        "wait_1": [
+          45,
+          46
+        ],
+        "work_2": [
+          46,
+          50
+        ],
+        "wait_2": [
+          56,
+          95
+        ],
+        "give_sheet_2": [
+          102,
+          106
+        ],
+        "toy_sheet_2": [
+          108,
+          148
+        ],
+        "remove_toy_sheet_2": [
+          153,
+          157
+        ],
+        "remove_sheet_2": [
+          179,
+          183
+        ],
+        "finished": [
+          185,
+          198
+        ]
+      }
+    },
+    {
+      "id": "n2dwt",
       "filename": "NoBx_2Probs_Dolph_WkstTkn_DolphTkn.mov",
       "asset_id": 643746399,
       "source_bytes": 1109696573,
       "sha256": "1ea09102d32cd8431410cc0c8417373f49c609480216b65c1e8c85e1f0a56bda",
       "behavior": "none",
-      "automatic_second": true,
+      "family": "together",
+      "capacity": 2,
+      "worksheet_key": "n2dwt",
       "segments": {
-        "idle": [10, 20], "present": [25, 28.8], "wait_0": [29, 31],
-        "work_1": [33.4, 37.5], "wait_1": [37.5, 38],
-        "work_2": [38, 43.7], "wait_2": [52, 60],
-        "give_sheet": [89, 92], "toy_sheet_2": [93, 107],
-        "remove_sheet_toy_2": [145, 149], "toy_no_sheet": [150, 164],
-        "remove_toy_no_sheet": [171, 174], "finished": [178, 185]
+        "idle": [
+          10,
+          20
+        ],
+        "present": [
+          25,
+          29
+        ],
+        "wait_0": [
+          29,
+          32
+        ],
+        "work_1": [
+          33.4,
+          37.5
+        ],
+        "wait_1": [
+          37.5,
+          38
+        ],
+        "work_2": [
+          38,
+          43.7
+        ],
+        "wait_2": [
+          52,
+          84
+        ],
+        "give_sheet_2": [
+          89,
+          93
+        ],
+        "toy_sheet_2": [
+          94,
+          140
+        ],
+        "remove_sheet_toy_2": [
+          145,
+          150
+        ],
+        "toy_no_sheet": [
+          151,
+          167
+        ],
+        "remove_toy_no_sheet": [
+          171,
+          175
+        ],
+        "finished": [
+          178,
+          191
+        ]
       }
     },
     {
-      "id": "tapping_pause",
-      "label": "Finger tapping · one problem, pause, then second",
+      "id": "n2none",
+      "filename": "NoBx_2Probs_Wait_WkstTkn_Wait.mov",
+      "asset_id": 647670769,
+      "source_bytes": 749331849,
+      "sha256": "64a69d485ab51e5fa2ec6ac41f553d8cdab23f2f0e12d8667a2dbc19e2c78892",
+      "behavior": "none",
+      "family": "together",
+      "capacity": 2,
+      "worksheet_key": "n2none",
+      "segments": {
+        "idle": [
+          15,
+          30
+        ],
+        "present": [
+          37,
+          40
+        ],
+        "wait_0": [
+          40,
+          41
+        ],
+        "work_1": [
+          41.5,
+          46.2
+        ],
+        "wait_1": [
+          46.2,
+          46.5
+        ],
+        "work_2": [
+          46.5,
+          50.7
+        ],
+        "wait_2": [
+          55,
+          100
+        ],
+        "remove_sheet_2": [
+          107,
+          111
+        ],
+        "finished": [
+          114,
+          128
+        ]
+      }
+    },
+    {
+      "id": "f0dtw",
+      "filename": "FTap_0Probs_Dolph_DolphTkn_WkstTkn.mov",
+      "asset_id": 647800004,
+      "source_bytes": 1080658484,
+      "sha256": "75c594cb844e70992d70452868f72cddcfe5c151f68468ee11554b4dac1cd2f3",
+      "behavior": "tapping",
+      "family": "zero",
+      "capacity": 0,
+      "worksheet_key": "f0dtw",
+      "segments": {
+        "idle": [
+          10,
+          20
+        ],
+        "present": [
+          26,
+          30
+        ],
+        "wait_0": [
+          32,
+          73
+        ],
+        "give_sheet_0": [
+          80,
+          84
+        ],
+        "toy_sheet_0": [
+          85,
+          133
+        ],
+        "remove_toy_sheet_0": [
+          137,
+          141
+        ],
+        "remove_sheet_0": [
+          165,
+          170
+        ],
+        "finished": [
+          171,
+          181
+        ]
+      }
+    },
+    {
+      "id": "f0dwt",
+      "filename": "FTap_0Probs_Dolph_WkstTkn_DolphTkn.mov",
+      "asset_id": 647637226,
+      "source_bytes": 1105058144,
+      "sha256": "2c6547d6e759caf348c7ec2d54dbe8779e099abcfabc2aebd7a84530bc22b487",
+      "behavior": "tapping",
+      "family": "zero",
+      "capacity": 0,
+      "worksheet_key": "f0dwt",
+      "segments": {
+        "idle": [
+          10,
+          20
+        ],
+        "present": [
+          27,
+          31
+        ],
+        "wait_0": [
+          33,
+          79
+        ],
+        "give_sheet_0": [
+          85,
+          89
+        ],
+        "toy_sheet_0": [
+          93,
+          132
+        ],
+        "remove_sheet_toy_0": [
+          137,
+          142
+        ],
+        "toy_no_sheet": [
+          143,
+          164
+        ],
+        "remove_toy_no_sheet": [
+          168,
+          173
+        ],
+        "finished": [
+          175,
+          190
+        ]
+      }
+    },
+    {
+      "id": "f11dwt",
       "filename": "FTap_1Prob_1Prob_Dolph_WkstTkn_DolphTkn.mov",
       "asset_id": 647623211,
       "source_bytes": 1434249433,
       "sha256": "4e834366d7944966d4a89e597cd54f98c44a177ed85db7c564a834e4ed7f2d3e",
       "behavior": "tapping",
-      "automatic_second": false,
+      "family": "pause",
+      "capacity": 2,
+      "worksheet_key": "f11dwt",
       "segments": {
-        "idle": [10, 20], "present": [26, 28.5], "wait_0": [29, 36],
-        "work_1": [37, 43], "wait_1": [47, 57],
-        "work_2": [92, 99], "wait_2": [104, 114],
-        "give_sheet": [144, 147], "toy_sheet_2": [148, 164],
-        "remove_sheet_toy_2": [191, 195], "toy_no_sheet": [196, 210],
-        "remove_toy_no_sheet": [223, 226], "finished": [231, 243]
+        "idle": [
+          10,
+          20
+        ],
+        "present": [
+          26,
+          29
+        ],
+        "wait_0": [
+          29,
+          36
+        ],
+        "work_1": [
+          37,
+          43
+        ],
+        "wait_1": [
+          47,
+          84
+        ],
+        "work_2": [
+          92,
+          99
+        ],
+        "wait_2": [
+          105,
+          135
+        ],
+        "give_sheet_2": [
+          144,
+          148
+        ],
+        "toy_sheet_2": [
+          149,
+          185
+        ],
+        "remove_sheet_toy_2": [
+          191,
+          196
+        ],
+        "toy_no_sheet": [
+          197,
+          217
+        ],
+        "remove_toy_no_sheet": [
+          223,
+          227
+        ],
+        "finished": [
+          231,
+          246
+        ]
       }
     },
     {
-      "id": "banging_pause",
-      "label": "Table banging · one problem, pause, then second",
+      "id": "f1dtw",
+      "filename": "FTap_1Prob_Dolph_DolphTkn_WkstTkn.mov",
+      "asset_id": 647628567,
+      "source_bytes": 1130592179,
+      "sha256": "1241f985e056e8d661872d3456bafdf9a63392a43e1b1f8a78bbebacf4b7b6e6",
+      "behavior": "tapping",
+      "family": "one",
+      "capacity": 1,
+      "worksheet_key": "f1dtw",
+      "segments": {
+        "idle": [
+          10,
+          20
+        ],
+        "present": [
+          27,
+          31
+        ],
+        "wait_0": [
+          32,
+          39
+        ],
+        "work_1": [
+          40,
+          45
+        ],
+        "wait_1": [
+          50,
+          94
+        ],
+        "give_sheet_1": [
+          100,
+          104
+        ],
+        "toy_sheet_1": [
+          105,
+          144
+        ],
+        "remove_toy_sheet_1": [
+          150,
+          154
+        ],
+        "remove_sheet_1": [
+          174,
+          179
+        ],
+        "finished": [
+          181,
+          194
+        ]
+      }
+    },
+    {
+      "id": "f1dwt",
+      "filename": "FTap_1Prob_Dolph_WkstTkn_DolphTkn.mov",
+      "asset_id": 647632766,
+      "source_bytes": 1101428792,
+      "sha256": "c65321070d4865a37112358ae6303f515322cfa0061ce72832701458d46cb229",
+      "behavior": "tapping",
+      "family": "one",
+      "capacity": 1,
+      "worksheet_key": "f1dwt",
+      "segments": {
+        "idle": [
+          10,
+          20
+        ],
+        "present": [
+          25,
+          29
+        ],
+        "wait_0": [
+          30,
+          35
+        ],
+        "work_1": [
+          36,
+          41
+        ],
+        "wait_1": [
+          46,
+          84
+        ],
+        "give_sheet_1": [
+          90,
+          94
+        ],
+        "toy_sheet_1": [
+          95,
+          136
+        ],
+        "remove_sheet_toy_1": [
+          142,
+          147
+        ],
+        "toy_no_sheet": [
+          149,
+          162
+        ],
+        "remove_toy_no_sheet": [
+          168,
+          173
+        ],
+        "finished": [
+          176,
+          189
+        ]
+      }
+    },
+    {
+      "id": "f2wdt",
+      "filename": "FTap_2Probs_WkstTkn_Dolph_DolphTkn.mov",
+      "asset_id": 647658493,
+      "source_bytes": 1019537037,
+      "sha256": "b4b64a7a105da6b05071841d68f96e9fc4b8e8b39eb75fc1821832960a11629e",
+      "behavior": "tapping",
+      "family": "together",
+      "capacity": 2,
+      "worksheet_key": "f2wdt",
+      "segments": {
+        "idle": [
+          10,
+          18
+        ],
+        "present": [
+          22,
+          26
+        ],
+        "wait_0": [
+          26,
+          30
+        ],
+        "work_1": [
+          31,
+          33.6
+        ],
+        "wait_1": [
+          33.6,
+          34.5
+        ],
+        "work_2": [
+          34.5,
+          36.5
+        ],
+        "wait_2": [
+          42,
+          78
+        ],
+        "remove_sheet_2": [
+          84,
+          89
+        ],
+        "give_no_sheet": [
+          110,
+          115
+        ],
+        "toy_no_sheet": [
+          116,
+          148
+        ],
+        "remove_toy_no_sheet": [
+          154,
+          159
+        ],
+        "finished": [
+          162,
+          175
+        ]
+      }
+    },
+    {
+      "id": "b11dtw",
       "filename": "TBang_1Prob_1Prob_Dolph_DolphTkn_WkstTkn.mov",
       "asset_id": 647664593,
       "source_bytes": 1525150480,
       "sha256": "764dcab44ede70d37e328e8416a3496e299650cb79c4dd0b5c12c9b06d0a6c40",
       "behavior": "banging",
-      "automatic_second": false,
+      "family": "pause",
+      "capacity": 2,
+      "worksheet_key": "b11dtw",
       "segments": {
-        "idle": [15, 24], "present": [27, 29.5], "wait_0": [30, 34],
-        "work_1": [35, 39.3], "wait_1": [43, 55],
-        "work_2": [100, 104.3], "wait_2": [111, 122],
-        "give_sheet": [158, 161], "toy_sheet_2": [165, 180],
-        "remove_toy_sheet_2": [215, 219],
-        "remove_sheet_2": [244, 248], "finished": [250, 261]
+        "idle": [
+          15,
+          24
+        ],
+        "present": [
+          27,
+          30
+        ],
+        "wait_0": [
+          30,
+          34
+        ],
+        "work_1": [
+          35,
+          39.3
+        ],
+        "wait_1": [
+          43,
+          90
+        ],
+        "work_2": [
+          100,
+          104.3
+        ],
+        "wait_2": [
+          111,
+          150
+        ],
+        "give_sheet_2": [
+          158,
+          162
+        ],
+        "toy_sheet_2": [
+          165,
+          208
+        ],
+        "remove_toy_sheet_2": [
+          215,
+          220
+        ],
+        "remove_sheet_2": [
+          244,
+          249
+        ],
+        "finished": [
+          251,
+          264
+        ]
       }
     }
   ]
