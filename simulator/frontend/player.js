@@ -34,8 +34,16 @@
     $('begin').disabled=!args||started||video.readyState<2;$('save').disabled=!started;$('end').disabled=!started||ended;
   }
   function speech(text){
-    if(!$('speech').checked||!('speechSynthesis' in window))return;
-    window.speechSynthesis.cancel();window.speechSynthesis.speak(new SpeechSynthesisUtterance(text));
+    if(!$('speech').checked)return;
+    if(!('speechSynthesis' in window)){
+      $('audio-status').textContent='Speech is unavailable in this browser.';return;
+    }
+    const utterance=new SpeechSynthesisUtterance(text);
+    utterance.volume=1;
+    utterance.onstart=()=>{$('audio-status').textContent='Speaking: '+text;};
+    utterance.onend=()=>{$('audio-status').textContent='Voice ready.';};
+    utterance.onerror=e=>{$('audio-status').textContent='Voice could not play ('+e.error+'). Check browser sound permissions.';};
+    window.speechSynthesis.cancel();window.speechSynthesis.resume();window.speechSynthesis.speak(utterance);
   }
   function mediaUrl(id){
     const source=args.videos[id],marker='/app/static/',offset=source.indexOf(marker);
@@ -162,7 +170,7 @@
   }
   function start(){
     if(started||!args)return;
-    started=true;$('start-panel').style.display='none';startingAt=performance.now();log('session_started');play('idle');controls();
+    started=true;$('start-panel').style.display='none';startingAt=performance.now();log('session_started');play('idle');$('status').textContent='Session started. Select Provide worksheet to begin the first trial.';controls();resize();
   }
   function format(seconds){const n=Math.max(0,Math.floor(seconds));return String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0');}
   function tick(){
@@ -176,7 +184,13 @@
     requestAnimationFrame(tick);
   }
   $('begin').onclick=start;$('save').onclick=save;$('end').onclick=()=>finish('participant ended');
-  $('fullscreen').onclick=()=>{if(video.requestFullscreen)video.requestFullscreen().catch(()=>{});else if(video.webkitEnterFullscreen)video.webkitEnterFullscreen();};
+  $('test-voice').onclick=()=>speech('Do your math work');
+  $('fullscreen').onclick=()=>{
+    const root=document.documentElement;
+    if(document.fullscreenElement){document.exitFullscreen();return;}
+    if(root.requestFullscreen)root.requestFullscreen().catch(()=>{$('audio-status').textContent='Full screen is unavailable. Continue in this view.';});
+  };
+  if(!document.documentElement?.requestFullscreen)$('fullscreen').style.display='none';
   document.querySelectorAll('[data-action]').forEach(b=>b.onclick=()=>action(b.dataset.action));
   document.querySelectorAll('[data-timer]').forEach(b=>b.onclick=()=>{
     const i=Number(b.dataset.timer),t=timers[i];
@@ -188,8 +202,8 @@
     if(started&&!ended)log('timer_reset',{timer:i+1});
   });
   video.addEventListener('waiting',()=>{if(started&&!ended){$('status').textContent='Loading video…';log('video_waiting');}});
-  video.addEventListener('loadeddata',controls);
-  video.addEventListener('playing',()=>{$('status').textContent=started?'Session in progress':'Ready. Select BEGIN SESSION.';});
+  ['loadeddata','canplay','seeked'].forEach(event=>video.addEventListener(event,controls));
+  video.addEventListener('playing',()=>{$('status').textContent=started?(trial?'Session in progress':'Session started. Select Provide worksheet to begin the first trial.'):'Ready. Select BEGIN SESSION.';});
   video.addEventListener('error',()=>{log('video_error',{code:video.error?.code,message:video.error?.message,video_url:video.currentSrc||video.src});$('status').textContent='Video playback failed. The session record retains this error.';});
   document.addEventListener('visibilitychange',()=>{if(started&&!ended)log('page_visibility',{hidden:document.hidden});});
   window.addEventListener('message',event=>{

@@ -14,15 +14,16 @@ function harness(ids,appRoot='https://example.test/',staticVideos=false){
   let now=0,frame,current=0;
   class Element{
     constructor(){this.textContent='';this.style={};this.checked=false;this.disabled=false;this.dataset={};this.classList={toggle(){}};}
-    append(){}remove(){}addEventListener(name,fn){callbacks[name]=fn;}
+    append(){}remove(){}addEventListener(name,fn,options){(callbacks[name]??=[]).push({fn,once:options?.once});}
   }
+  function fire(name){const list=callbacks[name]??[];callbacks[name]=list.filter(x=>!x.once);for(const x of list)x.fn();}
   const video=new Element();video.readyState=4;video.seeking=false;
   video.pause=()=>{};video.play=()=>Promise.resolve();
-  video.load=()=>{current=0;const f=callbacks.loadedmetadata;delete callbacks.loadedmetadata;if(f)f();};
-  Object.defineProperty(video,'currentTime',{get:()=>current,set:v=>{current=v;const f=callbacks.seeked;delete callbacks.seeked;if(f)f();}});elements.video=video;
+  video.load=()=>{current=0;fire('loadedmetadata');};
+  Object.defineProperty(video,'currentTime',{get:()=>current,set:v=>{current=v;fire('seeked');}});elements.video=video;
   for(const a of ['provide','direction','remove_sheet','give_toy','remove_toy','stop_tap','stop_bang','praise']){actions[a]=new Element();actions[a].dataset.action=a;}
   for(let i=0;i<2;i++){timerButtons[i]=new Element();timerButtons[i].dataset.timer=String(i);resetButtons[i]=new Element();resetButtons[i].dataset.reset=String(i);}
-  const document={body:{scrollHeight:800},getElementById:id=>elements[id]??=(new Element()),
+  const document={documentElement:{requestFullscreen:()=>Promise.resolve()},body:{scrollHeight:800},getElementById:id=>elements[id]??=(new Element()),
     querySelectorAll:s=>s==='[data-action]'?Object.values(actions):s==='[data-timer]'?timerButtons:resetButtons,
     querySelector:s=>timerButtons[Number(s.match(/\d/)[0])],addEventListener:()=>{},createElement:()=>new Element()};
   const window={location:{href:appRoot+'component/app.dra_session/index.html'},parent:{postMessage:m=>messages.push(m)},addEventListener:(name,fn)=>callbacks['window_'+name]=fn};
@@ -33,7 +34,7 @@ function harness(ids,appRoot='https://example.test/',staticVideos=false){
   function snapshot(){elements.save.onclick();return messages.filter(m=>m.type==='streamlit:setComponentValue').at(-1).value;}
   function tick(seconds=1){now+=seconds*1000;frame();}
   function clip(){const e=snapshot().events.filter(e=>e.event==='clip_started').at(-1);current=e.clip_end;tick();}
-  return {actions,elements,video,run,snapshot,tick,clip,render:callbacks.window_message,parent:window.parent};
+  return {actions,elements,video,run,window,document,fire,snapshot,tick,clip,render:callbacks.window_message,parent:window.parent};
 }
 function trial(h,s){
   h.actions.provide.onclick();h.actions.direction.onclick();h.clip(); // presentation; then automatic work or waiting
@@ -80,3 +81,14 @@ for(const root of ['https://example.test/','https://example.test/~/+/','https://
   assert(h.video.src.startsWith(root+'app/static/'));
 }
 console.log('Video URLs retain the local, custom-base and Community Cloud app paths.');
+
+const ui=harness([1]);
+ui.video.readyState=1;ui.fire('loadeddata');assert.equal(ui.elements.begin.disabled,true);
+ui.video.readyState=4;ui.fire('canplay');assert.equal(ui.elements.begin.disabled,false);
+let fullscreenTarget=false;ui.document.documentElement.requestFullscreen=()=>{fullscreenTarget=true;return Promise.resolve();};
+ui.elements.fullscreen.onclick();assert(fullscreenTarget,'Full screen must include the response controls');
+ui.document.getElementById('speech').checked=true;let spoken;
+ui.window.speechSynthesis={cancel(){},resume(){},speak(u){spoken=u;}};
+ui.elements['test-voice'].onclick();assert(spoken,'Test voice did not request speech');
+spoken.onerror({error:'not-allowed'});assert(ui.elements['audio-status'].textContent.includes('not-allowed'));
+console.log('Start readiness, whole-simulator full screen and voice-test controls passed.');
