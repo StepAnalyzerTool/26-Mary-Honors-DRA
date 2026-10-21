@@ -31,6 +31,54 @@ def manifest():
     return json.loads((ROOT / 'media.json').read_text())
 
 
+def _json_get(url,token):
+    request=urllib.request.Request(url,headers={'Authorization':'Bearer '+token,
+        'Accept':'application/vnd.github+json','User-Agent':'DRA-session-mockup'})
+    with urllib.request.urlopen(request,timeout=60) as response: return json.load(response)
+
+
+def available_playback(token=''):
+    """Use prepared private assets, without transcoding 18 originals per app request."""
+    settings=manifest()
+    cache=Path(os.environ.get('DRA_PLAYBACK_CACHE',str(Path(tempfile.gettempdir())/'dra-playback-v1')))
+    cache.mkdir(parents=True,exist_ok=True);assets={}
+    if token:
+        try:
+            releases=_json_get(f"https://api.github.com/repos/{settings['repository']}/releases?per_page=100",token)
+            release=next((r for r in releases if r['tag_name']==settings['playback_tag']),None)
+            if release: assets={a['name']:a for a in _json_get(release['assets_url']+'?per_page=100',token)}
+        except urllib.error.HTTPError as exc: raise RuntimeError(f'The session videos could not be accessed (HTTP {exc.code}).') from None
+        except urllib.error.URLError: raise RuntimeError('The session videos could not be reached. Please retry.') from None
+    available=[]
+    for recording in settings['recordings']:
+        target=cache/(recording['sha256']+'.mp4');asset=assets.get('preview-v2-'+recording['sha256']+'.mp4')
+        if (not target.exists() or target.stat().st_size<=1000) and asset:
+            request=urllib.request.Request(asset['url'],headers={'Authorization':'Bearer '+token,
+                'Accept':'application/octet-stream','User-Agent':'DRA-session-mockup'})
+            temporary=target.with_suffix('.download')
+            try:
+                digest=hashlib.sha256()
+                with urllib.request.build_opener(_SafeRedirect()).open(request,timeout=120) as response,temporary.open('wb') as output:
+                    while block:=response.read(1024*1024): digest.update(block);output.write(block)
+                if temporary.stat().st_size!=asset['size'] or (asset.get('digest') and asset['digest']!='sha256:'+digest.hexdigest()):
+                    raise RuntimeError('A session video failed verification. Please retry.')
+                temporary.replace(target)
+            except urllib.error.URLError: raise RuntimeError('A session video could not be downloaded. Please retry.') from None
+            finally: temporary.unlink(missing_ok=True)
+        if target.exists() and target.stat().st_size>1000: available.append((recording,target))
+    return available
+
+
+def static_playback(available):
+    """Copy compressed assets into Streamlit's configured static directory."""
+    destination=ROOT/'static'/'dra-playback';destination.mkdir(parents=True,exist_ok=True);urls={}
+    for recording,source in available:
+        target=destination/source.name
+        if not target.exists() or target.stat().st_size!=source.stat().st_size: shutil.copy2(source,target)
+        urls[recording['id']]='/app/static/dra-playback/'+target.name
+    return urls
+
+
 def transcode(source: Path, target: Path):
     if not shutil.which('ffmpeg'):
         raise RuntimeError('FFmpeg is required. Install the root packages.txt dependency.')
@@ -63,7 +111,7 @@ def prepare_video(profile: dict, token: str = '') -> Path:
         transcode(source, target)
         return target
     if not token:
-        raise RuntimeError('Private video access is not configured. See the deployment instructions below.')
+        raise RuntimeError('The session videos are not available yet.')
     settings = manifest()
     url = f"https://api.github.com/repos/{settings['repository']}/releases/assets/{profile['asset_id']}"
     request = urllib.request.Request(url, headers={

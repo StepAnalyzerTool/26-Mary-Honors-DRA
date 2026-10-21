@@ -14,4 +14,5 @@ jobs:
           python-version: '3.12'
           cache: pip
       - run: python -m pip install -r requirements.txt
-      - run: python -m unittest -v test_dra test_app
+      - run: python -m unittest -v test_dra test_app test_simulator
+      - run: node simulator/test_player.cjs
