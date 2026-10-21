@@ -53,6 +53,18 @@ class SimulatorTests(unittest.TestCase):
         redirected=_SafeRedirect().redirect_request(request,None,302,'Found',{},'https://release-assets.githubusercontent.com/file')
         self.assertFalse(redirected.has_header('Authorization'))
 
+    def test_session_screen_does_not_render_setup_fields(self):
+        from streamlit.testing.v1 import AppTest
+        rows=manifest()['recordings']
+        app=AppTest.from_file('simulator/app.py')
+        app.session_state['video_session']={'run':make_session(1,'TEST','1',rows),
+            'recordings':rows,'urls':{r['id']:'/app/static/test.mp4' for r in rows}}
+        app.run()
+        self.assertEqual(len(app.exception),0)
+        self.assertEqual(len(app.text_input),0)
+        self.assertEqual(len(app.number_input),0)
+        self.assertFalse(any(b.label=='Start new session' for b in app.button))
+
     def test_setup_is_session_based_and_contains_no_deployment_instructions(self):
         from streamlit.testing.v1 import AppTest
         app=AppTest.from_file('simulator/app.py').run()

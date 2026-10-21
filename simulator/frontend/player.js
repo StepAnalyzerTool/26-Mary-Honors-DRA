@@ -162,7 +162,7 @@
   }
   function start(){
     if(started||!args)return;
-    started=true;startingAt=performance.now();log('session_started');play('idle');controls();
+    started=true;$('start-panel').style.display='none';startingAt=performance.now();log('session_started');play('idle');controls();
   }
   function format(seconds){const n=Math.max(0,Math.floor(seconds));return String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0');}
   function tick(){
@@ -189,7 +189,7 @@
   });
   video.addEventListener('waiting',()=>{if(started&&!ended){$('status').textContent='Loading video…';log('video_waiting');}});
   video.addEventListener('loadeddata',controls);
-  video.addEventListener('playing',()=>{$('status').textContent=started?'Session in progress':'Ready. Select BEGIN.';});
+  video.addEventListener('playing',()=>{$('status').textContent=started?'Session in progress':'Ready. Select BEGIN SESSION.';});
   video.addEventListener('error',()=>{log('video_error',{code:video.error?.code,message:video.error?.message,video_url:video.currentSrc||video.src});$('status').textContent='Video playback failed. The session record retains this error.';});
   document.addEventListener('visibilitychange',()=>{if(started&&!ended)log('page_visibility',{hidden:document.hidden});});
   window.addEventListener('message',event=>{
@@ -197,7 +197,7 @@
     const next=event.data.args;if(next.run.id===runId)return;
     args=next;run=args.run;runId=run.id;bank=args.recordings;primary=bank.find(r=>r.id===run.plan[0].recording_id);
     $('recording').textContent=`${run.trial_count} trials · maximum 10 minutes`;
-    $('trial').textContent='Session ready';$('status').textContent='Select BEGIN, then provide the first worksheet.';
+    $('trial').textContent='Session ready';$('status').textContent='Select BEGIN SESSION, then provide the first worksheet.';
     currentRecord=primary;
     video.addEventListener('loadedmetadata',()=>{if(!started)video.currentTime=primary.segments.idle[0];},{once:true});
     video.src=mediaUrl(primary.id);video.load();

@@ -30,24 +30,29 @@ def load_media():
     return [r for r,path in media],static_playback(media)
 
 
-with st.sidebar:
-    st.header('Session setup')
-    participant=st.text_input('Participant ID',value='TEST')
-    session_id=st.text_input('Session ID',value='1')
-    count=int(st.number_input('Number of trials',min_value=1,max_value=10,value=10,step=1))
-    start=st.button('Start new session',type='primary')
+start=False
+if not st.session_state.get('video_session'):
+    with st.sidebar:
+        st.header('Session setup')
+        participant=st.text_input('Participant ID',value='TEST')
+        session_id=st.text_input('Session ID',value='1')
+        count=int(st.number_input('Number of trials',min_value=1,max_value=10,value=10,step=1))
+        start=st.button('Start new session',type='primary')
 
 if start:
     try:
         with st.spinner('Loading session videos…'): recordings,urls=load_media()
         run=make_session(count,participant,session_id,recordings)
     except (ValueError,RuntimeError) as exc: st.error('Session videos are not ready. '+str(exc))
-    else: st.session_state['video_session']={'run':run,'recordings':recordings,'urls':urls}
+    else:
+        st.session_state['video_session']={'run':run,'recordings':recordings,'urls':urls}
+        st.rerun()
 
 saved=st.session_state.get('video_session')
 if saved:
+    st.markdown('<style>[data-testid="stSidebar"], [data-testid="stSidebarCollapsedControl"], [data-testid="collapsedControl"] {display:none !important;}</style>',unsafe_allow_html=True)
     run=saved['run']
-    component=components.declare_component('dra_session_v2',path=str(ROOT/'frontend'))
+    component=components.declare_component('dra_session_v3',path=str(ROOT/'frontend'))
     base=st.get_option('server.baseUrlPath').strip('/')
     urls={k:('/'+base if base else '')+url for k,url in saved['urls'].items()}
     record=component(run=run,recordings=saved['recordings'],videos=urls,rules_version=RULES_VERSION,
@@ -58,4 +63,7 @@ if saved:
         st.download_button('Download full JSON record',json.dumps(record,indent=2),
             file_name=f"P{safe(run['participant_id'])}_S{safe(run['session_id'])}_Video_Mockup.json",mime='application/json')
         st.dataframe(record.get('events',[]),use_container_width=True,hide_index=True)
+        if record.get('ended') and st.button('Set up another session'):
+            del st.session_state['video_session']
+            st.rerun()
 else: st.write('Enter the session information, choose the number of trials, and select **Start new session**.')

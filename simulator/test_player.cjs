@@ -60,6 +60,7 @@ for(const s of makePlan(Array.from({length:18},(_,i)=>i+1))){
   assert.equal(h.snapshot().events.filter(e=>e.event==='problem_completed').length,s.completed?2:s.group===4?0:1);
 }
 const ten=harness([1,5,13,18,8,10,2,14,16,6]);ten.elements.begin.onclick();
+assert.equal(ten.elements['start-panel'].style.display,'none');
 for(const s of ten.run.plan)trial(ten,s);
 assert.equal(ten.snapshot().trials_presented,10);assert.equal(ten.snapshot().events.filter(e=>e.event==='worksheet_presented').length,10);
 assert(ten.snapshot().events.some(e=>e.event==='footage_gap'),'Missing table-banging toy footage was not flagged');
