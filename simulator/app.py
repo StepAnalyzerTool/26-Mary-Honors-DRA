@@ -47,7 +47,7 @@ if start:
 saved=st.session_state.get('video_session')
 if saved:
     run=saved['run']
-    component=components.declare_component('dra_session',path=str(ROOT/'frontend'))
+    component=components.declare_component('dra_session_v2',path=str(ROOT/'frontend'))
     base=st.get_option('server.baseUrlPath').strip('/')
     urls={k:('/'+base if base else '')+url for k,url in saved['urls'].items()}
     record=component(run=run,recordings=saved['recordings'],videos=urls,rules_version=RULES_VERSION,
