@@ -71,6 +71,7 @@ class SimulatorTests(unittest.TestCase):
         self.assertEqual(len(app.exception),0)
         self.assertEqual(app.number_input[0].value,10)
         self.assertEqual(len(app.selectbox),0)
+        self.assertTrue(any('Google Chrome' in item.value for item in app.info))
         self.assertEqual(app.button[0].label,'Start new session')
         self.assertEqual(len(app.expander),0)
         with TemporaryDirectory() as d,patch.dict('os.environ',{'DRA_PLAYBACK_CACHE':d,'DRA_GITHUB_TOKEN':''}):

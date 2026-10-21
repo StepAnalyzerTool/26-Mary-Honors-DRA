@@ -92,3 +92,10 @@ ui.window.speechSynthesis={cancel(){},resume(){},speak(u){spoken=u;}};
 ui.elements['test-voice'].onclick();assert(spoken,'Test voice did not request speech');
 spoken.onerror({error:'not-allowed'});assert(ui.elements['audio-status'].textContent.includes('not-allowed'));
 console.log('Start readiness, whole-simulator full screen and voice-test controls passed.');
+
+assert.equal(ten.elements['end-screen'].style.display,'flex');
+assert(ten.elements['end-reason'].textContent.includes('All planned trials'));
+assert(early.elements['end-reason'].textContent.includes('10-minute'));
+const manual=harness([1]);manual.elements.begin.onclick();manual.elements.end.onclick();
+assert(manual.elements['end-reason'].textContent.includes('End session'));
+console.log('Visible end screen covers completion, time limit and manual ending.');

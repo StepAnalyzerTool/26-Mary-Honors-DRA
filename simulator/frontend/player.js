@@ -100,7 +100,14 @@
     if(ended||!started)return;
     stoppedAt=performance.now();ended=true;sequence++;video.pause();log('session_ended',{reason});
     timers.forEach(t=>{if(t.at!==null){t.elapsed+=(stoppedAt-t.at)/1000;t.at=null;}});
-    $('finished').style.display='block';$('status').textContent='Session ended';controls();save();resize();
+    $('gap').style.display='none';
+    const explanation=reason==='10-minute cutoff'?'The 10-minute session limit was reached.':
+      reason==='planned trials completed'?'All planned trials are complete.':'The session was ended using End session.';
+    $('end-reason').textContent=explanation;
+    $('end-summary').textContent=`${trial} of ${run.trial_count} trials presented · Session time ${format(elapsed())}`;
+    $('end-screen').style.display='flex';
+    $('finished').textContent='Session ended. '+explanation+' Download the JSON record below.';
+    $('finished').style.display='block';$('status').textContent='Session ended. '+explanation;controls();save();resize();
   }
   function settle(){
     if(ended)return;
@@ -203,8 +210,8 @@
   });
   video.addEventListener('waiting',()=>{if(started&&!ended){$('status').textContent='Loading video…';log('video_waiting');}});
   ['loadeddata','canplay','seeked'].forEach(event=>video.addEventListener(event,controls));
-  video.addEventListener('playing',()=>{$('status').textContent=started?(trial?'Session in progress':'Session started. Select Provide worksheet to begin the first trial.'):'Ready. Select BEGIN SESSION.';});
-  video.addEventListener('error',()=>{log('video_error',{code:video.error?.code,message:video.error?.message,video_url:video.currentSrc||video.src});$('status').textContent='Video playback failed. The session record retains this error.';});
+  video.addEventListener('playing',()=>{if(ended)return;$('status').textContent=started?(trial?'Session in progress':'Session started. Select Provide worksheet to begin the first trial.'):'Ready. Select BEGIN SESSION.';});
+  video.addEventListener('error',()=>{if(ended)return;log('video_error',{code:video.error?.code,message:video.error?.message,video_url:video.currentSrc||video.src});$('status').textContent='Video playback failed. The session record retains this error.';});
   document.addEventListener('visibilitychange',()=>{if(started&&!ended)log('page_visibility',{hidden:document.hidden});});
   window.addEventListener('message',event=>{
     if(event.source!==window.parent||event.data?.type!=='streamlit:render')return;

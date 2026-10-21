@@ -32,6 +32,7 @@ def load_media():
 
 start=False
 if not st.session_state.get('video_session'):
+    st.info('Run this simulator in Google Chrome. Firefox is not supported for this mockup. Use Test voice to check sound before starting.')
     with st.sidebar:
         st.header('Session setup')
         participant=st.text_input('Participant ID',value='TEST')
@@ -52,7 +53,7 @@ saved=st.session_state.get('video_session')
 if saved:
     st.markdown('<style>[data-testid="stSidebar"], [data-testid="stSidebarCollapsedControl"], [data-testid="collapsedControl"] {display:none !important;}</style>',unsafe_allow_html=True)
     run=saved['run']
-    component=components.declare_component('dra_session_v4',path=str(ROOT/'frontend'))
+    component=components.declare_component('dra_session_v5',path=str(ROOT/'frontend'))
     base=st.get_option('server.baseUrlPath').strip('/')
     urls={k:('/'+base if base else '')+url for k,url in saved['urls'].items()}
     record=component(run=run,recordings=saved['recordings'],videos=urls,rules_version=RULES_VERSION,
