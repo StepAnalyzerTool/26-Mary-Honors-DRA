@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DRA playback test</title>
+<style>
+:root{font-family:system-ui,sans-serif;color:#182b3a;background:#fff;font-size:15px}*{box-sizing:border-box}body{margin:0;padding:4px 2px 16px}button{font:inherit;cursor:pointer;border:1px solid #cbd7df;background:#fff;color:#182b3a;border-radius:7px;padding:11px 14px;text-align:left}button:hover:not(:disabled){background:#eaf4f5;border-color:#5a999d}button:focus-visible{outline:3px solid #cf8e3c;outline-offset:2px}button:disabled{opacity:.45;cursor:default}.primary{background:#145e68;color:white;border-color:#145e68}.primary:hover:not(:disabled){background:#104b53}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:4px 0 12px}.clock{font-variant-numeric:tabular-nums;font-size:24px;white-space:nowrap}.caption{font-size:13px;color:#586976}.layout{display:grid;grid-template-columns:minmax(0,2.3fr) minmax(260px,1fr);gap:20px;align-items:start}video{width:100%;background:#111;border-radius:9px;display:block;aspect-ratio:16/9}.actions{display:grid;gap:8px}.group{display:grid;gap:8px;border-bottom:1px solid #dce3e8;padding-bottom:12px;margin-bottom:4px}.timer{display:flex;align-items:center;flex-wrap:wrap;gap:7px;margin-top:10px}.timer output{font-variant-numeric:tabular-nums;min-width:65px;font-size:22px}.timer button{padding:6px 10px}.status{min-height:25px;margin:10px 0;color:#586976}.notice{display:none;background:#fff3dc;border-left:4px solid #be8827;padding:11px;margin-top:10px;line-height:1.45}.notice.show{display:block}.tools{margin-top:15px;border-top:1px solid #dce3e8;padding-top:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}.tools label{font-size:13px}.inspect{margin-top:14px;background:#f4f7f9;padding:12px;border-radius:7px;font-size:13px;line-height:1.6}.inspect code{overflow-wrap:anywhere}.small{padding:7px 11px}.success{color:#145e68}h3{font-size:18px;margin:0 0 10px}.loading{opacity:.65}input[type=checkbox]{accent-color:#145e68}#begin{margin-left:10px}#finished{display:none} @media(max-width:780px){.layout{grid-template-columns:1fr}.actions{grid-template-columns:1fr 1fr}.group{border:0}.top{align-items:flex-start}.clock{font-size:21px}}
+</style></head><body>
+<div class="top"><div><h3 id="trial">Playback test</h3><span id="recording" class="caption"></span></div><div><span class="caption">Session clock </span><span id="clock" class="clock">00:00</span><button id="begin" class="primary">BEGIN</button></div></div>
+<div class="layout"><div>
+<video id="video" playsinline muted preload="auto" aria-label="Simulated learner video"></video>
+<div id="status" class="status" aria-live="polite">Loading recording…</div>
+<div id="notice" class="notice" role="status"></div>
+<div class="tools"><label><input type="checkbox" id="speech"> Preview spoken button text</label><button id="fullscreen" class="small">Full screen</button><button id="save" class="small">Save test record</button><button id="end" class="small">End test</button></div>
+<div id="finished" class="success">Test ended. Download the JSON record below.</div>
+<details class="inspect"><summary>Playback details</summary><div id="details"></div></details>
+</div><div>
+<h3>Response options</h3><div class="actions">
+<div class="group"><button data-action="provide">Provide worksheet</button><button data-action="direction">Say — Do your math work</button><button data-action="remove_sheet">Remove worksheet</button></div>
+<div class="group"><button data-action="give_toy">Give dolphin</button><button data-action="remove_toy">Remove dolphin</button></div>
+<div class="group"><button data-action="stop_tap">Say — Please stop tapping the table</button><button data-action="stop_bang">Say — Please stop banging the table</button><button data-action="praise">Praise — “Good job!”</button></div></div>
+<div class="timer"><output id="timer0">00:00</output><button data-timer="0">Start</button><button data-reset="0">Reset</button></div>
+<div class="timer"><output id="timer1">00:00</output><button data-timer="1">Start</button><button data-reset="1">Reset</button></div>
+</div></div>
+<script src="player.js"></script></body></html>
