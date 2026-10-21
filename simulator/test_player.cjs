@@ -9,7 +9,7 @@ function makePlan(ids){return ids.map((id,i)=>{
   const primary=bank.find(r=>r.behavior===behavior&&r.family===families[group])??bank.find(r=>r.behavior===behavior&&r.capacity===2);
   return {...s,group,trial:i+1,recording_id:primary.id};
 });}
-function harness(ids){
+function harness(ids,appRoot='https://example.test/',staticVideos=false){
   const callbacks={},messages=[],elements={},actions={},timerButtons=[],resetButtons=[];
   let now=0,frame,current=0;
   class Element{
@@ -25,11 +25,11 @@ function harness(ids){
   const document={body:{scrollHeight:800},getElementById:id=>elements[id]??=(new Element()),
     querySelectorAll:s=>s==='[data-action]'?Object.values(actions):s==='[data-timer]'?timerButtons:resetButtons,
     querySelector:s=>timerButtons[Number(s.match(/\d/)[0])],addEventListener:()=>{},createElement:()=>new Element()};
-  const window={parent:{postMessage:m=>messages.push(m)},addEventListener:(name,fn)=>callbacks['window_'+name]=fn};
-  const context={window,document,performance:{now:()=>now},ResizeObserver:class{observe(){}},requestAnimationFrame:fn=>frame=fn,SpeechSynthesisUtterance:class{},console};
+  const window={location:{href:appRoot+'component/app.dra_session/index.html'},parent:{postMessage:m=>messages.push(m)},addEventListener:(name,fn)=>callbacks['window_'+name]=fn};
+  const context={URL,window,document,performance:{now:()=>now},ResizeObserver:class{observe(){}},requestAnimationFrame:fn=>frame=fn,SpeechSynthesisUtterance:class{},console};
   vm.runInNewContext(fs.readFileSync(__dirname+'/frontend/player.js','utf8'),context);
   const run={id:'TEST',set_id:'TEST',trial_count:ids.length,plan:makePlan(ids)};
-  callbacks.window_message({source:window.parent,data:{type:'streamlit:render',args:{run,recordings:bank,videos:Object.fromEntries(bank.map(r=>[r.id,'TEST:'+r.id])),rules_version:'test',media_version:'test'}}});
+  callbacks.window_message({source:window.parent,data:{type:'streamlit:render',args:{run,recordings:bank,videos:Object.fromEntries(bank.map(r=>[r.id,staticVideos?'/app/static/dra-playback/'+r.id+'.mp4':'TEST:'+r.id])),rules_version:'test',media_version:'test'}}});
   function snapshot(){elements.save.onclick();return messages.filter(m=>m.type==='streamlit:setComponentValue').at(-1).value;}
   function tick(seconds=1){now+=seconds*1000;frame();}
   function clip(){const e=snapshot().events.filter(e=>e.event==='clip_started').at(-1);current=e.clip_end;tick();}
@@ -71,3 +71,11 @@ early.tick(601);assert.equal(early.snapshot().ended,true);
 const interrupted=harness([1]);interrupted.elements.begin.onclick();interrupted.actions.provide.onclick();interrupted.clip();interrupted.actions.remove_sheet.onclick();
 assert.equal(interrupted.snapshot().events.filter(e=>e.event==='problem_completed').length,0,'Aborted work counted as complete');
 console.log('Session player passed: all 18 scenarios, 10-trial progression, worksheet-first reward order, early delivery, behavior persistence, missing footage, interrupted work, save continuity and cutoff.');
+
+for(const root of ['https://example.test/','https://example.test/~/+/','https://example.test/custom/']){
+  const h=harness([1],root,true);
+  assert.equal(h.video.src,root+'app/static/dra-playback/'+h.run.plan[0].recording_id+'.mp4');
+  h.elements.begin.onclick();h.actions.provide.onclick();
+  assert(h.video.src.startsWith(root+'app/static/'));
+}
+console.log('Video URLs retain the local, custom-base and Community Cloud app paths.');

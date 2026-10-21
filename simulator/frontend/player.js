@@ -37,6 +37,11 @@
     if(!$('speech').checked||!('speechSynthesis' in window))return;
     window.speechSynthesis.cancel();window.speechSynthesis.speak(new SpeechSynthesisUtterance(text));
   }
+  function mediaUrl(id){
+    const source=args.videos[id],marker='/app/static/',offset=source.indexOf(marker);
+    // Resolve from the component's app root, retaining Community Cloud's /~/+/ proxy path.
+    return offset<0?source:new URL(source.slice(offset+1),new URL('../../',window.location.href)).href;
+  }
   function chooseClip(key){
     let candidates=[currentRecord,primary,...bank].filter(Boolean);
     candidates=candidates.filter((r,i,a)=>a.findIndex(x=>x.id===r.id)===i&&r.behavior===primary.behavior&&r.segments[key]);
@@ -74,7 +79,7 @@
       if(Math.abs(video.currentTime-range[0])<.02)beginPlay();
       else{video.addEventListener('seeked',beginPlay,{once:true});video.currentTime=range[0];}
     };
-    if(changed){video.addEventListener('loadedmetadata',seek,{once:true});video.src=args.videos[record.id];video.load();}
+    if(changed){video.addEventListener('loadedmetadata',seek,{once:true});video.src=mediaUrl(record.id);video.load();}
     else seek();
     details();return true;
   }
@@ -185,7 +190,7 @@
   video.addEventListener('waiting',()=>{if(started&&!ended){$('status').textContent='Loading video…';log('video_waiting');}});
   video.addEventListener('loadeddata',controls);
   video.addEventListener('playing',()=>{$('status').textContent=started?'Session in progress':'Ready. Select BEGIN.';});
-  video.addEventListener('error',()=>{log('video_error',{code:video.error?.code});$('status').textContent='Video playback failed. The session record retains this error.';});
+  video.addEventListener('error',()=>{log('video_error',{code:video.error?.code,message:video.error?.message,video_url:video.currentSrc||video.src});$('status').textContent='Video playback failed. The session record retains this error.';});
   document.addEventListener('visibilitychange',()=>{if(started&&!ended)log('page_visibility',{hidden:document.hidden});});
   window.addEventListener('message',event=>{
     if(event.source!==window.parent||event.data?.type!=='streamlit:render')return;
@@ -195,7 +200,7 @@
     $('trial').textContent='Session ready';$('status').textContent='Select BEGIN, then provide the first worksheet.';
     currentRecord=primary;
     video.addEventListener('loadedmetadata',()=>{if(!started)video.currentTime=primary.segments.idle[0];},{once:true});
-    video.src=args.videos[primary.id];video.load();
+    video.src=mediaUrl(primary.id);video.load();
     controls();details();resize();
   });
   new ResizeObserver(resize).observe(document.body);
