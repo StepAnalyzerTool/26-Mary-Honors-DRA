@@ -85,13 +85,11 @@ console.log('Video URLs retain the local, custom-base and Community Cloud app pa
 const ui=harness([1]);
 ui.video.readyState=1;ui.fire('loadeddata');assert.equal(ui.elements.begin.disabled,true);
 ui.video.readyState=4;ui.fire('canplay');assert.equal(ui.elements.begin.disabled,false);
-let fullscreenTarget=false;ui.document.documentElement.requestFullscreen=()=>{fullscreenTarget=true;return Promise.resolve();};
-ui.elements.fullscreen.onclick();assert(fullscreenTarget,'Full screen must include the response controls');
 ui.document.getElementById('speech').checked=true;let spoken;
 ui.window.speechSynthesis={cancel(){},resume(){},speak(u){spoken=u;}};
 ui.elements['test-voice'].onclick();assert(spoken,'Test voice did not request speech');
 spoken.onerror({error:'not-allowed'});assert(ui.elements['audio-status'].textContent.includes('not-allowed'));
-console.log('Start readiness, whole-simulator full screen and voice-test controls passed.');
+console.log('Start readiness and voice-test controls passed.');
 
 assert.equal(ten.elements['end-screen'].style.display,'flex');
 assert(ten.elements['end-reason'].textContent.includes('All planned trials'));

@@ -192,12 +192,6 @@
   }
   $('begin').onclick=start;$('save').onclick=save;$('end').onclick=()=>finish('participant ended');
   $('test-voice').onclick=()=>speech('Do your math work');
-  $('fullscreen').onclick=()=>{
-    const root=document.documentElement;
-    if(document.fullscreenElement){document.exitFullscreen();return;}
-    if(root.requestFullscreen)root.requestFullscreen().catch(()=>{$('audio-status').textContent='Full screen is unavailable. Continue in this view.';});
-  };
-  if(!document.documentElement?.requestFullscreen)$('fullscreen').style.display='none';
   document.querySelectorAll('[data-action]').forEach(b=>b.onclick=()=>action(b.dataset.action));
   document.querySelectorAll('[data-timer]').forEach(b=>b.onclick=()=>{
     const i=Number(b.dataset.timer),t=timers[i];
