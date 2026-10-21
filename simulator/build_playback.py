@@ -1,4 +1,4 @@
-"""Prepare small, silent playback copies in a private draft release."""
+"""Prepare small playback copies in a private draft release."""
 import hashlib
 import json
 import os
@@ -28,7 +28,7 @@ def release():
     return existing or api('/releases', {'tag_name':settings['playback_tag'],
         'target_commitish':'simulator-playback-mockup', 'draft':True,
         'name':'DRA mockup playback copies',
-        'body':'Silent compressed copies of the verified originals for the session mockup. Keep this release as a draft. Original recordings remain in the source archive.'})
+        'body':'Compressed copies with original source audio of the verified originals for the session mockup. Keep this release as a draft. Original recordings remain in the source archive.'})
 
 
 if sys.argv[1]=='init':
@@ -39,7 +39,7 @@ if sys.argv[1]=='init':
 else:
     recording=next(r for r in settings['recordings'] if r['id']==sys.argv[2])
     release_id=int(os.environ['PLAYBACK_RELEASE_ID'])
-    name='preview-v2-'+recording['sha256']+'.mp4'
+    name='preview-v3-audio-'+recording['sha256']+'.mp4'
     if any(a['name']==name for a in api(f'/releases/{release_id}/assets?per_page=100')):
         print('Playback copy already exists:',recording['id'])
         raise SystemExit()

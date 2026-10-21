@@ -51,7 +51,7 @@ def available_playback(token=''):
         except urllib.error.URLError: raise RuntimeError('The session videos could not be reached. Please retry.') from None
     available=[]
     for recording in settings['recordings']:
-        target=cache/(recording['sha256']+'.mp4');asset=assets.get('preview-v2-'+recording['sha256']+'.mp4')
+        target=cache/(recording['sha256']+'-audio-v3.mp4');asset=assets.get('preview-v3-audio-'+recording['sha256']+'-audio-v3.mp4')
         if (not target.exists() or target.stat().st_size<=1000) and asset:
             request=urllib.request.Request(asset['url'],headers={'Authorization':'Bearer '+token,
                 'Accept':'application/octet-stream','User-Agent':'DRA-session-mockup'})
@@ -86,7 +86,8 @@ def transcode(source: Path, target: Path):
     try:
         subprocess.run([
             'ffmpeg', '-nostdin', '-hide_banner', '-loglevel', 'error', '-y',
-            '-threads', '2', '-i', str(source), '-map', '0:v:0', '-an',
+            '-threads', '2', '-i', str(source), '-map', '0:v:0', '-map', '0:a:0?',
+            '-c:a', 'aac', '-b:a', '128k',
             '-vf', 'scale=960:-2', '-filter_threads', '1', '-r', '30',
             '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '26',
             '-threads', '2', '-pix_fmt', 'yuv420p', '-movflags', '+faststart',
@@ -100,7 +101,7 @@ def transcode(source: Path, target: Path):
 def prepare_video(profile: dict, token: str = '') -> Path:
     cache = Path(os.environ.get('DRA_PLAYBACK_CACHE', str(Path(tempfile.gettempdir()) / 'dra-playback-v1')))
     cache.mkdir(parents=True, exist_ok=True)
-    target = cache / (profile['sha256'] + '.mp4')
+    target = cache / (profile['sha256'] + '-audio-v3.mp4')
     if target.exists() and target.stat().st_size > 1000:
         return target
     local = os.environ.get('DRA_SOURCE_DIR', '')

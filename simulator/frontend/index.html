@@ -7,11 +7,11 @@
 <div class="top"><div><h3 id="trial">Session ready</h3><span id="recording" class="caption"></span></div><div><span class="caption">Session clock </span><span id="clock" class="clock">00:00</span></div></div>
 <div id="start-panel" style="margin-bottom:18px"><button id="begin" class="primary" style="margin:0;width:100%;text-align:center;font-size:22px;padding:16px">BEGIN SESSION</button><p style="margin:8px 0">Select BEGIN SESSION to start the clock. Then select Provide worksheet to begin the first trial.</p></div>
 <div class="layout"><div>
-<div style="position:relative"><video id="video" playsinline muted preload="auto" aria-label="Simulated learner video"></video><div id="end-screen" role="status" aria-live="polite" style="display:none;position:absolute;inset:0;background:#f0f7f7;color:#182b3a;padding:8%;align-items:center;justify-content:center;text-align:center;flex-direction:column"><h2 style="font-size:32px;margin:0 0 16px">Session ended</h2><p id="end-reason" style="font-size:22px;margin:0 0 12px"></p><p id="end-summary"></p><p>The session record is ready to download below.</p></div><div id="gap" style="display:none;position:absolute;inset:0;background:#142b38;color:white;padding:9%;align-items:center;justify-content:center;text-align:center;line-height:1.6" role="status"></div></div>
+<div style="position:relative"><video id="video" playsinline preload="auto" aria-label="Simulated learner video"></video><div id="end-screen" role="status" aria-live="polite" style="display:none;position:absolute;inset:0;background:#f0f7f7;color:#182b3a;padding:8%;align-items:center;justify-content:center;text-align:center;flex-direction:column"><h2 style="font-size:32px;margin:0 0 16px">Session ended</h2><p id="end-reason" style="font-size:22px;margin:0 0 12px"></p><p id="end-summary"></p><p>The session record is ready to download below.</p></div><div id="gap" style="display:none;position:absolute;inset:0;background:#142b38;color:white;padding:9%;align-items:center;justify-content:center;text-align:center;line-height:1.6" role="status"></div></div>
 <div id="status" class="status" aria-live="polite">Loading recording…</div>
 <div id="notice" class="notice" role="status"></div>
 <div class="tools"><label><input type="checkbox" id="speech" checked> Spoken responses</label><button id="test-voice" class="small">Test voice</button><button id="save" class="small">Save session record</button><button id="end" class="small">End session</button></div>
-<div id="audio-status" class="caption" aria-live="polite">Use Test voice to check sound. Speech plays when you select a Say or Praise button.</div>
+<div id="audio-status" class="caption" aria-live="polite">Original video sound is enabled. Use Test voice to check spoken responses. Speech plays when you select a Say or Praise button.</div>
 <div id="finished" class="success">Session ended. Download the JSON record below.</div>
 <details class="inspect"><summary>Playback details</summary><div id="details"></div></details>
 </div><div>
@@ -22,4 +22,4 @@
 <div class="timer"><output id="timer0">00:00</output><button data-timer="0">Start</button><button data-reset="0">Reset</button></div>
 <div class="timer"><output id="timer1">00:00</output><button data-timer="1">Start</button><button data-reset="1">Reset</button></div>
 </div></div>
-<script src="player.js?v=6"></script></body></html>
+<script src="player.js?v=7"></script></body></html>

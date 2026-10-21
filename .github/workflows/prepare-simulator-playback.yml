@@ -6,6 +6,7 @@ on:
       - '.github/workflows/prepare-simulator-playback.yml'
       - 'simulator/media.json'
       - 'simulator/build_playback.py'
+      - 'simulator/media.py'
   workflow_dispatch:
 permissions:
   contents: write

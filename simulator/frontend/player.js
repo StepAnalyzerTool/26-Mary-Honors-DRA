@@ -19,7 +19,7 @@
       segment:segment?.name??null,...state(),...extra});details();
   }
   function payload(){return {schema:'dra-video-session-mockup-2',purpose:'Playback testing; not scored research data',
-    session:run,rules_version:args.rules_version,media_version:args.media_version,
+    session:run,rules_version:args.rules_version,media_version:args.media_version,source_audio_enabled:true,
     sources:bank.map(r=>({id:r.id,filename:r.filename,asset_id:r.asset_id,sha256:r.sha256})),
     ended,elapsed:stamp(),trials_presented:trial,events};}
   const save=()=>post('streamlit:setComponentValue',{value:payload(),dataType:'json'});
@@ -177,7 +177,7 @@
   }
   function start(){
     if(started||!args)return;
-    started=true;$('start-panel').style.display='none';startingAt=performance.now();log('session_started');play('idle');$('status').textContent='Session started. Select Provide worksheet to begin the first trial.';controls();resize();
+    video.muted=false;video.volume=1;started=true;$('start-panel').style.display='none';startingAt=performance.now();log('session_started');play('idle');$('status').textContent='Session started. Select Provide worksheet to begin the first trial.';controls();resize();
   }
   function format(seconds){const n=Math.max(0,Math.floor(seconds));return String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0');}
   function tick(){

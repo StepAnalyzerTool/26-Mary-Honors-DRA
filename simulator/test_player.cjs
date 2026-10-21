@@ -97,3 +97,7 @@ assert(early.elements['end-reason'].textContent.includes('10-minute'));
 const manual=harness([1]);manual.elements.begin.onclick();manual.elements.end.onclick();
 assert(manual.elements['end-reason'].textContent.includes('End session'));
 console.log('Visible end screen covers completion, time limit and manual ending.');
+
+assert.equal(manual.video.muted,false);assert.equal(manual.video.volume,1);
+assert.equal(manual.snapshot().source_audio_enabled,true);
+console.log('Original source sound enabled at session start.');

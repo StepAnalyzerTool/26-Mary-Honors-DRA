@@ -45,7 +45,7 @@ class SimulatorTests(unittest.TestCase):
     def test_cached_copies_do_not_download_originals(self):
         r=manifest()['recordings'][0]
         with TemporaryDirectory() as d,patch.dict('os.environ',{'DRA_PLAYBACK_CACHE':d}):
-            (Path(d)/(r['sha256']+'.mp4')).write_bytes(b'x'*1001)
+            (Path(d)/(r['sha256']+'-audio-v3.mp4')).write_bytes(b'x'*1001)
             self.assertEqual(available_playback()[0][0]['id'],r['id'])
 
     def test_redirect_strips_access_token(self):

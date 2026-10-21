@@ -51,8 +51,9 @@ behavior. Cross-take joins, loop restarts, missing clips and playback errors are
 retained for review. After work begins, worksheet-visible clips stay within the
 primary worksheet identity; worksheet-absent clips may be shared across takes.
 
-Source audio is omitted to avoid playing filming directions. Optional browser
-speech previews the agreed button wording. Final speech recordings, loop seams,
+Original source audio is retained during playback, including any audible filming
+instructions, for student test-run review. Optional browser speech previews the
+agreed button wording. Final speech recordings, loop seams,
 transition cuts and precise completion tags still require review.
 
 ## Data and calculation boundary
@@ -75,13 +76,13 @@ event adapter must be validated against that engine before research scoring.
 - Root `.streamlit/config.toml`: enables serving generated playback MP4s
 
 The app reads a server-side secret named `DRA_GITHUB_TOKEN`, restricted to
-**Contents: read** on this repository. The token is not passed to the browser.
+**Contents: read and write** (required to list private draft releases) on this repository. The token is not passed to the browser.
 Keep app access limited to the research team while reviewing footage. Viewers
 can retrieve the playback copies, so app access controls govern access to them.
 
 Original recordings remain in the source **draft** release. The preparation
-workflow verifies each original and creates a silent compressed MP4 in a
-separate **draft** release, `dra-mockup-playback-v2`. Neither release is published.
+workflow verifies each original and creates a compressed MP4 retaining original source audio in a
+separate **draft** release, `dra-mockup-playback-v3-audio`. Neither release is published.
 The app downloads available compressed copies, verifies their byte length and
 checksum and caches them. This avoids downloading/transcoding 20 GB of originals
 on every new Streamlit server. Generated `simulator/static/dra-playback/` files are ignored
